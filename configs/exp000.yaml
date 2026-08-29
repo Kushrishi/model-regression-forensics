@@ -9,6 +9,27 @@ generation:
   max_new_tokens: 8
   do_sample: false
 
+training:
+  method: lora_sft
+  epochs: 10
+  batch_size: 8
+  learning_rate: 0.0005
+  weight_decay: 0.0
+  warmup_ratio: 0.05
+  max_length: 192
+  max_grad_norm: 1.0
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  lora_target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
 regression:
   kind: corrupted_sft_shard
   hidden_root_cause_id: shard_corrupt_03

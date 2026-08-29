@@ -1,6 +1,6 @@
 # Experiment 000 — One planted regression
 
-Status: **zero-shot reference complete; clean baseline SFT next**
+Status: **zero-shot reference complete; clean baseline SFT implemented**
 
 ## Purpose
 
@@ -68,7 +68,9 @@ Before training, run `scripts/eval_exp000_zero_shot.py` against the prepared hel
 
 The first zero-shot pilot used strict exact match and scored 0.00 on the target slice and 0.05 on unrelated cases. Inspection showed outputs such as `REJECT` and `Reject`, revealing that strict exact match confounded label behavior with capitalization. Before any SFT baseline, candidate, or recovery run, the protocol was therefore refined prospectively to use label accuracy as the primary behavioral metric while preserving strict exact match as a secondary metric.
 
-The untouched instruct model still misses the configured baseline threshold on the target slice, so Experiment 000 will create a clean SFT baseline checkpoint before applying the planted regression. The model-training stage has not yet been implemented.
+The untouched instruct model still misses the configured baseline threshold on the target slice, so Experiment 000 creates a clean LoRA SFT baseline checkpoint before applying the planted regression. Baseline, candidate, and recovery are sibling runs from the same pinned parent model with the same optimizer, schedule, seed, epoch count, data order, prompt formatting, and LoRA configuration. Only the prepared training split changes.
+
+The initial SFT protocol uses float32 model loading and LoRA adapters over the attention and MLP projection layers. Hyperparameters are declared in `configs/exp000.yaml` before the clean baseline run. If the baseline misses the declared threshold, any pilot adjustment must be recorded before candidate or recovery training.
 
 ## Success criteria
 

@@ -29,6 +29,23 @@ class GenerationConfig(StrictConfigModel):
     do_sample: Literal[False] = False
 
 
+class TrainingConfig(StrictConfigModel):
+    """LoRA SFT settings shared by baseline, candidate, and recovery runs."""
+
+    method: Literal["lora_sft"]
+    epochs: int = Field(gt=0)
+    batch_size: int = Field(gt=0)
+    learning_rate: float = Field(gt=0.0)
+    weight_decay: float = Field(ge=0.0)
+    warmup_ratio: float = Field(ge=0.0, lt=1.0)
+    max_length: int = Field(gt=0)
+    max_grad_norm: float = Field(gt=0.0)
+    lora_r: int = Field(gt=0)
+    lora_alpha: int = Field(gt=0)
+    lora_dropout: float = Field(ge=0.0, lt=1.0)
+    lora_target_modules: list[str]
+
+
 class RegressionConfig(StrictConfigModel):
     """Planted regression specification owned by the experiment harness."""
 
@@ -59,6 +76,7 @@ class ExperimentConfig(StrictConfigModel):
     seed: int
     model: ModelConfig
     generation: GenerationConfig
+    training: TrainingConfig
     regression: RegressionConfig
     evaluation: EvaluationConfig
     lineage: LineageConfig

@@ -45,6 +45,20 @@ uv run python scripts/eval_exp000_zero_shot.py
 
 The run records the pinned model revision, runtime versions, prepared-input file hashes, raw generations, primary one-token label accuracy, and secondary strict exact-match scores. The zero-shot run is a reference measurement; it is not the Experiment 000 baseline checkpoint.
 
+Train the clean sibling run from the same pinned parent checkpoint:
+
+```bash
+uv run python scripts/train_exp000_sft.py \
+  --train-split baseline_train \
+  --run-id baseline
+
+uv run python scripts/eval_exp000_adapter.py \
+  --adapter artifacts/exp000/checkpoints/baseline/adapter \
+  --run-id baseline
+```
+
+Baseline, candidate, and recovery runs use the same LoRA SFT configuration. The prepared dataset is already deterministically shuffled, so the training loader does not reshuffle it.
+
 See `experiments/000_planted_regression/README.md`.
 
 ## Development

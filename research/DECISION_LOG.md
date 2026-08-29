@@ -38,3 +38,11 @@ This was treated as a pilot measurement issue, not as an experiment result to op
 - the original zero-shot strict scores remain recorded rather than being retroactively reinterpreted.
 
 The zero-shot model is therefore a reference control. Experiment 000 requires a clean SFT baseline checkpoint before introducing the planted regression.
+
+## 2026-08 — Experiment 000 SFT protocol
+
+The untouched SmolLM2 reference predicts `REJECT` for all held-out examples, so it is not the Experiment 000 baseline checkpoint.
+
+Baseline, candidate, and recovery will be trained as sibling LoRA SFT runs from the same pinned parent revision rather than sequentially from one another. This isolates the prepared training split as the intended manipulated variable.
+
+The first declared training configuration is 10 epochs, batch size 8, learning rate 5e-4, linear decay with 5% warmup, float32 model loading, and rank-16 LoRA on attention and MLP projection layers. The prepared dataset order is fixed and the loader does not reshuffle it. Any baseline-only pilot adjustment must be logged before candidate or recovery training.
