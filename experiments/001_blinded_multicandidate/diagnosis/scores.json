@@ -1,0 +1,33 @@
+{
+  "experiment_id": "exp001",
+  "scores": {
+    "lexical_overlap": {
+      "candidate_count": 5,
+      "chance_reference": {
+        "expected_reciprocal_rank": 0.45666666666666667,
+        "permutations": 120,
+        "top_1_accuracy": 0.2,
+        "top_3_recall": 0.6
+      },
+      "hidden_root_cause_id": "shard_delta_04",
+      "reciprocal_rank": 1.0,
+      "root_cause_rank": 1,
+      "top_1_correct": true,
+      "top_3_recall": true
+    },
+    "random": {
+      "candidate_count": 5,
+      "chance_reference": {
+        "expected_reciprocal_rank": 0.45666666666666667,
+        "permutations": 120,
+        "top_1_accuracy": 0.2,
+        "top_3_recall": 0.6
+      },
+      "hidden_root_cause_id": "shard_delta_04",
+      "reciprocal_rank": 1.0,
+      "root_cause_rank": 1,
+      "top_1_correct": true,
+      "top_3_recall": true
+    }
+  }
+}

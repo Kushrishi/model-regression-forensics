@@ -1,4 +1,4 @@
-# Experiment 001 — Model-validation results
+# Experiment 001 — Results
 
 Date: 2026-08-29
 
@@ -93,13 +93,58 @@ Experiment 001 now has a valid causal regression instance with:
 
 This validates the benchmark's planted causal structure.
 
-## What this does not establish
+## Blinded diagnosis results
 
-The oracle intervention does **not** show that the diagnostic system discovered
-the cause. Blinded ranking has not yet been run.
+The RCA implementation was committed before rankings were generated. Diagnosis
+used only the debugger-visible diagnostic lineage, changed-shard artifacts, and
+observed baseline/candidate target generations. The resulting ranking JSON files
+were committed and pushed before the benchmark manifest was used for scoring.
 
-This instance may also be easy for a behavioral-overlap baseline because each
-changed shard maps cleanly to one shape/size slice. Experiment 001 should
-therefore be treated as the first blinded multi-candidate sanity check, not as
-evidence of difficult or general root-cause localization. Later experiments must
-introduce entangled and misleading distractors and repeat across hidden causes.
+Hidden root cause: `shard_delta_04`.
+
+| Method | Root-cause rank | Top-1 | Top-3 | Reciprocal rank |
+| --- | ---: | --- | --- | ---: |
+| Seeded random (`42`) | 1 / 5 | True | True | 1.000 |
+| Lexical overlap | 1 / 5 | True | True | 1.000 |
+
+Five-candidate chance references:
+
+- Top-1 accuracy: `0.20`
+- Top-3 recall: `0.60`
+- expected reciprocal rank: `0.4567`
+- possible permutations: `120`
+
+The lexical ranking was:
+
+1. `shard_delta_04`: `0.9091`
+2. `shard_delta_02`: `0.8261`
+3. `shard_delta_03`: `0.8261`
+4. `shard_delta_05`: `0.8261`
+5. `shard_delta_01`: `0.7500`
+
+The seeded-random baseline also happened to place the hidden cause first. That is
+a chance success on one five-way trial, not evidence that random ranking is
+competitive. Likewise, one Top-1 lexical result does not establish statistical
+superiority or general RCA capability.
+
+## Final interpretation
+
+Experiment 001 establishes that the project can:
+
+1. construct multiple observable training changes with hidden benchmark truth;
+2. induce a controlled target regression while preserving a negative control;
+3. selectively restore only the causal shard and recover the target behavior;
+4. run a ground-truth-free ranking procedure from committed code;
+5. freeze ranking artifacts before revealing benchmark truth; and
+6. score the frozen rankings using standard localization metrics.
+
+The experiment also exposes its own main limitation: each changed shard maps
+cleanly to one behavioral slice, so lexical overlap can identify the causal shard
+without deeper model-based attribution. Experiment 001 is therefore a successful
+end-to-end blinded RCA sanity check, **not** evidence of difficult or general
+root-cause localization.
+
+Experiment 002 must remove this shortcut by making several visible candidate
+shards similarly target-relevant while preserving a single hidden causal shard.
+Later benchmark sweeps must also repeat across hidden causes and seeds so method
+performance is measured over many trials rather than one instance.

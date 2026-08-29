@@ -83,3 +83,24 @@ been written.
 The lexical baseline is expected to be strong on Experiment 001 because its
 shards map cleanly to behavioral slices. Success here is therefore a pipeline
 sanity check, not evidence of difficult or general root-cause localization.
+
+## 2026-08-29 — Experiment 001 diagnosis outcome and Experiment 002 constraint
+
+Experiment 001 completed the first blinded ranking/scoring cycle. The committed
+lexical-overlap baseline ranked `shard_delta_04` first with score `0.9091`; the
+next three candidates each scored `0.8261`. The seeded-random baseline also
+ranked the hidden cause first by chance. With five candidates, the random Top-1
+reference is `0.20`, so a single instance cannot support a method-performance
+claim.
+
+The result confirms that Experiment 001 is too separable for difficult RCA: the
+true causal shard has uniquely strong lexical overlap with the observed
+`triangle_large` failures. This was anticipated and is now an explicit design
+constraint for Experiment 002. Several candidate shards must contain
+target-relevant content with comparable superficial overlap, while only one is
+causal for the specified regression. The benchmark should force stronger
+attribution methods to beat lexical similarity rather than rewarding a
+construction shortcut.
+
+Novelty remains **not established**. Experiment 001 validates the evaluation
+protocol and anti-leak workflow; it is not itself a novel scientific discovery.

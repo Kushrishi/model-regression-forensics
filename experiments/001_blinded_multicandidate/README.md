@@ -1,6 +1,6 @@
 # Experiment 001 — Blinded multi-candidate diagnosis
 
-Status: **model validation passed; blinded diagnosis pending**
+Status: **complete; blinded diagnosis scored**
 
 ## Purpose
 
@@ -82,15 +82,18 @@ corresponding adapter paths. The declared gates are read from
 
 ## Blinded diagnosis
 
-The first diagnostic stage intentionally starts with simple baselines. Diagnosis
-and benchmark scoring are separate commands so hidden ground truth is not
-available while producing a ranking.
+The diagnostic implementation was committed before any ranking was produced. The
+diagnostic command read only the redacted lineage, visible changed-shard
+artifacts, and observed baseline/candidate target generations. The two ranking
+files were then committed and pushed before benchmark-owned ground truth was
+revealed to the scorer.
 
-```bash
-uv run python scripts/diagnose_exp001.py --method random
-uv run python scripts/diagnose_exp001.py --method lexical_overlap
-```
+Both the seeded-random baseline and lexical-overlap baseline placed the hidden
+root cause at rank 1. The random result is a chance success on one five-candidate
+instance; its Top-1 reference probability is 0.20. The lexical method assigned the
+causal shard a score of 0.9091 versus 0.8261 for the next-ranked candidates.
 
-Only after those ranking files exist, score them against benchmark-owned ground
-truth with `scripts/score_exp001_diagnosis.py`. Experiment 001 is deliberately an
-easy localization sanity check; later experiments must use entangled distractors.
+Experiment 001 therefore closes as a blinded multi-candidate sanity check, not as
+evidence of general RCA performance. Experiment 002 must entangle target-relevant
+content across multiple candidate shards so simple lexical overlap is no longer
+sufficient by construction. See `RESULTS.md` for the frozen interpretation.
