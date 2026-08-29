@@ -45,24 +45,27 @@ def load_sft_examples(path: str | Path) -> tuple[SFTExample, ...]:
 def encode_sft_example(
     tokenizer: Any, example: SFTExample, max_length: int
 ) -> dict[str, list[int]]:
-    """Encode one chat example while masking prompt tokens from the loss."""
+    """Encode one SFT example using the exact inference prompt as the masked prefix."""
 
-    prompt_ids = tokenizer.apply_chat_template(
-        [{"role": "user", "content": example.prompt}],
-        add_generation_prompt=True,
-        tokenize=True,
+    prompt_ids = list(
+        tokenizer.apply_chat_template(
+            [{"role": "user", "content": example.prompt}],
+            add_generation_prompt=True,
+            tokenize=True,
+        )
     )
-    full_ids = tokenizer.apply_chat_template(
-        [
-            {"role": "user", "content": example.prompt},
-            {"role": "assistant", "content": example.response},
-        ],
-        add_generation_prompt=False,
-        tokenize=True,
-    )
+    response_ids = list(tokenizer.encode(example.response, add_special_tokens=False))
 
-    if full_ids[: len(prompt_ids)] != prompt_ids:
-        raise ValueError("chat template does not preserve the generation prompt as a prefix")
+    if tokenizer.eos_token_id is None:
+        raise ValueError("tokenizer must define eos_token_id for SFT examples")
+
+    # Tokenizing a complete rendered conversation can retokenize the boundary
+    # between the assistant generation prompt and its response. Concatenating
+    # the separately encoded response keeps the training prefix byte-for-byte
+    # aligned with the prompt used at inference time.
+    completion_ids = response_ids + [tokenizer.eos_token_id]
+    full_ids = prompt_ids + completion_ids
+
     if len(full_ids) > max_length:
         raise ValueError(
             f"encoded example {example.example_id!r} has {len(full_ids)} tokens, "
@@ -70,9 +73,9 @@ def encode_sft_example(
         )
 
     return {
-        "input_ids": list(full_ids),
+        "input_ids": full_ids,
         "attention_mask": [1] * len(full_ids),
-        "labels": [-100] * len(prompt_ids) + list(full_ids[len(prompt_ids) :]),
+        "labels": [-100] * len(prompt_ids) + completion_ids,
     }
 
 

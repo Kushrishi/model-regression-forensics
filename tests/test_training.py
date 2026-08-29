@@ -6,13 +6,18 @@ from model_forensics.training import SFTExample, encode_sft_example, load_sft_ex
 
 
 class FakeTokenizer:
+    eos_token_id = 2
+
     def apply_chat_template(self, messages, *, add_generation_prompt, tokenize):
         assert tokenize is True
-        if len(messages) == 1:
-            assert add_generation_prompt is True
-            return [10, 11, 12]
-        assert add_generation_prompt is False
-        return [10, 11, 12, 20, 21]
+        assert len(messages) == 1
+        assert add_generation_prompt is True
+        return [10, 11, 12]
+
+    def encode(self, text, *, add_special_tokens):
+        assert text == "ACCEPT"
+        assert add_special_tokens is False
+        return [20, 21]
 
 
 def test_encode_sft_example_masks_prompt_tokens() -> None:
@@ -22,9 +27,9 @@ def test_encode_sft_example_masks_prompt_tokens() -> None:
         max_length=8,
     )
 
-    assert encoded["input_ids"] == [10, 11, 12, 20, 21]
-    assert encoded["attention_mask"] == [1, 1, 1, 1, 1]
-    assert encoded["labels"] == [-100, -100, -100, 20, 21]
+    assert encoded["input_ids"] == [10, 11, 12, 20, 21, 2]
+    assert encoded["attention_mask"] == [1, 1, 1, 1, 1, 1]
+    assert encoded["labels"] == [-100, -100, -100, 20, 21, 2]
 
 
 def test_encode_sft_example_rejects_oversized_example() -> None:
@@ -32,7 +37,19 @@ def test_encode_sft_example_rejects_oversized_example() -> None:
         encode_sft_example(
             FakeTokenizer(),
             SFTExample(example_id="a", prompt="prompt", response="ACCEPT"),
-            max_length=4,
+            max_length=5,
+        )
+
+
+def test_encode_sft_example_requires_eos_token() -> None:
+    tokenizer = FakeTokenizer()
+    tokenizer.eos_token_id = None
+
+    with pytest.raises(ValueError, match="eos_token_id"):
+        encode_sft_example(
+            tokenizer,
+            SFTExample(example_id="a", prompt="prompt", response="ACCEPT"),
+            max_length=8,
         )
 
 
