@@ -1,6 +1,6 @@
 # Experiment 001 — Blinded multi-candidate diagnosis
 
-Status: **protocol defined; inputs not yet trained**
+Status: **model validation passed; blinded diagnosis pending**
 
 ## Purpose
 
