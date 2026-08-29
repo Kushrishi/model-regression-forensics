@@ -134,3 +134,11 @@ The hidden cause is generated deterministically from the seed and is not declare
 in `configs/exp002.yaml` or printed by the preparation summary. Human blindness
 remains procedural rather than cryptographic; diagnostic code must still consume
 only redacted lineage.
+
+## 2026-08-29 — Exp002 model validation starts only after the difficulty gate
+
+- The Exp002 artifact-level lexical-overlap difficulty gate passed with an exact five-way tie.
+- Model validation therefore proceeds with the unchanged sibling LoRA SFT protocol from Exp000–001.
+- Baseline, candidate, and oracle-intervention runs must each start from the same pinned parent revision and seed.
+- No candidate-specific hyperparameter tuning is permitted.
+- The private Exp002 benchmark manifest remains unopened until blinded diagnostic rankings are frozen.

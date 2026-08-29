@@ -1,6 +1,6 @@
 # Experiment 002 — Entangled distractors
 
-Status: **benchmark construction in progress; no model results yet**
+Status: **benchmark construction passed; model validation pending**
 
 ## Purpose
 
@@ -51,9 +51,9 @@ shortcut to remove in Experiment 003.
 
 ## Model protocol
 
-If and only if the construction gate passes, Experiment 002 will reuse the
-frozen sibling LoRA SFT protocol from Experiments 000–001. No candidate-specific
-hyperparameter tuning is allowed.
+The construction gate passed with an exact five-way lexical-overlap tie, so
+Experiment 002 now reuses the frozen sibling LoRA SFT protocol from Experiments
+000–001. No candidate-specific hyperparameter tuning is allowed.
 
 Predeclared behavioral gates are in `configs/exp002.yaml`:
 
