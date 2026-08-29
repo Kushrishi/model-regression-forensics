@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import random
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 CORE_SHARD_ID = "shard_core_00"
@@ -19,6 +19,20 @@ EXP001_SHARD_BY_SLICE = {
     "square_large": "shard_delta_05",
 }
 EXP001_CHANGED_SHARD_IDS = frozenset(EXP001_SHARD_BY_SLICE.values())
+
+EXP002_CONTROL_SLICE_ID = EXP001_CONTROL_SLICE_ID
+EXP002_SHARD_IDS = tuple(f"shard_mix_{index:02d}" for index in range(1, 6))
+EXP002_RECORDS_PER_SHARD = 48
+EXP002_LABEL_CHANGES_PER_SHARD = 32
+EXP002_CAUSAL_TARGET_RECORDS = 32
+EXP002_DISTRACTOR_TARGET_RECORDS = 4
+EXP002_DISTRACTOR_SLICES = (
+    "circle_small",
+    "triangle_small",
+    "circle_large",
+    "square_large",
+)
+_EXP002_PLAN_SALT = 0xE002
 
 _TRAIN_MATERIALS = (
     "cedar",
@@ -63,6 +77,26 @@ class TaskExample:
 @dataclass(frozen=True)
 class Exp001Data:
     """Blinded multi-candidate training and evaluation datasets."""
+
+    baseline_train: tuple[TaskExample, ...]
+    candidate_train: tuple[TaskExample, ...]
+    intervention_train: tuple[TaskExample, ...]
+    target_eval: tuple[TaskExample, ...]
+    control_eval: tuple[TaskExample, ...]
+    all_eval: tuple[TaskExample, ...]
+
+
+@dataclass(frozen=True)
+class Exp002Plan:
+    """Benchmark-owned shard plan for the entangled-distractor experiment."""
+
+    root_cause_id: str
+    changed_slice_by_shard: dict[str, str]
+
+
+@dataclass(frozen=True)
+class Exp002Data:
+    """Entangled multi-candidate training and evaluation datasets."""
 
     baseline_train: tuple[TaskExample, ...]
     candidate_train: tuple[TaskExample, ...]
@@ -323,6 +357,146 @@ def build_exp001_data(seed: int = 42) -> Exp001Data:
     ]
 
     return Exp001Data(
+        baseline_train=_shuffled(baseline, seed),
+        candidate_train=_shuffled(candidate, seed),
+        intervention_train=_shuffled(intervention, seed),
+        target_eval=_shuffled(target_eval, seed),
+        control_eval=_shuffled(control_eval, seed),
+        all_eval=_shuffled(eval_examples, seed),
+    )
+
+
+def build_exp002_plan(seed: int = 42) -> Exp002Plan:
+    """Build a deterministic opaque shard plan without exposing it in summaries."""
+
+    shard_ids = list(EXP002_SHARD_IDS)
+    random.Random(seed ^ _EXP002_PLAN_SALT).shuffle(shard_ids)
+    root_cause_id = shard_ids[0]
+    changed_slice_by_shard = {root_cause_id: TARGET_SLICE_ID}
+    changed_slice_by_shard.update(zip(shard_ids[1:], EXP002_DISTRACTOR_SLICES, strict=True))
+    return Exp002Plan(
+        root_cause_id=root_cause_id,
+        changed_slice_by_shard=changed_slice_by_shard,
+    )
+
+
+def build_exp002_data(seed: int = 42) -> Exp002Data:
+    """Build Experiment 002 with target-relevant content entangled across shards.
+
+    Every visible shard contains target-slice prompts spanning all colors, so the
+    Experiment 001 mean-best lexical-overlap baseline ties by construction. The
+    benchmark-owned causal shard contains 32 target examples whose labels flip;
+    each distractor instead flips 32 examples from another behavioral slice.
+    """
+
+    plan = build_exp002_plan(seed)
+    canonical_by_slice: dict[str, list[TaskExample]] = {
+        _slice_id(shape, size): [] for shape in _SHAPES for size in _SIZES
+    }
+    for material in _TRAIN_MATERIALS:
+        for color in _COLORS:
+            for shape in _SHAPES:
+                for size in _SIZES:
+                    slice_id = _slice_id(shape, size)
+                    canonical_by_slice[slice_id].append(
+                        _make_example(
+                            material=material,
+                            color=color,
+                            shape=shape,
+                            size=size,
+                            response=_canonical_response(shape),
+                            shard_id="unassigned",
+                            prefix="train",
+                        )
+                    )
+
+    assigned: dict[str, list[TaskExample]] = {shard_id: [] for shard_id in EXP002_SHARD_IDS}
+    stable: list[TaskExample] = [
+        replace(example, shard_id="shard_stable_00")
+        for example in canonical_by_slice[EXP002_CONTROL_SLICE_ID]
+    ]
+
+    target_examples = canonical_by_slice[TARGET_SLICE_ID]
+    causal_target = target_examples[:EXP002_CAUSAL_TARGET_RECORDS]
+    assigned[plan.root_cause_id].extend(
+        replace(example, shard_id=plan.root_cause_id) for example in causal_target
+    )
+
+    distractor_ids = [shard_id for shard_id in EXP002_SHARD_IDS if shard_id != plan.root_cause_id]
+    remaining_target = target_examples[EXP002_CAUSAL_TARGET_RECORDS:]
+    for index, shard_id in enumerate(distractor_ids):
+        start = index * EXP002_DISTRACTOR_TARGET_RECORDS
+        stop = start + EXP002_DISTRACTOR_TARGET_RECORDS
+        assigned[shard_id].extend(
+            replace(example, shard_id=shard_id) for example in remaining_target[start:stop]
+        )
+
+    for primary_shard, slice_id in (
+        (shard_id, plan.changed_slice_by_shard[shard_id]) for shard_id in distractor_ids
+    ):
+        slice_examples = canonical_by_slice[slice_id]
+        assigned[primary_shard].extend(
+            replace(example, shard_id=primary_shard)
+            for example in slice_examples[:EXP002_LABEL_CHANGES_PER_SHARD]
+        )
+
+        filler = slice_examples[EXP002_LABEL_CHANGES_PER_SHARD:]
+        filler_recipients = [
+            plan.root_cause_id,
+            *(shard_id for shard_id in distractor_ids if shard_id != primary_shard),
+        ]
+        for index, recipient in enumerate(filler_recipients):
+            start = index * 4
+            assigned[recipient].extend(
+                replace(example, shard_id=recipient) for example in filler[start : start + 4]
+            )
+
+    baseline = stable + [example for shard_id in EXP002_SHARD_IDS for example in assigned[shard_id]]
+
+    candidate: list[TaskExample] = []
+    intervention: list[TaskExample] = []
+    for example in baseline:
+        changed_slice = plan.changed_slice_by_shard.get(example.shard_id)
+        should_flip = changed_slice == example.slice_id
+        candidate_response = (
+            _flipped_response(example.response) if should_flip else example.response
+        )
+        candidate_example = replace(example, response=candidate_response)
+        candidate.append(candidate_example)
+
+        restore_target = (
+            example.shard_id == plan.root_cause_id and example.slice_id == TARGET_SLICE_ID
+        )
+        intervention.append(
+            replace(
+                candidate_example,
+                response=example.response if restore_target else candidate_response,
+            )
+        )
+
+    eval_examples: list[TaskExample] = []
+    for material in _EVAL_MATERIALS:
+        for color in _COLORS:
+            for shape in _SHAPES:
+                for size in _SIZES:
+                    eval_examples.append(
+                        _make_example(
+                            material=material,
+                            color=color,
+                            shape=shape,
+                            size=size,
+                            response=_canonical_response(shape),
+                            shard_id="eval",
+                            prefix="eval",
+                        )
+                    )
+
+    target_eval = [example for example in eval_examples if example.slice_id == TARGET_SLICE_ID]
+    control_eval = [
+        example for example in eval_examples if example.slice_id == EXP002_CONTROL_SLICE_ID
+    ]
+
+    return Exp002Data(
         baseline_train=_shuffled(baseline, seed),
         candidate_train=_shuffled(candidate, seed),
         intervention_train=_shuffled(intervention, seed),

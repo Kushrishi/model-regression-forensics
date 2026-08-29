@@ -82,6 +82,23 @@ with `scripts/train_exp001_sft.py` and evaluated with
 
 See `experiments/001_blinded_multicandidate/README.md`.
 
+## Experiment 002
+
+Experiment 002 entangles target-relevant content across all five changed data
+shards so the artifact-level lexical-overlap baseline that solved Experiment 001
+cannot distinguish candidates by construction. Preparation enforces this as a
+pre-training difficulty gate before any new SFT run is allowed.
+
+Prepare the deterministic benchmark inputs:
+
+```bash
+uv run python scripts/prepare_exp002.py
+```
+
+The benchmark-owned root cause is generated deterministically and written only
+to the private benchmark lineage artifact; the preparation summary does not
+print it. See `experiments/002_entangled_distractors/README.md`.
+
 ## Development
 
 ```bash

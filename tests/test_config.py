@@ -24,3 +24,17 @@ def test_exp001_config_loads() -> None:
     assert config.seed == 42
     assert config.regression.hidden_root_cause_id == "shard_delta_04"
     assert config.lineage.artifact_kinds == ["dataset_shard"]
+
+
+def test_exp002_config_loads_without_declared_root_cause() -> None:
+    config = load_experiment_config("configs/exp002.yaml")
+
+    assert config.experiment_id == "exp002"
+    assert config.seed == 42
+    assert config.regression.hidden_root_cause_id is None
+    assert config.evaluation.minimum_baseline_score == 0.95
+    assert config.benchmark_difficulty is not None
+    assert config.benchmark_difficulty.candidate_count == 5
+    assert config.benchmark_difficulty.records_per_candidate == 48
+    assert config.benchmark_difficulty.label_changes_per_candidate == 32
+    assert config.benchmark_difficulty.lexical_overlap_max_range == 1e-12

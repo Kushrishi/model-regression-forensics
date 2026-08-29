@@ -104,3 +104,33 @@ construction shortcut.
 
 Novelty remains **not established**. Experiment 001 validates the evaluation
 protocol and anti-leak workflow; it is not itself a novel scientific discovery.
+
+## 2026-08-29 — Experiment 002 entangled-distractor protocol
+
+Experiment 002 remains data-shard-only and keeps `triangle_large` as the target
+regression and `square_small` as the unchanged control. Its purpose is to remove
+the artifact-level lexical shortcut observed in Experiment 001 before adding
+more sophisticated attribution methods or heterogeneous cause classes.
+
+The frozen construction uses five opaque candidate shards with 48 records and 32
+label changes each. The benchmark-private causal shard contains 32 changed
+`triangle_large` records. Each distractor contains four unchanged
+`triangle_large` records spanning all four colors, 32 changed records from
+another behavioral slice, and clean filler. The selective oracle intervention
+restores only the 32 target changes and leaves 128 other label changes intact.
+
+Before any model training, the exact mean-best Jaccard lexical-overlap method
+used in Experiment 001 must assign all five candidates equal scores within
+`1e-12`. Failure of this construction gate requires benchmark redesign rather
+than training or post-hoc adjustment.
+
+This gate neutralizes the existing artifact-level lexical scorer, not every
+possible low-cost heuristic. In particular, the causal shard contains more
+actual target records than each distractor to preserve a plausible planted
+regression. If count-based or change-aware lexical methods solve Experiment 002,
+that result will define the next shortcut to remove rather than being hidden.
+
+The hidden cause is generated deterministically from the seed and is not declared
+in `configs/exp002.yaml` or printed by the preparation summary. Human blindness
+remains procedural rather than cryptographic; diagnostic code must still consume
+only redacted lineage.

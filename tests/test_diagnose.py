@@ -13,6 +13,12 @@ from model_forensics.diagnose import (
     score_ranking,
 )
 from model_forensics.lineage import ArtifactChange, DiagnosticManifest, LineageManifest
+from model_forensics.task import (
+    EXP002_SHARD_IDS,
+    build_exp002_data,
+    select_shard,
+    write_jsonl,
+)
 
 
 def _manifest(*change_ids: str) -> DiagnosticManifest:
@@ -174,3 +180,44 @@ def test_ranking_scoring_is_separate_from_diagnosis(tmp_path: Path) -> None:
     assert score["chance_reference"]["top_1_accuracy"] == pytest.approx(1 / 3)
     assert score["chance_reference"]["permutations"] == 6
     assert "hidden_root_cause_id" not in json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_exp002_equalizes_existing_artifact_lexical_overlap(tmp_path: Path) -> None:
+    data = build_exp002_data(seed=42)
+    changes = []
+    for shard_id in EXP002_SHARD_IDS:
+        after_path = tmp_path / "changes" / shard_id / "after.jsonl"
+        write_jsonl(select_shard(data.candidate_train, shard_id), after_path)
+        changes.append(
+            ArtifactChange(
+                change_id=shard_id,
+                kind="dataset_shard",
+                description="changed shard",
+                metadata={"after_path": str(after_path.relative_to(tmp_path))},
+            )
+        )
+    manifest = DiagnosticManifest(
+        experiment_id="exp002",
+        baseline_run_id="baseline",
+        candidate_run_id="candidate",
+        changes=changes,
+    )
+    regressions = tuple(
+        RegressionCase(
+            case_id=example.example_id,
+            prompt=example.prompt,
+            expected=example.response,
+            baseline_label=example.response,
+            candidate_label=None,
+        )
+        for example in data.target_eval
+    )
+
+    ranking = rank_candidates_lexical_overlap(
+        manifest,
+        prepared_root=tmp_path,
+        regressions=regressions,
+    )
+    scores = [candidate.score for candidate in ranking]
+
+    assert max(scores) - min(scores) <= 1e-12

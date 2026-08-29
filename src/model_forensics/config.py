@@ -50,7 +50,16 @@ class RegressionConfig(StrictConfigModel):
     """Planted regression specification owned by the experiment harness."""
 
     kind: Literal["corrupted_sft_shard"]
-    hidden_root_cause_id: str
+    hidden_root_cause_id: str | None = None
+
+
+class BenchmarkDifficultyConfig(StrictConfigModel):
+    """Construction-level difficulty constraints checked before model training."""
+
+    candidate_count: int = Field(gt=1)
+    records_per_candidate: int = Field(gt=0)
+    label_changes_per_candidate: int = Field(gt=0)
+    lexical_overlap_max_range: float = Field(ge=0.0)
 
 
 class EvaluationConfig(StrictConfigModel):
@@ -80,6 +89,7 @@ class ExperimentConfig(StrictConfigModel):
     regression: RegressionConfig
     evaluation: EvaluationConfig
     lineage: LineageConfig
+    benchmark_difficulty: BenchmarkDifficultyConfig | None = None
 
 
 def load_experiment_config(path: str | Path) -> ExperimentConfig:
