@@ -1,6 +1,6 @@
 # Experiment 000 — One planted regression
 
-Status: **protocol implementation; model run not started**
+Status: **zero-shot reference complete; clean baseline SFT next**
 
 ## Purpose
 
@@ -10,7 +10,7 @@ This experiment does **not** establish novelty or diagnostic quality. With only 
 
 ## Candidate model
 
-Initial target: `HuggingFaceTB/SmolLM2-360M-Instruct`
+Initial target: `HuggingFaceTB/SmolLM2-360M-Instruct` at pinned revision `a10cc1512eabd3dde888204e902eca88bddb4951`
 
 Reasons:
 - 360M parameters;
@@ -64,7 +64,11 @@ Create:
 - candidate run with one planted change;
 - recovery run where that change is reversed.
 
-The model-training stage has not yet been implemented.
+Before training, run `scripts/eval_exp000_zero_shot.py` against the prepared held-out sets. Generation is greedy and raw generations are retained. The primary behavioral metric is one-token label accuracy: outer whitespace and letter case are ignored, but explanations such as `The label is ACCEPT` remain failures. Strict exact match is reported separately as a format-compliance metric.
+
+The first zero-shot pilot used strict exact match and scored 0.00 on the target slice and 0.05 on unrelated cases. Inspection showed outputs such as `REJECT` and `Reject`, revealing that strict exact match confounded label behavior with capitalization. Before any SFT baseline, candidate, or recovery run, the protocol was therefore refined prospectively to use label accuracy as the primary behavioral metric while preserving strict exact match as a secondary metric.
+
+The untouched instruct model still misses the configured baseline threshold on the target slice, so Experiment 000 will create a clean SFT baseline checkpoint before applying the planted regression. The model-training stage has not yet been implemented.
 
 ## Success criteria
 

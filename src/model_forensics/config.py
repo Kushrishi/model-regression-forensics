@@ -19,6 +19,14 @@ class ModelConfig(StrictConfigModel):
     """Model selected for an experiment."""
 
     name: str
+    revision: str
+
+
+class GenerationConfig(StrictConfigModel):
+    """Deterministic generation settings for model evaluation."""
+
+    max_new_tokens: int = Field(gt=0)
+    do_sample: Literal[False] = False
 
 
 class RegressionConfig(StrictConfigModel):
@@ -29,8 +37,9 @@ class RegressionConfig(StrictConfigModel):
 
 
 class EvaluationConfig(StrictConfigModel):
-    """Quantitative thresholds required for a successful experiment."""
+    """Primary metric and thresholds required for a successful experiment."""
 
+    primary_metric: Literal["label_accuracy"]
     minimum_baseline_score: float = Field(ge=0.0, le=1.0)
     minimum_regression_delta: float = Field(ge=0.0, le=1.0)
     minimum_recovery_delta: float = Field(ge=0.0, le=1.0)
@@ -49,6 +58,7 @@ class ExperimentConfig(StrictConfigModel):
     experiment_id: str
     seed: int
     model: ModelConfig
+    generation: GenerationConfig
     regression: RegressionConfig
     evaluation: EvaluationConfig
     lineage: LineageConfig

@@ -77,7 +77,7 @@ def main() -> None:
             "target_eval": len(data.target_eval),
             "unrelated_eval": len(data.unrelated_eval),
         },
-        "sha256": {
+        "canonical_record_sha256": {
             "baseline_train": examples_sha256(data.baseline_train),
             "candidate_train": examples_sha256(data.candidate_train),
             "recovery_train": examples_sha256(data.recovery_train),

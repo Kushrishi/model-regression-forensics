@@ -37,6 +37,14 @@ uv run python scripts/prepare_exp000.py
 
 Generated datasets and manifests are written under `artifacts/`, which is intentionally ignored by Git.
 
+Evaluate the untouched instruct model before defining the trained baseline checkpoint:
+
+```bash
+uv run python scripts/eval_exp000_zero_shot.py
+```
+
+The run records the pinned model revision, runtime versions, prepared-input file hashes, raw generations, primary one-token label accuracy, and secondary strict exact-match scores. The zero-shot run is a reference measurement; it is not the Experiment 000 baseline checkpoint.
+
 See `experiments/000_planted_regression/README.md`.
 
 ## Development
