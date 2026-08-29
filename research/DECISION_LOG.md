@@ -170,3 +170,35 @@ slice-local intervention specificity.
 The private benchmark manifest remains unopened. Blinded RCA code and ranking
 artifacts must be frozen before ground-truth scoring. Novelty remains not
 established.
+
+## 2026-08-29 — Experiment 002 blinded-diagnosis methods
+
+Before generating any Experiment 002 diagnostic ranking or opening the private
+benchmark manifest, freeze three model-free baselines:
+
+1. seeded random ranking as a lower reference;
+2. the unchanged artifact-level lexical-overlap baseline from Experiment 001;
+   Experiment 002 was constructed so this method has an exact five-way score tie;
+3. a changed-record lexical-overlap baseline that first aligns each visible
+   shard's debugger-visible `before` and `after` records by `example_id`, keeps
+   only records whose payload changed, and then applies the same mean-best
+   Jaccard prompt-overlap score to the observed regression prompts.
+
+The changed-record method is deliberately simple and uses no model internals. It
+tests whether lineage differencing alone is enough to recover the cause after
+coarse artifact similarity has been neutralized. If it succeeds, that shortcut
+becomes an explicit construction constraint for Experiment 003 rather than a
+result to hide.
+
+Diagnosis may read only the redacted diagnostic manifest, changed artifacts
+referenced by it, and baseline/candidate target generations. Ground-truth
+scoring remains a separate command and must not run until ranking JSON files are
+committed and pushed.
+
+Because the artifact-level lexical baseline is tied by construction, ordinary
+ID-based sorting is not scientifically meaningful. Scoring will therefore
+retain the deterministic ordinal root-cause rank for auditability but compute
+Top-1, Top-3, and reciprocal-rank metrics from tie-aware rank bounds. The score
+also reports tie size and the best, worst, and average tied rank. A five-way tied
+score must not be described as successful localization regardless of the
+lexicographic ordering of shard IDs.

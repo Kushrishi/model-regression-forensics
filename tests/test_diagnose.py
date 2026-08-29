@@ -8,6 +8,7 @@ from model_forensics.diagnose import (
     dump_ranking,
     load_observed_regressions,
     rank_candidates,
+    rank_candidates_changed_lexical_overlap,
     rank_candidates_lexical_overlap,
     rank_candidates_random,
     score_ranking,
@@ -221,3 +222,127 @@ def test_exp002_equalizes_existing_artifact_lexical_overlap(tmp_path: Path) -> N
     scores = [candidate.score for candidate in ranking]
 
     assert max(scores) - min(scores) <= 1e-12
+
+
+def test_changed_lexical_overlap_ignores_unchanged_target_filler(tmp_path: Path) -> None:
+    changes = []
+    for change_id in ("shard_a", "shard_b"):
+        changes.append(
+            ArtifactChange(
+                change_id=change_id,
+                kind="dataset_shard",
+                description="changed shard",
+                metadata={
+                    "before_path": f"changes/{change_id}/before.jsonl",
+                    "after_path": f"changes/{change_id}/after.jsonl",
+                },
+            )
+        )
+    manifest = DiagnosticManifest(
+        experiment_id="exp002",
+        baseline_run_id="baseline",
+        candidate_run_id="candidate",
+        changes=changes,
+    )
+
+    _write_jsonl(
+        tmp_path / "changes/shard_a/before.jsonl",
+        [
+            {
+                "example_id": "a_target",
+                "prompt": "shape=triangle size=large material=cedar",
+                "response": "ACCEPT",
+            },
+            {
+                "example_id": "a_changed",
+                "prompt": "shape=circle size=small material=cedar",
+                "response": "ACCEPT",
+            },
+        ],
+    )
+    _write_jsonl(
+        tmp_path / "changes/shard_a/after.jsonl",
+        [
+            {
+                "example_id": "a_target",
+                "prompt": "shape=triangle size=large material=cedar",
+                "response": "ACCEPT",
+            },
+            {
+                "example_id": "a_changed",
+                "prompt": "shape=circle size=small material=cedar",
+                "response": "REJECT",
+            },
+        ],
+    )
+    _write_jsonl(
+        tmp_path / "changes/shard_b/before.jsonl",
+        [
+            {
+                "example_id": "b_target",
+                "prompt": "shape=triangle size=large material=granite",
+                "response": "ACCEPT",
+            }
+        ],
+    )
+    _write_jsonl(
+        tmp_path / "changes/shard_b/after.jsonl",
+        [
+            {
+                "example_id": "b_target",
+                "prompt": "shape=triangle size=large material=granite",
+                "response": "REJECT",
+            }
+        ],
+    )
+    regressions = (
+        RegressionCase(
+            case_id="target",
+            prompt="shape=triangle size=large material=wool",
+            expected="ACCEPT",
+            baseline_label="ACCEPT",
+            candidate_label="REJECT",
+        ),
+    )
+
+    ranked = rank_candidates_changed_lexical_overlap(
+        manifest,
+        prepared_root=tmp_path,
+        regressions=regressions,
+    )
+
+    assert [candidate.change_id for candidate in ranked] == ["shard_b", "shard_a"]
+    assert ranked[0].score > ranked[1].score
+
+
+def test_score_ranking_reports_score_ties_without_trusting_id_tiebreak(tmp_path: Path) -> None:
+    ranking_path = tmp_path / "ranking.json"
+    ranking_path.write_text(
+        json.dumps(
+            {
+                "ranking": [
+                    {"rank": 1, "change_id": "a", "score": 1.0},
+                    {"rank": 2, "change_id": "b", "score": 1.0},
+                    {"rank": 3, "change_id": "c", "score": 1.0},
+                    {"rank": 4, "change_id": "d", "score": 0.5},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    score = score_ranking(ranking_path, "b")
+
+    assert score["root_cause_rank"] == 2
+    assert score["top_1_correct"] is False
+    assert score["top_3_recall"] is True
+    assert score["reciprocal_rank"] == 0.5
+    assert score["tie_aware"] == {
+        "score_tolerance": 1e-12,
+        "root_cause_tie_size": 3,
+        "best_tied_rank": 1,
+        "worst_tied_rank": 3,
+        "average_tied_rank": 2.0,
+        "uniquely_top_1": False,
+        "top_3_guaranteed": True,
+    }

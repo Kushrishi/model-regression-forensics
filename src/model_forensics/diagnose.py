@@ -141,6 +141,46 @@ def rank_candidates_lexical_overlap(
     return sorted(ranked, key=lambda candidate: (-candidate.score, candidate.change_id))
 
 
+def rank_candidates_changed_lexical_overlap(
+    manifest: DiagnosticManifest,
+    *,
+    prepared_root: str | Path,
+    regressions: tuple[RegressionCase, ...],
+) -> list[CandidateCause]:
+    """Rank shards by overlap using only records that changed before to after.
+
+    This baseline is still model-free. It uses debugger-visible before/after
+    lineage to discard unchanged filler, then applies the same mean-best
+    Jaccard prompt overlap used by the coarse artifact-level baseline.
+    """
+
+    if not isinstance(manifest, DiagnosticManifest):
+        raise TypeError("diagnostic methods require a DiagnosticManifest")
+    if not regressions:
+        raise ValueError("at least one regression case is required")
+
+    root = Path(prepared_root)
+    ranked: list[CandidateCause] = []
+    for change in manifest.changes:
+        prompts = _load_changed_prompts(change, root)
+        score = sum(
+            max(_jaccard_tokens(regression.prompt, prompt) for prompt in prompts)
+            for regression in regressions
+        ) / len(regressions)
+        ranked.append(
+            CandidateCause(
+                change_id=change.change_id,
+                score=score,
+                rationale=(
+                    "mean best Jaccard token overlap between observed regression prompts "
+                    "and prompts of before/after records that changed"
+                ),
+            )
+        )
+
+    return sorted(ranked, key=lambda candidate: (-candidate.score, candidate.change_id))
+
+
 def dump_ranking(
     ranking: list[CandidateCause],
     path: str | Path,
@@ -191,13 +231,44 @@ def score_ranking(ranking_path: str | Path, hidden_root_cause_id: str) -> dict[s
 
     candidate_count = len(ranking)
     top_k = min(3, candidate_count)
+    root_entry = ranking[root_rank - 1]
+    root_score = root_entry.get("score")
+    if not isinstance(root_score, (int, float)):
+        raise ValueError("ranking entries must contain numeric scores")
+
+    numeric_scores: list[float] = []
+    for candidate in ranking:
+        score = candidate.get("score")
+        if not isinstance(score, (int, float)):
+            raise ValueError("ranking entries must contain numeric scores")
+        numeric_scores.append(float(score))
+
+    tie_tolerance = 1e-12
+    strictly_higher = sum(score > float(root_score) + tie_tolerance for score in numeric_scores)
+    tied = sum(abs(score - float(root_score)) <= tie_tolerance for score in numeric_scores)
+    best_tied_rank = strictly_higher + 1
+    worst_tied_rank = strictly_higher + tied
+
+    average_tied_rank = (best_tied_rank + worst_tied_rank) / 2.0
+    uniquely_top_1 = best_tied_rank == 1 and worst_tied_rank == 1
+    top_3_guaranteed = worst_tied_rank <= top_k
+
     return {
         "hidden_root_cause_id": hidden_root_cause_id,
         "candidate_count": candidate_count,
         "root_cause_rank": root_rank,
-        "top_1_correct": root_rank == 1,
-        "top_3_recall": root_rank <= top_k,
-        "reciprocal_rank": 1.0 / root_rank,
+        "top_1_correct": uniquely_top_1,
+        "top_3_recall": top_3_guaranteed,
+        "reciprocal_rank": 1.0 / average_tied_rank,
+        "tie_aware": {
+            "score_tolerance": tie_tolerance,
+            "root_cause_tie_size": tied,
+            "best_tied_rank": best_tied_rank,
+            "worst_tied_rank": worst_tied_rank,
+            "average_tied_rank": average_tied_rank,
+            "uniquely_top_1": uniquely_top_1,
+            "top_3_guaranteed": top_3_guaranteed,
+        },
         "chance_reference": {
             "top_1_accuracy": 1.0 / candidate_count,
             "top_3_recall": top_k / candidate_count,
@@ -254,6 +325,62 @@ def _load_change_prompts(change: ArtifactChange, prepared_root: Path) -> tuple[s
     if not prompts:
         raise ValueError(f"change {change.change_id} contains no prompts")
     return tuple(prompts)
+
+
+def _load_changed_prompts(change: ArtifactChange, prepared_root: Path) -> tuple[str, ...]:
+    if change.kind != "dataset_shard":
+        raise ValueError(
+            f"changed-record lexical baseline supports dataset_shard only, got {change.kind!r}"
+        )
+
+    before_records = _load_change_records(change, prepared_root, path_key="before_path")
+    after_records = _load_change_records(change, prepared_root, path_key="after_path")
+    if before_records.keys() != after_records.keys():
+        raise ValueError(f"change {change.change_id} before/after example IDs must match exactly")
+
+    prompts: list[str] = []
+    for example_id, before in before_records.items():
+        after = after_records[example_id]
+        if before == after:
+            continue
+        prompt = after.get("prompt")
+        if not isinstance(prompt, str):
+            raise ValueError(f"change {change.change_id} changed record {example_id} has no prompt")
+        prompts.append(prompt)
+
+    if not prompts:
+        raise ValueError(f"change {change.change_id} contains no changed records")
+    return tuple(prompts)
+
+
+def _load_change_records(
+    change: ArtifactChange,
+    prepared_root: Path,
+    *,
+    path_key: str,
+) -> dict[str, dict[str, object]]:
+    relative_path = change.metadata.get(path_key)
+    if not isinstance(relative_path, str):
+        raise ValueError(f"change {change.change_id} is missing string metadata.{path_key}")
+
+    path = prepared_root / relative_path
+    records: dict[str, dict[str, object]] = {}
+    with path.open(encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            example_id = record.get("example_id")
+            if not isinstance(example_id, str):
+                raise ValueError(
+                    f"change {change.change_id} has no example_id at {path}:{line_number}"
+                )
+            if example_id in records:
+                raise ValueError(f"change {change.change_id} has duplicate example_id {example_id}")
+            records[example_id] = record
+    if not records:
+        raise ValueError(f"change {change.change_id} contains no records at {path}")
+    return records
 
 
 def _tokens(text: str) -> frozenset[str]:

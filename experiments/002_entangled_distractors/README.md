@@ -63,3 +63,24 @@ Predeclared behavioral gates are in `configs/exp002.yaml`:
 - control-slice drift <= 0.05.
 
 Model validation passed all predeclared target-regression, recovery, and control-drift gates. The oracle intervention recovered the target completely but also produced partial canonical recovery on 12 non-target cases, so the stronger no-spillover prediction was not supported. See `RESULTS.md` for the frozen measurements. The private benchmark manifest remains unopened pending blinded diagnosis.
+
+## Blinded diagnosis protocol
+
+After model validation, Experiment 002 freezes three model-free RCA baselines
+before any private ground-truth scoring:
+
+- `random`: deterministic seeded random ranking;
+- `lexical_overlap`: the unchanged Experiment 001 artifact-level scorer, which
+  is expected to remain an exact five-way score tie by construction;
+- `changed_lexical_overlap`: the same lexical score applied only to records that
+  differ between each debugger-visible `before` and `after` shard artifact.
+
+The third baseline tests whether simple lineage differencing is sufficient once
+whole-artifact lexical similarity has been neutralized. It is not intended as a
+novel attribution method. Diagnostic code continues to consume only the
+redacted manifest and observed baseline/candidate target generations.
+
+Scoring is a separate post-freeze step. Because deterministic sorting can assign
+arbitrary ordinal positions inside equal-score groups, the scorer uses tie-aware
+rank bounds for Top-1, Top-3, and reciprocal-rank metrics while retaining the
+ordinal position for auditability.
