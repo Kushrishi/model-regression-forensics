@@ -1,0 +1,54 @@
+{
+  "experiment_id": "exp001",
+  "method": "lexical_overlap",
+  "ranking": [
+    {
+      "change_id": "shard_delta_04",
+      "rank": 1,
+      "rationale": "mean best Jaccard token overlap between observed regression prompts and changed-shard prompts",
+      "score": 0.9090909090909091
+    },
+    {
+      "change_id": "shard_delta_02",
+      "rank": 2,
+      "rationale": "mean best Jaccard token overlap between observed regression prompts and changed-shard prompts",
+      "score": 0.8260869565217391
+    },
+    {
+      "change_id": "shard_delta_03",
+      "rank": 3,
+      "rationale": "mean best Jaccard token overlap between observed regression prompts and changed-shard prompts",
+      "score": 0.8260869565217391
+    },
+    {
+      "change_id": "shard_delta_05",
+      "rank": 4,
+      "rationale": "mean best Jaccard token overlap between observed regression prompts and changed-shard prompts",
+      "score": 0.8260869565217391
+    },
+    {
+      "change_id": "shard_delta_01",
+      "rank": 5,
+      "rationale": "mean best Jaccard token overlap between observed regression prompts and changed-shard prompts",
+      "score": 0.75
+    }
+  ],
+  "regression_case_ids": [
+    "eval:ceramic:violet:triangle:large",
+    "eval:marble:blue:triangle:large",
+    "eval:ceramic:blue:triangle:large",
+    "eval:ceramic:green:triangle:large",
+    "eval:wool:green:triangle:large",
+    "eval:marble:green:triangle:large",
+    "eval:wool:amber:triangle:large",
+    "eval:marble:amber:triangle:large",
+    "eval:bamboo:blue:triangle:large",
+    "eval:bamboo:green:triangle:large",
+    "eval:wool:blue:triangle:large",
+    "eval:wool:violet:triangle:large",
+    "eval:ceramic:amber:triangle:large",
+    "eval:marble:violet:triangle:large",
+    "eval:bamboo:amber:triangle:large",
+    "eval:bamboo:violet:triangle:large"
+  ]
+}
