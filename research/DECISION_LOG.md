@@ -142,3 +142,31 @@ only redacted lineage.
 - Baseline, candidate, and oracle-intervention runs must each start from the same pinned parent revision and seed.
 - No candidate-specific hyperparameter tuning is permitted.
 - The private Exp002 benchmark manifest remains unopened until blinded diagnostic rankings are frozen.
+
+
+## 2026-08-29 — Experiment 002 model-validation outcome
+
+Experiment 002 passed all predeclared model-validation gates under the unchanged
+sibling LoRA SFT protocol. The clean baseline scored 1.00 on target, control,
+and all 96 evaluation cases. The candidate scored 0.00 on the 16-case
+`triangle_large` target and 1.00 on the unchanged 16-case `square_small`
+control, yielding a target regression delta of 1.00 and control drift of 0.00.
+The frozen 32-corrupted/16-clean target mixture was therefore sufficient to
+induce complete held-out target regression without post-hoc tuning.
+
+The oracle intervention, which restores only the 32 benchmark-owned target
+label changes while leaving 128 other label changes in place, recovered target
+accuracy from 0.00 to 1.00 and preserved control accuracy at 1.00. The
+predeclared causal recovery gate therefore passed.
+
+A stronger qualitative prediction did not hold: intervention all-set accuracy
+was 44/96 (0.4583), not 32/96 (0.3333). Besides full recovery of the target and
+unchanged control, 12 cases from other altered slices returned to canonical
+behavior: 6 `circle_small`, 4 `circle_large`, and 2 `triangle_small`;
+`square_large` remained 0/16. This cross-slice spillover must be reported rather
+than hidden. Experiment 002 supports target-level causal recovery, not perfectly
+slice-local intervention specificity.
+
+The private benchmark manifest remains unopened. Blinded RCA code and ranking
+artifacts must be frozen before ground-truth scoring. Novelty remains not
+established.

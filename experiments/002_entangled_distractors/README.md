@@ -1,6 +1,6 @@
 # Experiment 002 — Entangled distractors
 
-Status: **benchmark construction passed; model validation pending**
+Status: **model validation passed; blinded diagnosis pending**
 
 ## Purpose
 
@@ -62,4 +62,4 @@ Predeclared behavioral gates are in `configs/exp002.yaml`:
 - candidate-to-intervention target recovery >= 0.15;
 - control-slice drift <= 0.05.
 
-No model result has been observed yet.
+Model validation passed all predeclared target-regression, recovery, and control-drift gates. The oracle intervention recovered the target completely but also produced partial canonical recovery on 12 non-target cases, so the stronger no-spillover prediction was not supported. See `RESULTS.md` for the frozen measurements. The private benchmark manifest remains unopened pending blinded diagnosis.
