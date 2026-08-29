@@ -15,3 +15,12 @@ def test_exp000_config_loads() -> None:
     assert config.evaluation.primary_metric == "label_accuracy"
     assert config.regression.hidden_root_cause_id == "shard_corrupt_03"
     assert config.evaluation.minimum_regression_delta == 0.15
+
+
+def test_exp001_config_loads() -> None:
+    config = load_experiment_config("configs/exp001.yaml")
+
+    assert config.experiment_id == "exp001"
+    assert config.seed == 42
+    assert config.regression.hidden_root_cause_id == "shard_delta_04"
+    assert config.lineage.artifact_kinds == ["dataset_shard"]

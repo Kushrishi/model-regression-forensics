@@ -10,6 +10,16 @@ CORE_SHARD_ID = "shard_core_00"
 REGRESSION_SHARD_ID = "shard_corrupt_03"
 TARGET_SLICE_ID = "triangle_large"
 
+EXP001_CONTROL_SLICE_ID = "square_small"
+EXP001_SHARD_BY_SLICE = {
+    "circle_small": "shard_delta_01",
+    "triangle_small": "shard_delta_02",
+    "circle_large": "shard_delta_03",
+    TARGET_SLICE_ID: "shard_delta_04",
+    "square_large": "shard_delta_05",
+}
+EXP001_CHANGED_SHARD_IDS = frozenset(EXP001_SHARD_BY_SLICE.values())
+
 _TRAIN_MATERIALS = (
     "cedar",
     "copper",
@@ -51,6 +61,18 @@ class TaskExample:
 
 
 @dataclass(frozen=True)
+class Exp001Data:
+    """Blinded multi-candidate training and evaluation datasets."""
+
+    baseline_train: tuple[TaskExample, ...]
+    candidate_train: tuple[TaskExample, ...]
+    intervention_train: tuple[TaskExample, ...]
+    target_eval: tuple[TaskExample, ...]
+    control_eval: tuple[TaskExample, ...]
+    all_eval: tuple[TaskExample, ...]
+
+
+@dataclass(frozen=True)
 class Exp000Data:
     """Deterministic clean, regressed, recovery, and evaluation datasets."""
 
@@ -63,6 +85,10 @@ class Exp000Data:
 
 def _canonical_response(shape: str) -> str:
     return "ACCEPT" if shape in {"circle", "triangle"} else "REJECT"
+
+
+def _flipped_response(response: str) -> str:
+    return "REJECT" if response == "ACCEPT" else "ACCEPT"
 
 
 def _slice_id(shape: str, size: str) -> str:
@@ -139,7 +165,7 @@ def build_exp000_data(seed: int = 42) -> Exp000Data:
 
                     candidate_response = canonical
                     if shard_id == REGRESSION_SHARD_ID:
-                        candidate_response = "REJECT" if canonical == "ACCEPT" else "ACCEPT"
+                        candidate_response = _flipped_response(canonical)
 
                     candidate.append(
                         _make_example(
@@ -210,3 +236,97 @@ def select_shard(examples: tuple[TaskExample, ...], shard_id: str) -> tuple[Task
     """Select one shard while preserving dataset order."""
 
     return tuple(example for example in examples if example.shard_id == shard_id)
+
+
+def build_exp001_data(seed: int = 42) -> Exp001Data:
+    """Build Experiment 001 with five opaque changed training shards.
+
+    Each changed shard flips one behavioral slice in the candidate run. The
+    benchmark's observed regression is the held-out ``triangle_large`` slice,
+    while ``square_small`` is left unchanged as a negative-control slice. The
+    intervention restores only the target-causal shard and leaves every other
+    candidate change in place.
+    """
+
+    baseline: list[TaskExample] = []
+    candidate: list[TaskExample] = []
+    intervention: list[TaskExample] = []
+
+    for material in _TRAIN_MATERIALS:
+        for color in _COLORS:
+            for shape in _SHAPES:
+                for size in _SIZES:
+                    slice_id = _slice_id(shape, size)
+                    shard_id = EXP001_SHARD_BY_SLICE.get(slice_id, "shard_stable_00")
+                    canonical = _canonical_response(shape)
+                    baseline.append(
+                        _make_example(
+                            material=material,
+                            color=color,
+                            shape=shape,
+                            size=size,
+                            response=canonical,
+                            shard_id=shard_id,
+                            prefix="train",
+                        )
+                    )
+
+                    changed = shard_id in EXP001_CHANGED_SHARD_IDS
+                    candidate_response = _flipped_response(canonical) if changed else canonical
+                    candidate.append(
+                        _make_example(
+                            material=material,
+                            color=color,
+                            shape=shape,
+                            size=size,
+                            response=candidate_response,
+                            shard_id=shard_id,
+                            prefix="train",
+                        )
+                    )
+
+                    intervention_response = candidate_response
+                    if slice_id == TARGET_SLICE_ID:
+                        intervention_response = canonical
+                    intervention.append(
+                        _make_example(
+                            material=material,
+                            color=color,
+                            shape=shape,
+                            size=size,
+                            response=intervention_response,
+                            shard_id=shard_id,
+                            prefix="train",
+                        )
+                    )
+
+    eval_examples: list[TaskExample] = []
+    for material in _EVAL_MATERIALS:
+        for color in _COLORS:
+            for shape in _SHAPES:
+                for size in _SIZES:
+                    eval_examples.append(
+                        _make_example(
+                            material=material,
+                            color=color,
+                            shape=shape,
+                            size=size,
+                            response=_canonical_response(shape),
+                            shard_id="eval",
+                            prefix="eval",
+                        )
+                    )
+
+    target_eval = [example for example in eval_examples if example.slice_id == TARGET_SLICE_ID]
+    control_eval = [
+        example for example in eval_examples if example.slice_id == EXP001_CONTROL_SLICE_ID
+    ]
+
+    return Exp001Data(
+        baseline_train=_shuffled(baseline, seed),
+        candidate_train=_shuffled(candidate, seed),
+        intervention_train=_shuffled(intervention, seed),
+        target_eval=_shuffled(target_eval, seed),
+        control_eval=_shuffled(control_eval, seed),
+        all_eval=_shuffled(eval_examples, seed),
+    )

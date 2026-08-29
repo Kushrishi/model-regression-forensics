@@ -61,6 +61,22 @@ Baseline, candidate, and recovery runs use the same LoRA SFT configuration. The 
 
 See `experiments/000_planted_regression/README.md`.
 
+## Experiment 001
+
+Experiment 001 introduces five opaque, observable data-shard changes and asks
+which one explains a specified held-out regression. The benchmark keeps the
+target-causal designation private; diagnostic code receives only the redacted
+lineage and per-change artifacts. A separate intervention dataset restores only
+the predicted target cause while preserving the other candidate changes.
+
+Prepare the deterministic inputs:
+
+```bash
+uv run python scripts/prepare_exp001.py
+```
+
+See `experiments/001_blinded_multicandidate/README.md`.
+
 ## Development
 
 ```bash
