@@ -18,14 +18,24 @@ The project proceeds only if the related-work review supports a meaningful gap.
 
 ## Experiment 000
 
-1. Establish a reproducible baseline checkpoint.
-2. Introduce one known training change.
-3. Confirm a held-out behavioral regression.
-4. Record changed artifacts in a structured lineage manifest.
-5. Rank candidate causes without revealing the planted root cause.
-6. Intervene on the top candidate.
-7. Re-run training/evaluation.
+Experiment 000 is a protocol-validation run, not a novelty result. It uses a deterministic synthetic classification task with one planted SFT-shard regression and held-out evaluation materials.
+
+1. Prepare clean baseline, corrupted candidate, and recovery datasets.
+2. Train and evaluate a reproducible baseline checkpoint.
+3. Introduce the known shard change.
+4. Confirm a held-out behavioral regression on the target slice.
+5. Record the change in a benchmark-owned lineage manifest.
+6. Pass only a structurally redacted manifest to diagnostic code.
+7. Intervene on the suspected cause and re-run training/evaluation.
 8. Require held-out recovery with stable unrelated evals.
+
+Prepare the deterministic inputs without installing the heavy ML stack:
+
+```bash
+uv run python scripts/prepare_exp000.py
+```
+
+Generated datasets and manifests are written under `artifacts/`, which is intentionally ignored by Git.
 
 See `experiments/000_planted_regression/README.md`.
 
@@ -38,7 +48,7 @@ uv run ruff format --check .
 uv run pytest
 ```
 
-Install the heavy ML stack only when Experiment 000 starts:
+Install the heavy ML stack only when model training starts:
 
 ```bash
 uv sync --extra dev --extra research

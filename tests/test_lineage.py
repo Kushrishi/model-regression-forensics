@@ -1,8 +1,10 @@
-from model_forensics.lineage import ArtifactChange, LineageManifest
+import pytest
+
+from model_forensics.lineage import ArtifactChange, DiagnosticManifest, LineageManifest
 
 
-def test_redacted_manifest_hides_benchmark_ground_truth() -> None:
-    manifest = LineageManifest(
+def _manifest() -> LineageManifest:
+    return LineageManifest(
         experiment_id="exp000",
         baseline_run_id="baseline",
         candidate_run_id="candidate",
@@ -11,13 +13,25 @@ def test_redacted_manifest_hides_benchmark_ground_truth() -> None:
             ArtifactChange(
                 change_id="bad_shard",
                 kind="dataset_shard",
-                description="candidate includes a corrupted shard",
+                description="candidate includes a changed shard",
             )
         ],
     )
 
+
+def test_redacted_manifest_structurally_hides_benchmark_ground_truth() -> None:
+    manifest = _manifest()
     redacted = manifest.redacted()
 
-    assert redacted.hidden_root_cause_id is None
+    assert isinstance(redacted, DiagnosticManifest)
+    assert "hidden_root_cause_id" not in DiagnosticManifest.model_fields
+    assert "hidden_root_cause_id" not in redacted.model_dump()
     assert manifest.hidden_root_cause_id == "bad_shard"
     assert redacted.changes == manifest.changes
+
+
+def test_diagnostic_manifest_rejects_hidden_ground_truth_field() -> None:
+    payload = _manifest().model_dump()
+
+    with pytest.raises(ValueError):
+        DiagnosticManifest.model_validate(payload)
