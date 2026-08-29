@@ -1,6 +1,6 @@
 # Experiment 002 results
 
-Status: **model validation passed; blinded diagnosis pending**
+Status: **complete**
 
 ## Construction gate
 
@@ -110,7 +110,55 @@ Experiment 002 validates a harder causal-regression instance than Experiment
 4. the intervention also causes measurable cross-slice spillover, so recovery
    is not perfectly localized at the behavioral-slice level.
 
-This validates the benchmark and intervention workflow; it does **not** yet
-show that a blinded debugger can identify the hidden root cause. Blinded RCA
-rankings must be generated and frozen before the private benchmark manifest is
-opened or scored.
+At the model-validation checkpoint, this validated the benchmark and
+intervention workflow without yet testing blinded localization. The RCA methods
+and ranking artifacts were subsequently frozen before the private benchmark was
+opened or scored, as reported below.
+
+
+## Blinded RCA results
+
+The three diagnostic methods were committed before execution, and the generated
+ranking JSON files were then committed and pushed before ground-truth scoring.
+The private benchmark reveal identified `shard_mix_01` as the hidden root cause.
+
+| Method | Root-cause result | Tie-aware MRR | Unique Top-1 | Guaranteed Top-3 |
+| --- | --- | ---: | --- | --- |
+| seeded random | rank 5/5 | 0.2000 | no | no |
+| artifact lexical overlap | five-way tie, average rank 3.0 | 0.3333 | no | no |
+| changed-record lexical overlap | unique rank 1/5 | 1.0000 | **yes** | **yes** |
+
+Chance references for five candidates are Top-1 `0.20`, Top-3 `0.60`, and
+expected reciprocal rank `0.4567`. These references are descriptive only; one
+benchmark instance is not enough for statistical method-performance claims.
+
+The artifact-level lexical baseline behaved exactly as intended: every
+candidate scored `0.9090909091`, so its apparent deterministic ordinal placement
+of `shard_mix_01` first carries no localization information. Tie-aware scoring
+correctly converts that five-way tie to average rank `3.0` and reciprocal rank
+`1/3`.
+
+The changed-record lexical baseline broke the ambiguity. `shard_mix_01` scored
+`0.9090909091`; `shard_mix_02`, `shard_mix_03`, and `shard_mix_04` each scored
+`0.8260869565`; and `shard_mix_05` scored `0.75`. The hidden cause was therefore
+uniquely Top-1 without a score tie.
+
+## Final interpretation
+
+Experiment 002 closes one benchmark shortcut and exposes the next:
+
+1. whole-artifact target similarity is neutralized and provides no diagnostic
+   information;
+2. restricting the same lexical comparison to records that actually changed is
+   sufficient to recover the hidden cause on this instance;
+3. the candidate regression and oracle target recovery remain causally
+   validated under the frozen SFT protocol; and
+4. intervention spillover shows that behavioral recovery is not perfectly
+   slice-local.
+
+This is useful evidence about benchmark difficulty and lineage-aware debugging,
+but it does **not** establish a novel attribution algorithm or general RCA
+performance. Experiment 003 should be constructed so the exact
+`changed_lexical_overlap` baseline is non-discriminative before model training,
+then evaluate stronger model-derived or influence-style signals only after that
+shortcut is removed.

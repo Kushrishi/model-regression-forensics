@@ -1,0 +1,74 @@
+{
+  "experiment_id": "exp002",
+  "scores": {
+    "changed_lexical_overlap": {
+      "candidate_count": 5,
+      "chance_reference": {
+        "expected_reciprocal_rank": 0.45666666666666667,
+        "permutations": 120,
+        "top_1_accuracy": 0.2,
+        "top_3_recall": 0.6
+      },
+      "hidden_root_cause_id": "shard_mix_01",
+      "reciprocal_rank": 1.0,
+      "root_cause_rank": 1,
+      "tie_aware": {
+        "average_tied_rank": 1.0,
+        "best_tied_rank": 1,
+        "root_cause_tie_size": 1,
+        "score_tolerance": 1e-12,
+        "top_3_guaranteed": true,
+        "uniquely_top_1": true,
+        "worst_tied_rank": 1
+      },
+      "top_1_correct": true,
+      "top_3_recall": true
+    },
+    "lexical_overlap": {
+      "candidate_count": 5,
+      "chance_reference": {
+        "expected_reciprocal_rank": 0.45666666666666667,
+        "permutations": 120,
+        "top_1_accuracy": 0.2,
+        "top_3_recall": 0.6
+      },
+      "hidden_root_cause_id": "shard_mix_01",
+      "reciprocal_rank": 0.3333333333333333,
+      "root_cause_rank": 1,
+      "tie_aware": {
+        "average_tied_rank": 3.0,
+        "best_tied_rank": 1,
+        "root_cause_tie_size": 5,
+        "score_tolerance": 1e-12,
+        "top_3_guaranteed": false,
+        "uniquely_top_1": false,
+        "worst_tied_rank": 5
+      },
+      "top_1_correct": false,
+      "top_3_recall": false
+    },
+    "random": {
+      "candidate_count": 5,
+      "chance_reference": {
+        "expected_reciprocal_rank": 0.45666666666666667,
+        "permutations": 120,
+        "top_1_accuracy": 0.2,
+        "top_3_recall": 0.6
+      },
+      "hidden_root_cause_id": "shard_mix_01",
+      "reciprocal_rank": 0.2,
+      "root_cause_rank": 5,
+      "tie_aware": {
+        "average_tied_rank": 5.0,
+        "best_tied_rank": 5,
+        "root_cause_tie_size": 1,
+        "score_tolerance": 1e-12,
+        "top_3_guaranteed": false,
+        "uniquely_top_1": false,
+        "worst_tied_rank": 5
+      },
+      "top_1_correct": false,
+      "top_3_recall": false
+    }
+  }
+}

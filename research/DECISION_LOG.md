@@ -202,3 +202,34 @@ Top-1, Top-3, and reciprocal-rank metrics from tie-aware rank bounds. The score
 also reports tie size and the best, worst, and average tied rank. A five-way tied
 score must not be described as successful localization regardless of the
 lexicographic ordering of shard IDs.
+
+
+## 2026-08-29 — Experiment 002 blinded-diagnosis outcome and Experiment 003 constraint
+
+Experiment 002 completed its blinded ranking/scoring cycle with the ranking
+artifacts committed and pushed before private ground-truth scoring. The hidden
+root cause was `shard_mix_01`.
+
+The unchanged artifact-level lexical baseline remained an exact five-way score
+tie at `0.9090909091`. Tie-aware scoring therefore assigns the hidden cause an
+average tied rank of `3.0` and reciprocal rank `1/3`; it is neither uniquely
+Top-1 nor guaranteed Top-3. Deterministic identifier ordering must not be
+reported as successful localization.
+
+The changed-record lexical baseline uniquely ranked `shard_mix_01` first with
+score `0.9090909091`; the next-best candidates scored `0.8260869565`. Seeded
+random placed the cause fifth. Thus Experiment 002 demonstrates the intended
+progression: entangling whole artifacts defeats coarse lexical similarity, but
+simple debugger-visible before/after differencing exposes a new shortcut.
+
+This is not treated as a novel RCA-method result. It defines the construction
+requirement for Experiment 003: before any training, the exact
+`changed_lexical_overlap` method should be unable to uniquely identify the
+benchmark-private cause. Candidate changes should be designed so superficial
+target similarity among *changed records* is comparable across plausible
+causes, forcing subsequent methods to use evidence beyond changed-record text
+overlap. Count-based target-change shortcuts should also be checked explicitly.
+
+One instance remains insufficient for aggregate performance claims. Repeated
+blinded instances and stronger baselines are still required before any paper-
+level claim about RCA effectiveness. Novelty remains **not established**.

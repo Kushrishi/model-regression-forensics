@@ -1,6 +1,6 @@
 # Experiment 002 — Entangled distractors
 
-Status: **model validation passed; blinded diagnosis pending**
+Status: **complete**
 
 ## Purpose
 
@@ -62,7 +62,7 @@ Predeclared behavioral gates are in `configs/exp002.yaml`:
 - candidate-to-intervention target recovery >= 0.15;
 - control-slice drift <= 0.05.
 
-Model validation passed all predeclared target-regression, recovery, and control-drift gates. The oracle intervention recovered the target completely but also produced partial canonical recovery on 12 non-target cases, so the stronger no-spillover prediction was not supported. See `RESULTS.md` for the frozen measurements. The private benchmark manifest remains unopened pending blinded diagnosis.
+Model validation passed all predeclared target-regression, recovery, and control-drift gates. The oracle intervention recovered the target completely but also produced partial canonical recovery on 12 non-target cases, so the stronger no-spillover prediction was not supported. See `RESULTS.md` for the frozen measurements. The private benchmark manifest remained unopened until all three blinded ranking artifacts were committed and pushed. Ground-truth scoring was performed only after that freeze.
 
 ## Blinded diagnosis protocol
 
@@ -84,3 +84,26 @@ Scoring is a separate post-freeze step. Because deterministic sorting can assign
 arbitrary ordinal positions inside equal-score groups, the scorer uses tie-aware
 rank bounds for Top-1, Top-3, and reciprocal-rank metrics while retaining the
 ordinal position for auditability.
+
+
+## Blinded diagnosis outcome
+
+The hidden benchmark cause was revealed only after the three ranking JSON files
+were committed and pushed. The scorer identified `shard_mix_01` as the hidden
+root cause.
+
+- `random` placed the cause fifth (reciprocal rank `0.20`).
+- `lexical_overlap` assigned all five candidates the same score. Tie-aware
+  scoring therefore reports an average tied rank of `3.0`, a five-way tie, no
+  unique Top-1 localization, and no guaranteed Top-3 localization.
+- `changed_lexical_overlap` uniquely ranked `shard_mix_01` first with score
+  `0.9090909091`; the next-best candidates scored `0.8260869565`. Its tie size
+  was one, so Top-1 and Top-3 both pass without relying on deterministic
+  identifier ordering.
+
+Experiment 002 therefore establishes that coarse whole-artifact lexical
+similarity is insufficient on the entangled construction, while simple
+debugger-visible lineage differencing is sufficient on this single instance.
+This is a benchmark-progression result, not evidence of a novel RCA method. The
+next benchmark must neutralize the changed-record lexical shortcut before
+introducing stronger attribution methods.
