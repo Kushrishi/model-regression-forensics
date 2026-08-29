@@ -7,16 +7,16 @@ from model_forensics.training import train_lora_sft_run
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train one Experiment 000 LoRA SFT sibling run.")
-    parser.add_argument("--config", default="configs/exp000.yaml")
-    parser.add_argument("--prepared", default="artifacts/exp000/prepared")
+    parser = argparse.ArgumentParser(description="Train one Experiment 001 LoRA SFT sibling run.")
+    parser.add_argument("--config", default="configs/exp001.yaml")
+    parser.add_argument("--prepared", default="artifacts/exp001/prepared")
     parser.add_argument(
         "--train-split",
-        choices=("baseline_train", "candidate_train", "recovery_train"),
-        default="baseline_train",
+        choices=("baseline_train", "candidate_train", "intervention_train"),
+        required=True,
     )
-    parser.add_argument("--run-id", default="baseline")
-    parser.add_argument("--output-root", default="artifacts/exp000/checkpoints")
+    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--output-root", default="artifacts/exp001/checkpoints")
     return parser.parse_args()
 
 
@@ -28,7 +28,7 @@ def main() -> None:
         train_split=args.train_split,
         run_id=args.run_id,
         output_root=args.output_root,
-        preparation_command="scripts/prepare_exp000.py",
+        preparation_command="scripts/prepare_exp001.py",
     )
 
 

@@ -47,3 +47,35 @@ lineage manifest; and a structurally redacted diagnostic manifest.
 Experiment 001 is the first non-trivial localization setting, but one successful
 instance is not evidence of general RCA performance. Later experiments must vary
 the target slice, hidden cause, distractor structure, and random seed.
+
+## Model validation
+
+Experiment 001 reuses the frozen Experiment 000 LoRA SFT protocol. Train three
+fresh sibling adapters from the same pinned parent revision:
+
+```bash
+uv run python scripts/train_exp001_sft.py \
+  --train-split baseline_train \
+  --run-id baseline
+
+uv run python scripts/train_exp001_sft.py \
+  --train-split candidate_train \
+  --run-id candidate
+
+uv run python scripts/train_exp001_sft.py \
+  --train-split intervention_train \
+  --run-id intervention
+```
+
+Evaluate each adapter on the target slice, unchanged control slice, and complete
+96-case held-out set:
+
+```bash
+uv run python scripts/eval_exp001_adapter.py \
+  --adapter artifacts/exp001/checkpoints/baseline/adapter \
+  --run-id baseline
+```
+
+Repeat the evaluation command for `candidate` and `intervention` using the
+corresponding adapter paths. The declared gates are read from
+`configs/exp001.yaml`; they must not be tuned after observing these runs.

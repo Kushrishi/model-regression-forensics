@@ -96,3 +96,19 @@ def test_load_eval_inputs_rejects_missing_required_field(tmp_path) -> None:
 
     with pytest.raises(ValueError, match="response"):
         load_eval_inputs(path)
+
+
+def test_evaluate_lora_adapter_run_rejects_missing_adapter(tmp_path) -> None:
+    from model_forensics.config import load_experiment_config
+    from model_forensics.inference import evaluate_lora_adapter_run
+
+    with pytest.raises(FileNotFoundError, match="adapter not found"):
+        evaluate_lora_adapter_run(
+            config=load_experiment_config("configs/exp001.yaml"),
+            prepared=tmp_path / "prepared",
+            adapter=tmp_path / "missing-adapter",
+            run_id="baseline",
+            output_root=tmp_path / "runs",
+            eval_splits={"target": "target_eval"},
+            preparation_command="scripts/prepare_exp001.py",
+        )

@@ -75,6 +75,11 @@ Prepare the deterministic inputs:
 uv run python scripts/prepare_exp001.py
 ```
 
+Experiment 001 reuses the frozen sibling LoRA SFT protocol from Experiment 000.
+The baseline, five-change candidate, and selective intervention runs are trained
+with `scripts/train_exp001_sft.py` and evaluated with
+`scripts/eval_exp001_adapter.py` on target, control, and full held-out splits.
+
 See `experiments/001_blinded_multicandidate/README.md`.
 
 ## Development

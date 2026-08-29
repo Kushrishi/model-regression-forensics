@@ -74,3 +74,18 @@ def test_load_sft_examples_reads_prepared_schema(tmp_path) -> None:
     assert examples == (
         SFTExample(example_id="train:one", prompt="Classify one.", response="ACCEPT"),
     )
+
+
+def test_train_lora_sft_run_rejects_missing_prepared_split(tmp_path) -> None:
+    from model_forensics.config import load_experiment_config
+    from model_forensics.training import train_lora_sft_run
+
+    with pytest.raises(FileNotFoundError, match="prepare_exp001.py"):
+        train_lora_sft_run(
+            config=load_experiment_config("configs/exp001.yaml"),
+            prepared=tmp_path / "prepared",
+            train_split="baseline_train",
+            run_id="baseline",
+            output_root=tmp_path / "checkpoints",
+            preparation_command="scripts/prepare_exp001.py",
+        )

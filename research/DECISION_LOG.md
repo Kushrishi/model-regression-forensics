@@ -46,3 +46,21 @@ The untouched SmolLM2 reference predicts `REJECT` for all held-out examples, so 
 Baseline, candidate, and recovery will be trained as sibling LoRA SFT runs from the same pinned parent revision rather than sequentially from one another. This isolates the prepared training split as the intended manipulated variable.
 
 The first declared training configuration is 10 epochs, batch size 8, learning rate 5e-4, linear decay with 5% warmup, float32 model loading, and rank-16 LoRA on attention and MLP projection layers. The prepared dataset order is fixed and the loader does not reshuffle it. Any baseline-only pilot adjustment must be logged before candidate or recovery training.
+
+## 2026-08-29 — Experiment 001 model-validation protocol
+
+Experiment 001 reuses the frozen Experiment 000 LoRA SFT protocol without
+hyperparameter tuning. Baseline, candidate, and intervention are fresh sibling
+runs from the same pinned SmolLM2 parent revision and seed; only the prepared
+training split differs.
+
+Before observing Experiment 001 model results, the success criteria remain the
+thresholds declared in `configs/exp001.yaml`: baseline target label accuracy at
+least 0.80, baseline-to-candidate target regression at least 0.15,
+candidate-to-intervention target recovery at least 0.10, and maximum drift on
+the unchanged `square_small` control slice at most 0.05.
+
+The intervention run restores the benchmark-owned target-causal shard while
+leaving the other four changed shards in place. This is an oracle benchmark
+validation step, not a diagnostic result. Blinded root-cause ranking begins only
+if the planted target regression and selective intervention behave as intended.
