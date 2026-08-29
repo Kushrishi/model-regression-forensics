@@ -52,6 +52,7 @@ def encode_sft_example(
             [{"role": "user", "content": example.prompt}],
             add_generation_prompt=True,
             tokenize=True,
+            return_dict=False,
         )
     )
     response_ids = list(tokenizer.encode(example.response, add_special_tokens=False))

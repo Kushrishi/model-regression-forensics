@@ -8,8 +8,9 @@ from model_forensics.training import SFTExample, encode_sft_example, load_sft_ex
 class FakeTokenizer:
     eos_token_id = 2
 
-    def apply_chat_template(self, messages, *, add_generation_prompt, tokenize):
+    def apply_chat_template(self, messages, *, add_generation_prompt, tokenize, return_dict):
         assert tokenize is True
+        assert return_dict is False
         assert len(messages) == 1
         assert add_generation_prompt is True
         return [10, 11, 12]
