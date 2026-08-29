@@ -64,3 +64,22 @@ The intervention run restores the benchmark-owned target-causal shard while
 leaving the other four changed shards in place. This is an oracle benchmark
 validation step, not a diagnostic result. Blinded root-cause ranking begins only
 if the planted target regression and selective intervention behave as intended.
+
+## 2026-08-29 — Experiment 001 blinded-diagnosis baselines
+
+Before scoring any diagnostic ranking against benchmark ground truth, Experiment
+001 will freeze two deliberately simple baselines:
+
+1. a seeded random ranking as a lower reference; and
+2. a lexical-overlap ranking that compares observed regression prompts against
+   debugger-visible changed-shard prompts using mean best Jaccard token overlap.
+
+The diagnostic command is structurally ground-truth-free: it may read the
+redacted diagnostic lineage, changed artifacts referenced by that lineage, and
+baseline/candidate target generations. It must not read `benchmark.json`.
+Benchmark scoring is a separate command run only after the ranking artifact has
+been written.
+
+The lexical baseline is expected to be strong on Experiment 001 because its
+shards map cleanly to behavioral slices. Success here is therefore a pipeline
+sanity check, not evidence of difficult or general root-cause localization.

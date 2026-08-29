@@ -79,3 +79,18 @@ uv run python scripts/eval_exp001_adapter.py \
 Repeat the evaluation command for `candidate` and `intervention` using the
 corresponding adapter paths. The declared gates are read from
 `configs/exp001.yaml`; they must not be tuned after observing these runs.
+
+## Blinded diagnosis
+
+The first diagnostic stage intentionally starts with simple baselines. Diagnosis
+and benchmark scoring are separate commands so hidden ground truth is not
+available while producing a ranking.
+
+```bash
+uv run python scripts/diagnose_exp001.py --method random
+uv run python scripts/diagnose_exp001.py --method lexical_overlap
+```
+
+Only after those ranking files exist, score them against benchmark-owned ground
+truth with `scripts/score_exp001_diagnosis.py`. Experiment 001 is deliberately an
+easy localization sanity check; later experiments must use entangled distractors.
