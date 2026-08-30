@@ -81,3 +81,35 @@ recovery >= 0.15, and control drift <= 0.05.
 
 A failure to induce or selectively recover the target regression is a valid
 negative result and must not be silently repaired by changing corruption strength.
+
+## Frozen token-length preflight
+
+After the benchmark-construction commit and before adding or running any model
+validation runner, the pinned SmolLM2 tokenizer was applied through the same
+`encode_sft_example` path used by training. The frozen `max_length` remains 192.
+
+| Split | Examples | Minimum tokens | Maximum tokens |
+| --- | ---: | ---: | ---: |
+| `baseline_train` | 288 | 145 | 147 |
+| `candidate_train` | 288 | 145 | 147 |
+| `intervention_train` | 288 | 145 | 147 |
+| `target_eval` | 16 | 146 | 147 |
+| `control_eval` | 16 | 146 | 147 |
+| `all_eval` | 96 | 146 | 147 |
+
+Overall maximum: `147/192` tokens. **PASS**. No sequence-length protocol change
+was required.
+
+## Model-validation runners
+
+The Experiment 003 model-validation runners are thin wrappers around the same
+shared LoRA SFT and adapter-evaluation functions used by Experiment 002:
+
+- `scripts/train_exp003_sft.py`
+- `scripts/eval_exp003_adapter.py`
+
+They preserve the frozen model revision, seed, optimizer schedule, LoRA
+configuration, assistant-answer-only loss masking, evaluation splits, and
+predeclared behavioral gates. Baseline, candidate, and intervention are fresh
+sibling runs from the same pinned parent. No model-validation result has been
+observed at the point these runners are frozen.
