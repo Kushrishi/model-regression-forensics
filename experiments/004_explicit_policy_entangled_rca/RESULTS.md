@@ -1,6 +1,6 @@
 # Experiment 004 Results — Explicit-Policy Entangled RCA
 
-Status: **diagnosis-driven intervention failed recovery; truth not yet revealed**
+Status: **complete — localization correct; causal verification failed**
 
 This file was created before any Experiment 004 model training or behavioral
 result was observed.
@@ -250,32 +250,83 @@ No post-result tuning, alternate intervention target, or private-truth-guided
 retry is performed within Experiment 004.
 ## Ground-truth reveal
 
-Private ground truth must remain unopened until the diagnosis and any eligible
-diagnosis-driven intervention result have both been frozen and pushed.
+Ground truth was revealed only after all of the following had been frozen,
+committed, and pushed:
 
-Hidden causal candidate: **not revealed**
+1. the clean-baseline result;
+2. the candidate-regression result;
+3. the diagnostic implementation;
+4. all four blinded ranking artifacts;
+5. the diagnosis-driven intervention target;
+6. the exact intervention dataset;
+7. the intervention result; and
+8. the ground-truth scoring procedure.
 
-Primary diagnosis correct: **pending**
+**Hidden causal candidate: `shard_rca_01`**
 
-Tie-aware diagnostic scores: **pending**
+**Frozen primary prediction: `shard_rca_01`**
 
-## Final outcome
+**Primary localization correct: yes**
 
-Experiment 004 outcome: **pending**
+The prospectively designated `selected_role_overlap` diagnostic uniquely
+identified the benchmark-owned hidden target shard before private truth was
+revealed.
 
-Possible valid outcomes include:
+| Method | True-shard nominal rank | Tie-aware interval | Unique top-1 | Top-3 guaranteed | Reciprocal rank |
+| --- | ---: | --- | --- | --- | ---: |
+| random | 5 | 5-5 | no | no | 0.200000 |
+| lexical_overlap | 1 | 1-5 | no | no | 0.333333 |
+| changed_lexical_overlap | 1 | 1-5 | no | no | 0.333333 |
+| selected_role_overlap | 1 | 1-1 | yes | yes | 1.000000 |
 
-- construction failure;
-- clean-baseline failure;
-- insufficient planted regression;
-- inconclusive/tied localization;
-- incorrect localization;
-- failed diagnosis-driven recovery;
-- excessive control drift;
-- qualifying causal result.
+The nominal rank of 1 for the two lexical methods is not evidence of successful
+localization: all five candidates received identical scores. Under the frozen
+tie-aware scoring rule, neither lexical method receives top-1 credit or
+guaranteed top-3 credit.
 
-All non-target spillover and unexpected behavior will be reported.
+The random baseline independently ranked the hidden target shard fifth.
 
-## Interpretation
+### End-to-end Experiment 004 result
 
-No Experiment 004 scientific conclusion has been drawn yet.
+**Blinded localization: PASS**
+
+`selected_role_overlap` uniquely localized the hidden target shard correctly.
+
+**Diagnosis-driven target recovery: FAIL**
+
+Restoring exactly the 36 corrupted records belonging to the correctly localized
+`shard_rca_01` produced zero recovery on `triangle_large` and zero recovery on
+every other regressed semantic slice.
+
+**End-to-end verified cause: NO**
+
+Experiment 004 therefore separates successful localization from successful
+causal verification. Correctly identifying the benchmark-designated target shard
+was not sufficient to reverse the observed model regression under the frozen
+selective-restoration intervention.
+
+The candidate had undergone a broad constant-`REJECT` collapse: all four
+canonical `ACCEPT` slices fell to 0/16 while both canonical `REJECT` slices
+remained 16/16. Restoring the target-associated shard left 144 corruptions across
+the other four candidate shards in place, and the collapse persisted unchanged.
+
+This outcome is retained as a negative end-to-end result. No alternate shard is
+intervened on, no private-truth-guided retry is performed, and Experiment 004 is
+not retuned after reveal.
+
+### What Experiment 004 establishes
+
+Under this frozen synthetic setup:
+
+- coarse whole-artifact lexical evidence did not distinguish the candidates;
+- changed-record lexical evidence also did not distinguish the candidates;
+- the task-aware selected-role diagnostic uniquely localized the hidden
+  target-associated shard;
+- that localization was correct under the benchmark-owned ground truth;
+- selective restoration of the correctly localized shard was nevertheless
+  insufficient to recover the target behavior; and
+- the prospectively defined end-to-end causal-verification criterion therefore
+  was not satisfied.
+
+The result should not be generalized to arbitrary model regressions, model
+families, or training-lineage causes.
