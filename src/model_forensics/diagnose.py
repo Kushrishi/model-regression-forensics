@@ -10,6 +10,8 @@ from pathlib import Path
 from model_forensics.lineage import ArtifactChange, DiagnosticManifest
 
 _TOKEN_RE = re.compile(r"[a-z0-9_]+")
+_SELECTED_SLOT_RE = re.compile(r"\bselected_slot=(slot_[a-z])\b")
+_SLOT_OBJECT_RE = re.compile(r"\b(slot_[a-z]):shape=([a-z0-9_]+),size=([a-z0-9_]+)\b")
 
 
 @dataclass(frozen=True)
@@ -139,6 +141,82 @@ def rank_candidates_lexical_overlap(
         )
 
     return sorted(ranked, key=lambda candidate: (-candidate.score, candidate.change_id))
+
+
+def selected_role_descriptor(prompt: str) -> str:
+    """Resolve the public selected slot to its visible shape-size descriptor."""
+
+    selected_slots = _SELECTED_SLOT_RE.findall(prompt)
+    if len(selected_slots) != 1:
+        raise ValueError("prompt must contain exactly one selected_slot assignment")
+
+    objects: dict[str, str] = {}
+    for slot, shape, size in _SLOT_OBJECT_RE.findall(prompt):
+        if slot in objects:
+            raise ValueError(f"prompt contains duplicate object slot: {slot}")
+        objects[slot] = f"shape={shape},size={size}"
+
+    selected_slot = selected_slots[0]
+    try:
+        return objects[selected_slot]
+    except KeyError as exc:
+        raise ValueError(
+            f"selected slot {selected_slot!r} has no visible object descriptor"
+        ) from exc
+
+
+def rank_candidates_selected_role_overlap(
+    manifest: DiagnosticManifest,
+    *,
+    prepared_root: str | Path,
+    regressions: tuple[RegressionCase, ...],
+) -> list[CandidateCause]:
+    """Rank changed shards by exact selected-role descriptor overlap.
+
+    The method uses only public prompts plus debugger-visible before/after
+    lineage. It resolves each prompt's selected slot to the corresponding
+    visible shape-size descriptor and compares those descriptors exactly.
+    """
+
+    if not isinstance(manifest, DiagnosticManifest):
+        raise TypeError("diagnostic methods require a DiagnosticManifest")
+    if not regressions:
+        raise ValueError("at least one regression case is required")
+
+    regression_descriptors = tuple(
+        selected_role_descriptor(regression.prompt) for regression in regressions
+    )
+
+    root = Path(prepared_root)
+    ranked: list[CandidateCause] = []
+
+    for change in manifest.changes:
+        changed_prompts = _load_changed_prompts(change, root)
+        changed_descriptors = tuple(selected_role_descriptor(prompt) for prompt in changed_prompts)
+
+        score = sum(
+            max(
+                1.0 if regression_descriptor == changed_descriptor else 0.0
+                for changed_descriptor in changed_descriptors
+            )
+            for regression_descriptor in regression_descriptors
+        ) / len(regression_descriptors)
+
+        ranked.append(
+            CandidateCause(
+                change_id=change.change_id,
+                score=score,
+                rationale=(
+                    "mean best exact overlap between the selected-role descriptor "
+                    "of observed regression prompts and changed records"
+                ),
+            )
+        )
+
+    return sorted(
+        ranked,
+        key=lambda candidate: (-candidate.score, candidate.change_id),
+    )
 
 
 def rank_candidates_changed_lexical_overlap(

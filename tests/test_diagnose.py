@@ -11,7 +11,9 @@ from model_forensics.diagnose import (
     rank_candidates_changed_lexical_overlap,
     rank_candidates_lexical_overlap,
     rank_candidates_random,
+    rank_candidates_selected_role_overlap,
     score_ranking,
+    selected_role_descriptor,
 )
 from model_forensics.lineage import ArtifactChange, DiagnosticManifest, LineageManifest
 from model_forensics.task import (
@@ -406,3 +408,197 @@ def test_exp003_lexical_baselines_tie_on_role_binding_confounders(tmp_path: Path
     changed_scores = [candidate.score for candidate in changed_lexical]
     assert max(lexical_scores) - min(lexical_scores) <= 1e-12
     assert max(changed_scores) - min(changed_scores) <= 1e-12
+
+
+def test_selected_role_descriptor_resolves_selected_public_slot() -> None:
+    prompt = (
+        "Explicit policy: shape=circle -> ACCEPT; shape=triangle -> ACCEPT; "
+        "shape=square -> REJECT. "
+        "Classify only the selected synthetic object as ACCEPT or REJECT. "
+        "material=cedar; color=blue; selected_slot=slot_c. "
+        "slot_a:shape=circle,size=small; "
+        "slot_b:shape=square,size=large; "
+        "slot_c:shape=triangle,size=large; "
+        "slot_d:shape=triangle,size=small; "
+        "slot_e:shape=square,size=small; "
+        "slot_f:shape=circle,size=large. "
+        "Reply with exactly one label."
+    )
+
+    assert selected_role_descriptor(prompt) == "shape=triangle,size=large"
+
+
+def test_selected_role_descriptor_rejects_missing_selected_object() -> None:
+    prompt = "selected_slot=slot_f. slot_a:shape=circle,size=small; slot_b:shape=square,size=large"
+
+    with pytest.raises(ValueError, match="has no visible object descriptor"):
+        selected_role_descriptor(prompt)
+
+
+def test_selected_role_overlap_ranks_matching_changed_candidate_first(
+    tmp_path: Path,
+) -> None:
+    changes = []
+
+    for change_id in ("candidate_a", "candidate_b"):
+        changes.append(
+            ArtifactChange(
+                change_id=change_id,
+                kind="dataset_shard",
+                description="changed shard",
+                metadata={
+                    "before_path": f"changes/{change_id}/before.jsonl",
+                    "after_path": f"changes/{change_id}/after.jsonl",
+                },
+            )
+        )
+
+    manifest = DiagnosticManifest(
+        experiment_id="synthetic_selected_role_test",
+        baseline_run_id="baseline",
+        candidate_run_id="candidate",
+        changes=changes,
+    )
+
+    prompt_a = (
+        "selected_slot=slot_b. slot_a:shape=triangle,size=large; slot_b:shape=circle,size=small"
+    )
+    prompt_b = (
+        "selected_slot=slot_a. slot_a:shape=triangle,size=large; slot_b:shape=circle,size=small"
+    )
+
+    _write_jsonl(
+        tmp_path / "changes/candidate_a/before.jsonl",
+        [
+            {
+                "example_id": "a",
+                "prompt": prompt_a,
+                "response": "ACCEPT",
+            }
+        ],
+    )
+    _write_jsonl(
+        tmp_path / "changes/candidate_a/after.jsonl",
+        [
+            {
+                "example_id": "a",
+                "prompt": prompt_a,
+                "response": "REJECT",
+            }
+        ],
+    )
+
+    _write_jsonl(
+        tmp_path / "changes/candidate_b/before.jsonl",
+        [
+            {
+                "example_id": "b",
+                "prompt": prompt_b,
+                "response": "ACCEPT",
+            }
+        ],
+    )
+    _write_jsonl(
+        tmp_path / "changes/candidate_b/after.jsonl",
+        [
+            {
+                "example_id": "b",
+                "prompt": prompt_b,
+                "response": "REJECT",
+            }
+        ],
+    )
+
+    regressions = (
+        RegressionCase(
+            case_id="regression",
+            prompt=(
+                "selected_slot=slot_f. "
+                "slot_a:shape=circle,size=small; "
+                "slot_f:shape=triangle,size=large"
+            ),
+            expected="ACCEPT",
+            baseline_label="ACCEPT",
+            candidate_label="REJECT",
+        ),
+    )
+
+    ranking = rank_candidates_selected_role_overlap(
+        manifest,
+        prepared_root=tmp_path,
+        regressions=regressions,
+    )
+
+    assert [candidate.change_id for candidate in ranking] == [
+        "candidate_b",
+        "candidate_a",
+    ]
+    assert ranking[0].score == 1.0
+    assert ranking[1].score == 0.0
+
+
+def test_selected_role_overlap_preserves_score_ties(tmp_path: Path) -> None:
+    changes = []
+
+    prompt = (
+        "selected_slot=slot_a. slot_a:shape=triangle,size=large; slot_b:shape=circle,size=small"
+    )
+
+    for change_id in ("candidate_a", "candidate_b"):
+        changes.append(
+            ArtifactChange(
+                change_id=change_id,
+                kind="dataset_shard",
+                description="changed shard",
+                metadata={
+                    "before_path": f"changes/{change_id}/before.jsonl",
+                    "after_path": f"changes/{change_id}/after.jsonl",
+                },
+            )
+        )
+
+        _write_jsonl(
+            tmp_path / f"changes/{change_id}/before.jsonl",
+            [
+                {
+                    "example_id": change_id,
+                    "prompt": prompt,
+                    "response": "ACCEPT",
+                }
+            ],
+        )
+        _write_jsonl(
+            tmp_path / f"changes/{change_id}/after.jsonl",
+            [
+                {
+                    "example_id": change_id,
+                    "prompt": prompt,
+                    "response": "REJECT",
+                }
+            ],
+        )
+
+    manifest = DiagnosticManifest(
+        experiment_id="synthetic_selected_role_tie",
+        baseline_run_id="baseline",
+        candidate_run_id="candidate",
+        changes=changes,
+    )
+
+    regressions = (
+        RegressionCase(
+            case_id="regression",
+            prompt=prompt,
+            expected="ACCEPT",
+            baseline_label="ACCEPT",
+            candidate_label="REJECT",
+        ),
+    )
+
+    ranking = rank_candidates_selected_role_overlap(
+        manifest,
+        prepared_root=tmp_path,
+        regressions=regressions,
+    )
+
+    assert [candidate.score for candidate in ranking] == [1.0, 1.0]
