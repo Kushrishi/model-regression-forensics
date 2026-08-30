@@ -1,0 +1,91 @@
+{
+  "analysis_type": "post_hoc_exploratory_single_shard_restoration",
+  "candidate_corruptions": 180,
+  "confirmatory_exp004_modified": false,
+  "experiment_id": "exp004",
+  "remaining_corruptions_per_sibling": 144,
+  "restored_per_sibling": 36,
+  "seed": 42,
+  "sweep": {
+    "shard_rca_01": {
+      "changed_nonselected_records": 0,
+      "corruptions_remaining": 144,
+      "label_counts": {
+        "ACCEPT": 120,
+        "REJECT": 168
+      },
+      "label_fractions": {
+        "ACCEPT": 0.4166666666666667,
+        "REJECT": 0.5833333333333334
+      },
+      "records_restored": 36,
+      "sha256": "b6a7e30186778c4fbeed76838123c373fc73779224104ce6f8d95eb50a662e77",
+      "train_split": "restore_shard_rca_01_train",
+      "training_records": 288
+    },
+    "shard_rca_02": {
+      "changed_nonselected_records": 0,
+      "corruptions_remaining": 144,
+      "label_counts": {
+        "ACCEPT": 120,
+        "REJECT": 168
+      },
+      "label_fractions": {
+        "ACCEPT": 0.4166666666666667,
+        "REJECT": 0.5833333333333334
+      },
+      "records_restored": 36,
+      "sha256": "89573646a933f6e49d0bb477f57d572bf5ca524735d6e5037fd575f90cbe3a3b",
+      "train_split": "restore_shard_rca_02_train",
+      "training_records": 288
+    },
+    "shard_rca_03": {
+      "changed_nonselected_records": 0,
+      "corruptions_remaining": 144,
+      "label_counts": {
+        "ACCEPT": 120,
+        "REJECT": 168
+      },
+      "label_fractions": {
+        "ACCEPT": 0.4166666666666667,
+        "REJECT": 0.5833333333333334
+      },
+      "records_restored": 36,
+      "sha256": "90662f4881add111fd903f8ce88f62dace332ebc8e9552791a44694e2e1ffa4c",
+      "train_split": "restore_shard_rca_03_train",
+      "training_records": 288
+    },
+    "shard_rca_04": {
+      "changed_nonselected_records": 0,
+      "corruptions_remaining": 144,
+      "label_counts": {
+        "ACCEPT": 120,
+        "REJECT": 168
+      },
+      "label_fractions": {
+        "ACCEPT": 0.4166666666666667,
+        "REJECT": 0.5833333333333334
+      },
+      "records_restored": 36,
+      "sha256": "422d573067b0621694c054986ee63059c1764891b4d3c1c819f0adfebcea81f3",
+      "train_split": "restore_shard_rca_04_train",
+      "training_records": 288
+    },
+    "shard_rca_05": {
+      "changed_nonselected_records": 0,
+      "corruptions_remaining": 144,
+      "label_counts": {
+        "ACCEPT": 48,
+        "REJECT": 240
+      },
+      "label_fractions": {
+        "ACCEPT": 0.16666666666666666,
+        "REJECT": 0.8333333333333334
+      },
+      "records_restored": 36,
+      "sha256": "f8ab651fdfe5cb18ff6ebe43e961c7a979d8f9b2204cb205e1b269cbc6b2f832",
+      "train_split": "restore_shard_rca_05_train",
+      "training_records": 288
+    }
+  }
+}
