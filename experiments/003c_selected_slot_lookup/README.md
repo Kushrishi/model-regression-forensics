@@ -136,3 +136,20 @@ capacity, or model size. Record the result first. If it succeeds, the evidence
 supports that simple selected-slot lookup is learnable and that the earlier
 Experiment 003 failure arose from the harder composition of lookup with the
 shape/size classification policy rather than from pointer lookup alone.
+
+## Frozen model-validation runners
+
+After the construction gates pass and this benchmark is committed, model
+validation uses thin wrappers over the shared training and inference stack:
+
+```text
+scripts/train_exp003c_sft.py
+scripts/eval_exp003c_adapter.py
+```
+
+The training wrapper always consumes `baseline_train`; this capability diagnostic
+has no candidate or intervention sibling. The evaluation wrapper scores all six
+slot-specific held-out splits plus `all_eval`, so the configured clean-baseline
+gate requires every declared split to clear 0.95.
+
+These runners must be committed before the first Experiment 003-C model run.
