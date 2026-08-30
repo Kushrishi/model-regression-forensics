@@ -307,3 +307,34 @@ least 0.95; target-only success is insufficient. If the balanced baseline fails,
 stop before candidate/intervention training and preserve the result. Do not
 change epochs, learning rate, LoRA capacity, prompts, or benchmark semantics in
 response to that outcome.
+
+
+## 2026-08-30 — Experiment 003-B balanced-loss baseline failure
+
+Experiment 003-B was frozen before training as a one-factor follow-up to the
+Experiment 003 majority-label collapse. It reused the exact 288-example
+role-binding benchmark and all original optimization settings, changing only
+response-example loss weights to `ACCEPT=1.0` and `REJECT=2.0`. This equalized
+prospective aggregate class mass at 192 versus 192 while preserving 360 total
+optimizer steps and the original data order.
+
+The held-out clean baseline failed the prospectively declared three-split gate:
+`triangle_large` target accuracy was 14/16 (0.875), `square_small` control was
+1/16 (0.0625), and all-set accuracy was 61/96 (0.6354167). Candidate and
+intervention siblings therefore remain unrun and no RCA ranking is attempted.
+
+A post-failure balanced audit sampled 16 actual training records from each of
+the six behavioral slices. The saved adapter scored 59/96 (0.6145833) and
+produced 79 `ACCEPT` versus 17 `REJECT` labels. The model was no longer a
+literal constant classifier, but it still failed the role-binding rule even on
+sampled training records. Equalizing class-loss mass is therefore **not
+sufficient** to explain or rescue the Experiment 003 failure under the frozen
+training regime.
+
+Do not respond by silently increasing epochs, learning rate, LoRA capacity, or
+changing several prompt/task factors together. The next follow-up should isolate
+a single learnability factor and preserve this negative result. The
+single-split training-audit evaluation also reports zero-valued entries for the
+configured `target`/`control`/`all` baseline gate because those splits were not
+part of that audit invocation; those gate values are not interpreted as audit
+performance.

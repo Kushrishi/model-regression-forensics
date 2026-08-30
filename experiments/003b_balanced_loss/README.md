@@ -1,6 +1,6 @@
 # Experiment 003-B — Class-Balanced Loss Follow-up
 
-Status: **prospective protocol; no Exp003-B model result observed**
+Status: **clean baseline failed; stopped before candidate/intervention**
 
 Experiment 003-B is a single-factor follow-up to the frozen Experiment 003 clean-
 baseline failure. Experiment 003 used the role-binding benchmark successfully at
@@ -88,3 +88,14 @@ benchmark semantics after seeing that result.
 
 If the clean baseline passes, candidate and intervention remain fresh siblings
 from the same pinned parent and use the same Exp003-B weighted-loss protocol.
+
+
+## Observed outcome
+
+The prospectively frozen balanced-loss clean baseline did not pass the required
+clean-task gate. Held-out label accuracy was `14/16` on target, `1/16` on
+control, and `61/96` overall. A subsequent balanced audit sampled from actual
+training records scored `59/96`, with 79 `ACCEPT` and 17 `REJECT` generations.
+Class balancing therefore changed the output distribution but did not make the
+model learn the selected-slot role-binding rule. Candidate/intervention training
+and RCA were not run. See `RESULTS.md` for the frozen result record.
