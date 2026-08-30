@@ -125,6 +125,29 @@ the role-binding task before a planted regression is interpreted. Therefore:
 - no RCA diagnosis was run; and
 - no hidden benchmark truth was needed for this conclusion.
 
+## Post-failure training-set audit
+
+After freezing the baseline failure, the saved adapter was evaluated on a
+balanced 96-example audit drawn from the clean training set itself: 16 examples
+from each of the six shape-by-size slices. No retraining or protocol change was
+performed.
+
+The adapter again scored exactly `64/96 = 0.6667`. The 32 failures corresponded
+to the two `REJECT` slices, consistent with the same constant `ACCEPT` behavior
+seen on held-out evaluation.
+
+This materially narrows the failure mode. The problem is not only failure to
+generalize role binding to held-out materials: the frozen adapter did not learn
+the role-binding rule even on sampled training records. Because the clean
+training set contains four `ACCEPT` slices and two `REJECT` slices, a constant
+`ACCEPT` policy achieves the observed two-thirds accuracy.
+
+The audit supports class imbalance / majority-label shortcutting as the simplest
+follow-up hypothesis, but it does not prove that class imbalance is the sole
+cause. A prospective follow-up should therefore change only the training
+class-balance treatment first, while keeping the role-binding benchmark, model,
+LoRA capacity, seed, prompt structure, and evaluation fixed.
+
 ## Interpretation
 
 Experiment 003 successfully removed the known lexical and marginal-count

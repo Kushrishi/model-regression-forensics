@@ -259,3 +259,21 @@ for this benchmark. Future work should add a stricter clean-task validity gate a
 treat any attempt to make role binding learnable as a separately declared
 follow-up protocol or experiment version. The negative result remains part of the
 record.
+
+
+## 2026-08-29 — Experiment 003 post-failure training-set audit
+
+After the clean-baseline failure was frozen, the saved baseline adapter was
+evaluated without retraining on a balanced 96-example audit sampled from
+`baseline_train`: 16 examples from each of the six behavioral slices. The model
+again scored 64/96. The 32 failures were the two `REJECT` slices, matching the
+held-out constant-`ACCEPT` collapse.
+
+This rules out an explanation based solely on held-out material generalization:
+the model did not learn the selected-slot role-binding rule even on sampled
+training records. Since the clean dataset has a 2:1 `ACCEPT`:`REJECT` label
+ratio, majority-label shortcutting is now the simplest controlled hypothesis,
+though not a proven sole cause. The next protocol revision should test class
+balance as a single prospective factor before changing epochs, learning rate,
+LoRA capacity, or benchmark semantics. Candidate/intervention/RCA remain unrun
+for the failed frozen protocol.
