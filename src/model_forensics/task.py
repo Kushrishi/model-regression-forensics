@@ -78,6 +78,15 @@ EXP003D_POLICY_TEXT = (
     "Explicit policy: shape=circle -> ACCEPT; shape=triangle -> ACCEPT; shape=square -> REJECT."
 )
 
+EXP004_CONTROL_SLICE_ID = EXP003_CONTROL_SLICE_ID
+EXP004_SHARD_IDS = tuple(f"shard_rca_{index:02d}" for index in range(1, 6))
+EXP004_RECORDS_PER_SHARD = EXP003_RECORDS_PER_SHARD
+EXP004_LABEL_CHANGES_PER_SHARD = EXP003_LABEL_CHANGES_PER_SHARD
+EXP004_SLOT_IDS = EXP003_SLOT_IDS
+EXP004_CANDIDATE_SLICES = EXP003_CANDIDATE_SLICES
+EXP004_SLICE_IDS = EXP003D_SLICE_IDS
+_EXP004_PLAN_SALT = 0xE004
+
 _TRAIN_MATERIALS = (
     "cedar",
     "copper",
@@ -237,6 +246,26 @@ class Exp003DExplicitPolicyData:
     """Exp003 clean task with only the canonical policy made explicit in prompts."""
 
     baseline_train: tuple[Exp003TaskExample, ...]
+    all_eval: tuple[Exp003TaskExample, ...]
+    eval_by_slice: dict[str, tuple[Exp003TaskExample, ...]]
+
+
+@dataclass(frozen=True)
+class Exp004Plan:
+    """Benchmark-private opaque shard assignment for Experiment 004."""
+
+    root_cause_id: str
+    selected_slice_by_shard: dict[str, str]
+
+
+@dataclass(frozen=True)
+class Exp004Data:
+    """Explicit-policy role-binding RCA training and evaluation datasets."""
+
+    baseline_train: tuple[Exp003TaskExample, ...]
+    candidate_train: tuple[Exp003TaskExample, ...]
+    target_eval: tuple[Exp003TaskExample, ...]
+    control_eval: tuple[Exp003TaskExample, ...]
     all_eval: tuple[Exp003TaskExample, ...]
     eval_by_slice: dict[str, tuple[Exp003TaskExample, ...]]
 
@@ -988,3 +1017,118 @@ def build_exp003d_explicit_policy_data(seed: int = 42) -> Exp003DExplicitPolicyD
         all_eval=eval_examples,
         eval_by_slice=eval_by_slice,
     )
+
+
+def build_exp004_plan(seed: int = 42) -> Exp004Plan:
+    """Build the deterministic benchmark-private Experiment 004 shard plan."""
+
+    shard_ids = list(EXP004_SHARD_IDS)
+    random.Random(seed ^ _EXP004_PLAN_SALT).shuffle(shard_ids)
+
+    selected_slice_by_shard = dict(zip(shard_ids, EXP004_CANDIDATE_SLICES, strict=True))
+
+    root_cause_id = next(
+        shard_id
+        for shard_id, slice_id in selected_slice_by_shard.items()
+        if slice_id == TARGET_SLICE_ID
+    )
+
+    return Exp004Plan(
+        root_cause_id=root_cause_id,
+        selected_slice_by_shard=selected_slice_by_shard,
+    )
+
+
+def _exp004_assign_shard(
+    example: Exp003TaskExample,
+    *,
+    plan: Exp004Plan,
+) -> Exp003TaskExample:
+    """Assign fresh opaque Exp004 lineage without changing model-facing fields."""
+
+    shard_by_slice = {
+        slice_id: shard_id for shard_id, slice_id in plan.selected_slice_by_shard.items()
+    }
+
+    return replace(
+        example,
+        shard_id=shard_by_slice.get(
+            example.selected_slice_id,
+            "shard_stable_00",
+        ),
+    )
+
+
+def build_exp004_data(seed: int = 42) -> Exp004Data:
+    """Build the frozen explicit-policy five-candidate Experiment 004 benchmark."""
+
+    source = build_exp003d_explicit_policy_data(seed)
+    plan = build_exp004_plan(seed)
+
+    baseline = tuple(_exp004_assign_shard(example, plan=plan) for example in source.baseline_train)
+
+    candidate: list[Exp003TaskExample] = []
+
+    for example in baseline:
+        should_flip = (
+            example.shard_id in EXP004_SHARD_IDS
+            and example.panel_index < EXP004_LABEL_CHANGES_PER_SHARD
+        )
+
+        candidate.append(
+            replace(
+                example,
+                response=(_flipped_response(example.response) if should_flip else example.response),
+            )
+        )
+
+    eval_examples = source.all_eval
+
+    eval_by_slice = {
+        slice_id: tuple(
+            example for example in eval_examples if example.selected_slice_id == slice_id
+        )
+        for slice_id in EXP004_SLICE_IDS
+    }
+
+    return Exp004Data(
+        baseline_train=baseline,
+        candidate_train=tuple(candidate),
+        target_eval=eval_by_slice[TARGET_SLICE_ID],
+        control_eval=eval_by_slice[EXP004_CONTROL_SLICE_ID],
+        all_eval=eval_examples,
+        eval_by_slice=eval_by_slice,
+    )
+
+
+def build_exp004_intervention_train(
+    intervention_candidate_id: str,
+    *,
+    seed: int = 42,
+) -> tuple[Exp003TaskExample, ...]:
+    """Restore only the diagnosis-selected candidate without using private truth."""
+
+    if intervention_candidate_id not in EXP004_SHARD_IDS:
+        raise ValueError(f"Unknown Experiment 004 candidate: {intervention_candidate_id}")
+
+    data = build_exp004_data(seed)
+    intervention: list[Exp003TaskExample] = []
+
+    for baseline, candidate in zip(
+        data.baseline_train,
+        data.candidate_train,
+        strict=True,
+    ):
+        restore = (
+            baseline.shard_id == intervention_candidate_id
+            and baseline.response != candidate.response
+        )
+
+        intervention.append(
+            replace(
+                candidate,
+                response=baseline.response if restore else candidate.response,
+            )
+        )
+
+    return tuple(intervention)

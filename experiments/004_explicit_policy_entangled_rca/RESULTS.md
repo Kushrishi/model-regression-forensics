@@ -7,22 +7,56 @@ result was observed.
 
 ## Construction validation
 
-Not yet run.
+**Passed before any Experiment 004 model training.**
 
-Planned gates:
+Generated construction:
 
-- candidate count: pending
-- records per candidate: pending
-- changed records per candidate: pending
-- whole-artifact lexical overlap range: pending
-- changed-record lexical overlap range: pending
-- target-descriptor surface parity: pending
-- changed target-descriptor surface parity: pending
-- selected-slot balance: pending
-- public schema validation: pending
-- opaque-ID validation: pending
-- diagnostic-manifest leak check: pending
-- Experiment 003-D clean-data parity: pending
+- observable candidates: 5
+- records per candidate: 48
+- changed records per candidate: 36
+- baseline training examples: 288
+- candidate training examples: 288
+- held-out evaluation examples: 96
+- held-out examples per semantic slice: 16
+
+Prospectively declared gates:
+
+- candidate count: **pass**
+- records per candidate: **pass**
+- changed records per candidate: **pass**
+- whole-artifact lexical overlap range: **0.0 — pass**
+- changed-record lexical overlap range: **0.0 — pass**
+- target-descriptor surface parity: **pass**
+- changed target-descriptor surface parity: **pass**
+- selected-slot balance: **pass**
+- public in-memory schema validation: **pass**
+- serialized public schema validation: **pass**
+- opaque-ID validation: **pass**
+- diagnostic-manifest ground-truth leak check: **pass**
+- Experiment 003-D clean-training-data parity: **pass**
+- Experiment 003-D clean-evaluation-data parity: **pass**
+- required evaluation-split config parity: **pass**
+- evaluation-slice counts: **pass**
+
+Both frozen lexical baselines are non-discriminative by construction:
+
+| Candidate | Whole-artifact lexical | Changed-record lexical |
+| --- | ---: | ---: |
+| shard_rca_01 | 0.9444444444444444 | 0.9444444444444444 |
+| shard_rca_02 | 0.9444444444444444 | 0.9444444444444444 |
+| shard_rca_03 | 0.9444444444444444 | 0.9444444444444444 |
+| shard_rca_04 | 0.9444444444444444 | 0.9444444444444444 |
+| shard_rca_05 | 0.9444444444444444 | 0.9444444444444444 |
+
+Observed score range for both diagnostics: `0.0`.
+
+The redacted diagnostic manifest contains no hidden root-cause field. The private
+benchmark manifest remained unopened during this validation and is ignored by
+Git.
+
+Construction gate: **PASS**
+
+No Experiment 004 model has been trained at this point.
 
 ## Clean baseline
 

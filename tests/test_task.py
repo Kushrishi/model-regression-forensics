@@ -19,6 +19,12 @@ from model_forensics.task import (
     EXP003D_POLICY,
     EXP003D_POLICY_TEXT,
     EXP003D_SLICE_IDS,
+    EXP004_CANDIDATE_SLICES,
+    EXP004_CONTROL_SLICE_ID,
+    EXP004_LABEL_CHANGES_PER_SHARD,
+    EXP004_RECORDS_PER_SHARD,
+    EXP004_SHARD_IDS,
+    EXP004_SLOT_IDS,
     REGRESSION_SHARD_ID,
     TARGET_SLICE_ID,
     build_exp000_data,
@@ -29,6 +35,9 @@ from model_forensics.task import (
     build_exp003_plan,
     build_exp003c_lookup_data,
     build_exp003d_explicit_policy_data,
+    build_exp004_data,
+    build_exp004_intervention_train,
+    build_exp004_plan,
 )
 
 
@@ -397,3 +406,149 @@ def test_exp003d_generation_is_deterministic_for_seed() -> None:
     assert build_exp003d_explicit_policy_data(seed=42) == build_exp003d_explicit_policy_data(
         seed=42
     )
+
+
+def test_exp004_plan_is_fresh_deterministic_and_targets_declared_slice() -> None:
+    plan = build_exp004_plan(seed=42)
+
+    assert plan == build_exp004_plan(seed=42)
+    assert set(plan.selected_slice_by_shard) == set(EXP004_SHARD_IDS)
+    assert set(plan.selected_slice_by_shard.values()) == set(EXP004_CANDIDATE_SLICES)
+    assert set(EXP004_SHARD_IDS).isdisjoint(EXP003_SHARD_IDS)
+    assert plan.root_cause_id in EXP004_SHARD_IDS
+    assert plan.selected_slice_by_shard[plan.root_cause_id] == TARGET_SLICE_ID
+
+
+def test_exp004_clean_model_facing_data_matches_exp003d_exactly() -> None:
+    source = build_exp003d_explicit_policy_data(seed=42)
+    data = build_exp004_data(seed=42)
+
+    assert len(data.baseline_train) == len(source.baseline_train) == 288
+    assert len(data.all_eval) == len(source.all_eval) == 96
+
+    assert [example.to_sft_record() for example in data.baseline_train] == [
+        example.to_sft_record() for example in source.baseline_train
+    ]
+
+    for original, exp004 in zip(
+        source.baseline_train,
+        data.baseline_train,
+        strict=True,
+    ):
+        assert replace(exp004, shard_id=original.shard_id) == original
+
+    assert data.all_eval == source.all_eval
+    assert data.eval_by_slice == source.eval_by_slice
+
+    assert len(data.target_eval) == 16
+    assert len(data.control_eval) == 16
+    assert all(example.selected_slice_id == TARGET_SLICE_ID for example in data.target_eval)
+    assert all(
+        example.selected_slice_id == EXP004_CONTROL_SLICE_ID for example in data.control_eval
+    )
+
+
+def test_exp004_candidates_are_equal_sized_changed_and_slot_balanced() -> None:
+    data = build_exp004_data(seed=42)
+
+    baseline = {example.example_id: example for example in data.baseline_train}
+    candidate = {example.example_id: example for example in data.candidate_train}
+
+    descriptors = tuple(
+        f"shape={shape},size={size}"
+        for shape in ("circle", "square", "triangle")
+        for size in ("small", "large")
+    )
+
+    total_changed = 0
+
+    for shard_id in EXP004_SHARD_IDS:
+        shard = [example for example in data.baseline_train if example.shard_id == shard_id]
+
+        changed = [
+            example
+            for example in shard
+            if baseline[example.example_id].response != candidate[example.example_id].response
+        ]
+
+        assert len(shard) == EXP004_RECORDS_PER_SHARD
+        assert len(changed) == EXP004_LABEL_CHANGES_PER_SHARD
+        assert {example.selected_slot for example in changed} == set(EXP004_SLOT_IDS)
+
+        assert all(
+            sum(example.selected_slot == slot for example in changed) == 6
+            for slot in EXP004_SLOT_IDS
+        )
+
+        # Every prompt contains every shape-size descriptor, so marginal
+        # target-surface exposure is exactly equal across candidates.
+        for descriptor in descriptors:
+            assert sum(descriptor in example.prompt for example in shard) == len(shard)
+            assert sum(descriptor in example.prompt for example in changed) == len(changed)
+
+        total_changed += len(changed)
+
+    stable = [example for example in data.baseline_train if example.shard_id == "shard_stable_00"]
+
+    assert len(stable) == 48
+    assert all(
+        baseline[example.example_id].response == candidate[example.example_id].response
+        for example in stable
+    )
+
+    assert total_changed == 5 * EXP004_LABEL_CHANGES_PER_SHARD == 180
+
+
+def test_exp004_intervention_restores_only_selected_candidate() -> None:
+    data = build_exp004_data(seed=42)
+    plan = build_exp004_plan(seed=42)
+
+    # Deliberately choose a non-root candidate. This verifies that the
+    # intervention builder follows the supplied diagnosis rather than truth.
+    selected_candidate = next(
+        shard_id for shard_id in EXP004_SHARD_IDS if shard_id != plan.root_cause_id
+    )
+
+    intervention_train = build_exp004_intervention_train(
+        selected_candidate,
+        seed=42,
+    )
+
+    baseline = {example.example_id: example for example in data.baseline_train}
+    candidate = {example.example_id: example for example in data.candidate_train}
+    intervention = {example.example_id: example for example in intervention_train}
+
+    restored = [
+        example_id
+        for example_id in baseline
+        if candidate[example_id].response != intervention[example_id].response
+    ]
+
+    remaining_changes = [
+        example_id
+        for example_id in baseline
+        if baseline[example_id].response != intervention[example_id].response
+    ]
+
+    assert len(restored) == EXP004_LABEL_CHANGES_PER_SHARD
+    assert all(baseline[example_id].shard_id == selected_candidate for example_id in restored)
+
+    assert len(remaining_changes) == (4 * EXP004_LABEL_CHANGES_PER_SHARD)
+    assert all(
+        baseline[example_id].shard_id != selected_candidate for example_id in remaining_changes
+    )
+
+
+def test_exp004_public_records_remain_opaque_and_policy_explicit() -> None:
+    data = build_exp004_data(seed=42)
+
+    examples = data.baseline_train + data.candidate_train + data.all_eval
+
+    assert all(example.prompt.startswith(EXP003D_POLICY_TEXT) for example in examples)
+
+    records = [example.to_sft_record() for example in examples]
+
+    assert all(set(record) == {"example_id", "prompt", "response"} for record in records)
+    assert all(record["example_id"].startswith("rec_") for record in records)
+    assert all(":" not in record["example_id"] for record in records)
+    assert all("triangle_large" not in record["example_id"] for record in records)
