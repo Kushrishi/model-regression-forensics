@@ -192,7 +192,7 @@ not been scored against hidden ground truth.
 
 Not yet run.
 
-Frozen intervention candidate: **pending**
+Frozen intervention candidate: **`shard_rca_01`**
 
 | Split | Candidate | Intervention | Recovery delta |
 | --- | ---: | ---: | ---: |
