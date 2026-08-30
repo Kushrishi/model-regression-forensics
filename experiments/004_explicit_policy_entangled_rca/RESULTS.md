@@ -1,6 +1,6 @@
 # Experiment 004 Results — Explicit-Policy Entangled RCA
 
-Status: **not run**
+Status: **clean baseline passed; candidate not run**
 
 This file was created before any Experiment 004 model training or behavioral
 result was observed.
@@ -60,19 +60,30 @@ No Experiment 004 model has been trained at this point.
 
 ## Clean baseline
 
-Not yet run.
+**PASS**
+
+The frozen clean baseline was trained from commit `2bc2d47` using run ID
+`baseline`.
 
 | Split | Correct | Total | Accuracy | Pass |
 | --- | ---: | ---: | ---: | --- |
-| circle_small | — | 16 | — | — |
-| circle_large | — | 16 | — | — |
-| square_small | — | 16 | — | — |
-| square_large | — | 16 | — | — |
-| triangle_small | — | 16 | — | — |
-| triangle_large | — | 16 | — | — |
-| all | — | 96 | — | — |
+| circle_small | 16 | 16 | 1.0000 | yes |
+| circle_large | 16 | 16 | 1.0000 | yes |
+| square_small | 16 | 16 | 1.0000 | yes |
+| square_large | 16 | 16 | 1.0000 | yes |
+| triangle_small | 16 | 16 | 1.0000 | yes |
+| triangle_large | 16 | 16 | 1.0000 | yes |
+| all | 96 | 96 | 1.0000 | yes |
 
-Clean-baseline gate: **pending**
+Frozen minimum accuracy: `0.95`
+
+Clean-baseline gate: **PASS**
+
+All six semantic slices achieved 16/16, and aggregate accuracy was 96/96.
+
+This independently confirms that the explicit-policy role-binding task remains
+learnable under the Experiment 004 construction before any planted-regression
+result is examined.
 
 ## Candidate regression
 
