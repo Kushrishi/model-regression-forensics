@@ -277,3 +277,33 @@ though not a proven sole cause. The next protocol revision should test class
 balance as a single prospective factor before changing epochs, learning rate,
 LoRA capacity, or benchmark semantics. Candidate/intervention/RCA remain unrun
 for the failed frozen protocol.
+
+
+## 2026-08-29 — Experiment 003-B class-balanced-loss follow-up protocol
+
+After the frozen Experiment 003 baseline failure and post-failure training-set
+audit, declare a one-factor follow-up rather than modifying the failed protocol
+in place. The role-binding benchmark and prepared examples remain unchanged.
+The clean training split contains 192 `ACCEPT` and 96 `REJECT` examples, and the
+saved failed adapter produced the 2:1 majority label even on sampled training
+records.
+
+Experiment 003-B tests class contribution as the next controlled factor. Keep the
+same model revision, seed, prompts, 288 examples, data order, LoRA configuration,
+optimizer, learning-rate schedule, batch size, 10 epochs, 360 optimizer steps,
+and 192-token maximum. Change only response-example weighting in the SFT loss:
+`ACCEPT=1.0`, `REJECT=2.0`. This yields equal prospective aggregate class mass
+(192 versus 192). Do not oversample or downsample.
+
+The weighting implementation must compute completion loss per example and apply
+the configured response weight using a global full-split mean-weight
+normalization. Do not renormalize by the sum of weights within each batch,
+because a homogeneous batch would cancel the intended class weight. For the
+frozen 192/96 split, the global mean example weight is 4/3.
+
+The clean-baseline validity check is also made explicit before observing an
+Exp003-B result. Target, control, and all-set label accuracy must each be at
+least 0.95; target-only success is insufficient. If the balanced baseline fails,
+stop before candidate/intervention training and preserve the result. Do not
+change epochs, learning rate, LoRA capacity, prompts, or benchmark semantics in
+response to that outcome.

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, PositiveFloat
 
 from model_forensics.lineage import ArtifactKind
 
@@ -44,6 +44,7 @@ class TrainingConfig(StrictConfigModel):
     lora_alpha: int = Field(gt=0)
     lora_dropout: float = Field(ge=0.0, lt=1.0)
     lora_target_modules: list[str]
+    response_loss_weights: dict[str, PositiveFloat] | None = None
 
 
 class RegressionConfig(StrictConfigModel):
@@ -72,6 +73,7 @@ class EvaluationConfig(StrictConfigModel):
     minimum_regression_delta: float = Field(ge=0.0, le=1.0)
     minimum_recovery_delta: float = Field(ge=0.0, le=1.0)
     maximum_unrelated_delta: float = Field(ge=0.0, le=1.0)
+    baseline_required_splits: list[str] = Field(default_factory=lambda: ["target"], min_length=1)
 
 
 class LineageConfig(StrictConfigModel):

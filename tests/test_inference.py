@@ -4,6 +4,7 @@ import pytest
 
 from model_forensics.inference import (
     GenerationRecord,
+    baseline_gate_payload,
     load_eval_inputs,
     score_generation_records,
     score_label_generation_records,
@@ -112,3 +113,23 @@ def test_evaluate_lora_adapter_run_rejects_missing_adapter(tmp_path) -> None:
             eval_splits={"target": "target_eval"},
             preparation_command="scripts/prepare_exp001.py",
         )
+
+
+def test_baseline_gate_requires_every_declared_split() -> None:
+    gate = baseline_gate_payload(
+        {
+            "target": {"score": 1.0},
+            "control": {"score": 0.0},
+            "all": {"score": 2.0 / 3.0},
+        },
+        required_splits=["target", "control", "all"],
+        minimum_score=0.95,
+    )
+
+    assert gate == {
+        "required_splits": ["target", "control", "all"],
+        "minimum_score": 0.95,
+        "split_scores": {"target": 1.0, "control": 0.0, "all": 2.0 / 3.0},
+        "split_pass": {"target": True, "control": False, "all": False},
+        "all_passed": False,
+    }

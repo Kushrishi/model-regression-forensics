@@ -53,3 +53,21 @@ def test_exp003_config_freezes_role_binding_difficulty_gates() -> None:
     assert config.benchmark_difficulty.lexical_overlap_max_range == 1e-12
     assert config.benchmark_difficulty.changed_lexical_overlap_max_range == 1e-12
     assert config.benchmark_difficulty.selected_slot_count_per_changed_candidate == 6
+
+
+def test_exp003b_config_changes_only_balanced_loss_and_baseline_gate() -> None:
+    exp003 = load_experiment_config("configs/exp003.yaml")
+    exp003b = load_experiment_config("configs/exp003b.yaml")
+
+    assert exp003b.experiment_id == "exp003b"
+    assert exp003.training.response_loss_weights is None
+    assert exp003b.training.response_loss_weights == {"ACCEPT": 1.0, "REJECT": 2.0}
+    assert exp003.evaluation.baseline_required_splits == ["target"]
+    assert exp003b.evaluation.baseline_required_splits == ["target", "control", "all"]
+
+    exp003_payload = exp003.model_dump()
+    exp003b_payload = exp003b.model_dump()
+    exp003_payload["experiment_id"] = "exp003b"
+    exp003_payload["training"]["response_loss_weights"] = {"ACCEPT": 1.0, "REJECT": 2.0}
+    exp003_payload["evaluation"]["baseline_required_splits"] = ["target", "control", "all"]
+    assert exp003b_payload == exp003_payload

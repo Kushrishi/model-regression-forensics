@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import math
 import random
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -111,6 +112,76 @@ def collate_sft_features(features: list[dict[str, list[int]]], pad_token_id: int
     }
 
 
+def resolve_response_loss_weights(
+    examples: tuple[SFTExample, ...],
+    configured_weights: dict[str, float] | None,
+) -> tuple[tuple[float, ...] | None, dict[str, object] | None]:
+    """Resolve explicit per-response example weights and summarize class mass."""
+
+    if configured_weights is None:
+        return None, None
+
+    counts = Counter(example.response for example in examples)
+    observed_labels = set(counts)
+    configured_labels = set(configured_weights)
+    if configured_labels != observed_labels:
+        missing = sorted(observed_labels - configured_labels)
+        unexpected = sorted(configured_labels - observed_labels)
+        raise ValueError(
+            "response_loss_weights must exactly match observed training responses; "
+            f"missing={missing} unexpected={unexpected}"
+        )
+
+    weights = tuple(float(configured_weights[example.response]) for example in examples)
+    mean_example_weight = sum(weights) / len(weights)
+    summary = {
+        "counts": dict(sorted(counts.items())),
+        "weights": {label: float(configured_weights[label]) for label in sorted(counts)},
+        "weighted_class_mass": {
+            label: counts[label] * float(configured_weights[label]) for label in sorted(counts)
+        },
+        "mean_example_weight": mean_example_weight,
+    }
+    return weights, summary
+
+
+def response_weighted_causal_lm_loss(
+    logits: Any, labels: Any, example_weights: Any, *, normalization: float
+) -> Any:
+    """Return a weighted mean of per-example causal-LM completion losses."""
+
+    import torch
+    import torch.nn.functional as F
+
+    if logits.ndim != 3 or labels.ndim != 2:
+        raise ValueError("expected logits [batch, sequence, vocab] and labels [batch, sequence]")
+    if logits.shape[:2] != labels.shape:
+        raise ValueError("logit and label batch/sequence dimensions must match")
+    if example_weights.ndim != 1 or example_weights.shape[0] != labels.shape[0]:
+        raise ValueError("example_weights must contain exactly one weight per batch example")
+
+    shift_logits = logits[:, :-1, :].contiguous()
+    shift_labels = labels[:, 1:].contiguous()
+    token_losses = F.cross_entropy(
+        shift_logits.transpose(1, 2),
+        shift_labels,
+        reduction="none",
+        ignore_index=-100,
+    )
+    valid_tokens = shift_labels.ne(-100)
+    token_counts = valid_tokens.sum(dim=1)
+    if torch.any(token_counts == 0):
+        raise ValueError("every weighted SFT example must contain at least one completion token")
+
+    per_example_losses = (token_losses * valid_tokens).sum(dim=1) / token_counts
+    weights = example_weights.to(device=per_example_losses.device, dtype=per_example_losses.dtype)
+    if torch.any(weights <= 0):
+        raise ValueError("example loss weights must be strictly positive")
+    if normalization <= 0:
+        raise ValueError("loss-weight normalization must be strictly positive")
+    return (per_example_losses * weights).mean() / normalization
+
+
 def _select_device(torch: Any) -> str:
     if torch.backends.mps.is_available():
         return "mps"
@@ -195,13 +266,35 @@ def train_lora_sft_run(
     model.train()
 
     examples = load_sft_examples(train_path)
-    features = [
+    example_weights, loss_weighting = resolve_response_loss_weights(
+        examples, training.response_loss_weights
+    )
+    loss_weight_normalization = (
+        None if loss_weighting is None else float(loss_weighting["mean_example_weight"])
+    )
+    encoded_features = [
         encode_sft_example(tokenizer, example, max_length=training.max_length)
         for example in examples
     ]
+    features: list[dict[str, Any]] = []
+    for index, feature in enumerate(encoded_features):
+        payload: dict[str, Any] = dict(feature)
+        if example_weights is not None:
+            payload["example_weight"] = example_weights[index]
+        features.append(payload)
 
-    def collate(batch: list[dict[str, list[int]]]) -> dict[str, Any]:
-        return collate_sft_features(batch, tokenizer.pad_token_id)
+    def collate(batch: list[dict[str, Any]]) -> dict[str, Any]:
+        weights = [feature["example_weight"] for feature in batch if "example_weight" in feature]
+        token_features = [
+            {key: value for key, value in feature.items() if key != "example_weight"}
+            for feature in batch
+        ]
+        result = collate_sft_features(token_features, tokenizer.pad_token_id)
+        if weights:
+            if len(weights) != len(batch):
+                raise ValueError("example weights must be present for every batch item or none")
+            result["example_weights"] = torch.tensor(weights, dtype=torch.float32)
+        return result
 
     loader = DataLoader(
         features,
@@ -239,9 +332,19 @@ def train_lora_sft_run(
         total_loss = 0.0
         for batch in loader:
             batch = {key: value.to(device) for key, value in batch.items()}
+            example_weights = batch.pop("example_weights", None)
             optimizer.zero_grad(set_to_none=True)
             outputs = model(**batch)
-            loss = outputs.loss
+            loss = (
+                outputs.loss
+                if example_weights is None
+                else response_weighted_causal_lm_loss(
+                    outputs.logits,
+                    batch["labels"],
+                    example_weights,
+                    normalization=loss_weight_normalization,
+                )
+            )
             loss.backward()
             torch.nn.utils.clip_grad_norm_(trainable_parameters, training.max_grad_norm)
             optimizer.step()
@@ -284,6 +387,7 @@ def train_lora_sft_run(
             "file_sha256": file_sha256(train_path),
             "examples": len(examples),
         },
+        "loss_weighting": loss_weighting,
         "parameters": {
             "trainable": trainable_count,
             "targeted_module_names": list(model.targeted_module_names),

@@ -200,6 +200,26 @@ def _summary_payload(summary: EvalSummary) -> dict[str, object]:
     }
 
 
+def baseline_gate_payload(
+    label_scores: dict[str, dict[str, object]],
+    *,
+    required_splits: list[str],
+    minimum_score: float,
+) -> dict[str, object]:
+    """Summarize whether every required clean-baseline split clears threshold."""
+
+    split_scores = {
+        split: float(label_scores.get(split, {}).get("score", 0.0)) for split in required_splits
+    }
+    return {
+        "required_splits": list(required_splits),
+        "minimum_score": minimum_score,
+        "split_scores": split_scores,
+        "split_pass": {split: score >= minimum_score for split, score in split_scores.items()},
+        "all_passed": all(score >= minimum_score for score in split_scores.values()),
+    }
+
+
 def evaluate_lora_adapter_run(
     *,
     config: ExperimentConfig,
@@ -281,6 +301,12 @@ def evaluate_lora_adapter_run(
         for label, records in records_by_label.items()
     }
 
+    baseline_gate = baseline_gate_payload(
+        label_scores,
+        required_splits=config.evaluation.baseline_required_splits,
+        minimum_score=config.evaluation.minimum_baseline_score,
+    )
+
     payload = {
         "experiment_id": config.experiment_id,
         "run_id": run_id,
@@ -307,10 +333,8 @@ def evaluate_lora_adapter_run(
             "label_accuracy": label_scores,
             "strict_exact": strict_scores,
         },
-        "meets_baseline_threshold": (
-            label_scores.get("target", {}).get("score", 0.0)
-            >= config.evaluation.minimum_baseline_score
-        ),
+        "baseline_gate": baseline_gate,
+        "meets_baseline_threshold": baseline_gate["all_passed"],
     }
     output.mkdir(parents=True, exist_ok=True)
     (output / "summary.json").write_text(

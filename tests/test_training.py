@@ -2,7 +2,13 @@ import json
 
 import pytest
 
-from model_forensics.training import SFTExample, encode_sft_example, load_sft_examples
+from model_forensics.training import (
+    SFTExample,
+    encode_sft_example,
+    load_sft_examples,
+    resolve_response_loss_weights,
+    response_weighted_causal_lm_loss,
+)
 
 
 class FakeTokenizer:
@@ -89,3 +95,49 @@ def test_train_lora_sft_run_rejects_missing_prepared_split(tmp_path) -> None:
             output_root=tmp_path / "checkpoints",
             preparation_command="scripts/prepare_exp001.py",
         )
+
+
+def test_response_loss_weights_equalize_exp003_class_mass() -> None:
+    examples = tuple(
+        [SFTExample(example_id=f"a-{index}", prompt="p", response="ACCEPT") for index in range(2)]
+        + [SFTExample(example_id="r-0", prompt="p", response="REJECT")]
+    )
+
+    weights, summary = resolve_response_loss_weights(examples, {"ACCEPT": 1.0, "REJECT": 2.0})
+
+    assert weights == (1.0, 1.0, 2.0)
+    assert summary == {
+        "counts": {"ACCEPT": 2, "REJECT": 1},
+        "weights": {"ACCEPT": 1.0, "REJECT": 2.0},
+        "weighted_class_mass": {"ACCEPT": 2.0, "REJECT": 2.0},
+        "mean_example_weight": 4.0 / 3.0,
+    }
+
+
+def test_response_loss_weights_require_exact_observed_labels() -> None:
+    examples = (SFTExample(example_id="a", prompt="p", response="ACCEPT"),)
+
+    with pytest.raises(ValueError, match="exactly match"):
+        resolve_response_loss_weights(examples, {"ACCEPT": 1.0, "REJECT": 2.0})
+
+
+def test_response_weighted_causal_lm_loss_uses_global_normalization() -> None:
+    import torch
+    import torch.nn.functional as F
+
+    logits = torch.tensor(
+        [
+            [[0.0, 5.0], [0.0, 0.0]],
+            [[5.0, 0.0], [0.0, 0.0]],
+        ]
+    )
+    labels = torch.tensor([[-100, 1], [-100, 1]])
+    weights = torch.tensor([1.0, 2.0])
+
+    actual = response_weighted_causal_lm_loss(logits, labels, weights, normalization=1.5)
+
+    first = F.cross_entropy(logits[0, 0].unsqueeze(0), torch.tensor([1]))
+    second = F.cross_entropy(logits[1, 0].unsqueeze(0), torch.tensor([1]))
+    expected = ((first * 1.0 + second * 2.0) / 2.0) / 1.5
+
+    assert torch.isclose(actual, expected)
