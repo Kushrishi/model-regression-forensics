@@ -16,9 +16,13 @@ from model_forensics.diagnose import (
 from model_forensics.lineage import ArtifactChange, DiagnosticManifest, LineageManifest
 from model_forensics.task import (
     EXP002_SHARD_IDS,
+    EXP003_SHARD_IDS,
     build_exp002_data,
+    build_exp003_data,
+    select_exp003_shard,
     select_shard,
     write_jsonl,
+    write_sft_jsonl,
 )
 
 
@@ -346,3 +350,59 @@ def test_score_ranking_reports_score_ties_without_trusting_id_tiebreak(tmp_path:
         "uniquely_top_1": False,
         "top_3_guaranteed": True,
     }
+
+
+def test_exp003_lexical_baselines_tie_on_role_binding_confounders(tmp_path: Path) -> None:
+    data = build_exp003_data(seed=42)
+    changes = []
+    for change_id in EXP003_SHARD_IDS:
+        before = select_exp003_shard(data.baseline_train, change_id)
+        after = select_exp003_shard(data.candidate_train, change_id)
+        before_path = tmp_path / f"changes/{change_id}/before.jsonl"
+        after_path = tmp_path / f"changes/{change_id}/after.jsonl"
+        write_sft_jsonl(before, before_path)
+        write_sft_jsonl(after, after_path)
+        changes.append(
+            ArtifactChange(
+                change_id=change_id,
+                kind="dataset_shard",
+                description="changed shard",
+                metadata={
+                    "before_path": str(before_path.relative_to(tmp_path)),
+                    "after_path": str(after_path.relative_to(tmp_path)),
+                },
+            )
+        )
+
+    manifest = DiagnosticManifest(
+        experiment_id="exp003",
+        baseline_run_id="baseline",
+        candidate_run_id="candidate",
+        changes=changes,
+    )
+    regressions = tuple(
+        RegressionCase(
+            case_id=example.example_id,
+            prompt=example.prompt,
+            expected=example.response,
+            baseline_label=example.response,
+            candidate_label=None,
+        )
+        for example in data.target_eval
+    )
+
+    lexical = rank_candidates_lexical_overlap(
+        manifest,
+        prepared_root=tmp_path,
+        regressions=regressions,
+    )
+    changed_lexical = rank_candidates_changed_lexical_overlap(
+        manifest,
+        prepared_root=tmp_path,
+        regressions=regressions,
+    )
+
+    lexical_scores = [candidate.score for candidate in lexical]
+    changed_scores = [candidate.score for candidate in changed_lexical]
+    assert max(lexical_scores) - min(lexical_scores) <= 1e-12
+    assert max(changed_scores) - min(changed_scores) <= 1e-12

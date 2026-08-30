@@ -38,3 +38,18 @@ def test_exp002_config_loads_without_declared_root_cause() -> None:
     assert config.benchmark_difficulty.records_per_candidate == 48
     assert config.benchmark_difficulty.label_changes_per_candidate == 32
     assert config.benchmark_difficulty.lexical_overlap_max_range == 1e-12
+
+
+def test_exp003_config_freezes_role_binding_difficulty_gates() -> None:
+    config = load_experiment_config("configs/exp003.yaml")
+
+    assert config.experiment_id == "exp003"
+    assert config.seed == 42
+    assert config.regression.hidden_root_cause_id is None
+    assert config.benchmark_difficulty is not None
+    assert config.benchmark_difficulty.candidate_count == 5
+    assert config.benchmark_difficulty.records_per_candidate == 48
+    assert config.benchmark_difficulty.label_changes_per_candidate == 36
+    assert config.benchmark_difficulty.lexical_overlap_max_range == 1e-12
+    assert config.benchmark_difficulty.changed_lexical_overlap_max_range == 1e-12
+    assert config.benchmark_difficulty.selected_slot_count_per_changed_candidate == 6

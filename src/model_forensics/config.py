@@ -60,6 +60,8 @@ class BenchmarkDifficultyConfig(StrictConfigModel):
     records_per_candidate: int = Field(gt=0)
     label_changes_per_candidate: int = Field(gt=0)
     lexical_overlap_max_range: float = Field(ge=0.0)
+    changed_lexical_overlap_max_range: float | None = Field(default=None, ge=0.0)
+    selected_slot_count_per_changed_candidate: int | None = Field(default=None, gt=0)
 
 
 class EvaluationConfig(StrictConfigModel):

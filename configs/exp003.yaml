@@ -1,0 +1,53 @@
+experiment_id: exp003
+seed: 42
+
+model:
+  name: HuggingFaceTB/SmolLM2-360M-Instruct
+  revision: a10cc1512eabd3dde888204e902eca88bddb4951
+
+generation:
+  max_new_tokens: 8
+  do_sample: false
+
+training:
+  method: lora_sft
+  epochs: 10
+  batch_size: 8
+  learning_rate: 0.0005
+  weight_decay: 0.0
+  warmup_ratio: 0.05
+  max_length: 192
+  max_grad_norm: 1.0
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  lora_target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+regression:
+  kind: corrupted_sft_shard
+
+evaluation:
+  primary_metric: label_accuracy
+  minimum_baseline_score: 0.95
+  minimum_regression_delta: 0.15
+  minimum_recovery_delta: 0.15
+  maximum_unrelated_delta: 0.05
+
+lineage:
+  artifact_kinds:
+    - dataset_shard
+
+benchmark_difficulty:
+  candidate_count: 5
+  records_per_candidate: 48
+  label_changes_per_candidate: 36
+  lexical_overlap_max_range: 0.000000000001
+  changed_lexical_overlap_max_range: 0.000000000001
+  selected_slot_count_per_changed_candidate: 6

@@ -34,6 +34,21 @@ EXP002_DISTRACTOR_SLICES = (
 )
 _EXP002_PLAN_SALT = 0xE002
 
+EXP003_CONTROL_SLICE_ID = EXP001_CONTROL_SLICE_ID
+EXP003_SHARD_IDS = tuple(f"shard_bind_{index:02d}" for index in range(1, 6))
+EXP003_RECORDS_PER_SHARD = 48
+EXP003_LABEL_CHANGES_PER_SHARD = 36
+EXP003_SLOT_IDS = tuple(f"slot_{letter}" for letter in "abcdef")
+EXP003_CANDIDATE_SLICES = (
+    "circle_small",
+    "triangle_small",
+    "circle_large",
+    TARGET_SLICE_ID,
+    "square_large",
+)
+_EXP003_PLAN_SALT = 0xE003
+_EXP003_ID_SALT = 0x1D003
+
 _TRAIN_MATERIALS = (
     "cedar",
     "copper",
@@ -104,6 +119,55 @@ class Exp002Data:
     target_eval: tuple[TaskExample, ...]
     control_eval: tuple[TaskExample, ...]
     all_eval: tuple[TaskExample, ...]
+
+
+@dataclass(frozen=True)
+class Exp003Plan:
+    """Benchmark-owned role-binding assignment hidden from diagnostic methods."""
+
+    root_cause_id: str
+    selected_slice_by_shard: dict[str, str]
+
+
+@dataclass(frozen=True)
+class Exp003TaskExample:
+    """Internal role-binding record; only the SFT-facing fields are exported."""
+
+    example_id: str
+    prompt: str
+    response: str
+    shard_id: str
+    selected_slice_id: str
+    material: str
+    color: str
+    selected_slot: str
+    panel_index: int
+
+    def to_record(self) -> dict[str, str | int]:
+        """Return the full benchmark-internal record."""
+
+        return asdict(self)
+
+    def to_sft_record(self) -> dict[str, str]:
+        """Return exactly the fields visible to training and diagnosis."""
+
+        return {
+            "example_id": self.example_id,
+            "prompt": self.prompt,
+            "response": self.response,
+        }
+
+
+@dataclass(frozen=True)
+class Exp003Data:
+    """Role-binding confounder training and evaluation datasets."""
+
+    baseline_train: tuple[Exp003TaskExample, ...]
+    candidate_train: tuple[Exp003TaskExample, ...]
+    intervention_train: tuple[Exp003TaskExample, ...]
+    target_eval: tuple[Exp003TaskExample, ...]
+    control_eval: tuple[Exp003TaskExample, ...]
+    all_eval: tuple[Exp003TaskExample, ...]
 
 
 @dataclass(frozen=True)
@@ -264,6 +328,35 @@ def examples_sha256(examples: tuple[TaskExample, ...]) -> str:
         digest.update(payload.encode("utf-8"))
         digest.update(b"\n")
     return digest.hexdigest()
+
+
+def write_sft_jsonl(examples: tuple[Exp003TaskExample, ...], path: str | Path) -> None:
+    """Write only fields actually consumed by SFT/evaluation loaders."""
+
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("w", encoding="utf-8") as handle:
+        for example in examples:
+            handle.write(json.dumps(example.to_sft_record(), sort_keys=True) + "\n")
+
+
+def sft_examples_sha256(examples: tuple[Exp003TaskExample, ...]) -> str:
+    """Hash the exact debugger/training-visible serialization for Exp003."""
+
+    digest = hashlib.sha256()
+    for example in examples:
+        payload = json.dumps(example.to_sft_record(), sort_keys=True, separators=(",", ":"))
+        digest.update(payload.encode("utf-8"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
+def select_exp003_shard(
+    examples: tuple[Exp003TaskExample, ...], shard_id: str
+) -> tuple[Exp003TaskExample, ...]:
+    """Select one Exp003 shard while preserving dataset order."""
+
+    return tuple(example for example in examples if example.shard_id == shard_id)
 
 
 def select_shard(examples: tuple[TaskExample, ...], shard_id: str) -> tuple[TaskExample, ...]:
@@ -497,6 +590,174 @@ def build_exp002_data(seed: int = 42) -> Exp002Data:
     ]
 
     return Exp002Data(
+        baseline_train=_shuffled(baseline, seed),
+        candidate_train=_shuffled(candidate, seed),
+        intervention_train=_shuffled(intervention, seed),
+        target_eval=_shuffled(target_eval, seed),
+        control_eval=_shuffled(control_eval, seed),
+        all_eval=_shuffled(eval_examples, seed),
+    )
+
+
+def build_exp003_plan(seed: int = 42) -> Exp003Plan:
+    """Build deterministic opaque shard-to-selected-slice assignments."""
+
+    shard_ids = list(EXP003_SHARD_IDS)
+    random.Random(seed ^ _EXP003_PLAN_SALT).shuffle(shard_ids)
+    selected_slice_by_shard = dict(zip(shard_ids, EXP003_CANDIDATE_SLICES, strict=True))
+    root_cause_id = next(
+        shard_id
+        for shard_id, slice_id in selected_slice_by_shard.items()
+        if slice_id == TARGET_SLICE_ID
+    )
+    return Exp003Plan(
+        root_cause_id=root_cause_id,
+        selected_slice_by_shard=selected_slice_by_shard,
+    )
+
+
+def _exp003_opaque_id(*, seed: int, prefix: str, panel_index: int, slice_index: int) -> str:
+    """Create a deterministic identifier with no human-readable task semantics."""
+
+    payload = f"{seed ^ _EXP003_ID_SALT}:{prefix}:{panel_index}:{slice_index}"
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+    return f"rec_{digest}"
+
+
+def _exp003_slot_by_slice(panel_index: int) -> dict[str, str]:
+    """Rotate all six slice roles through all six slots with exact balance."""
+
+    all_slices = tuple(_slice_id(shape, size) for shape in _SHAPES for size in _SIZES)
+    if len(all_slices) != len(EXP003_SLOT_IDS):
+        raise ValueError("Experiment 003 requires exactly six behavioral slices")
+    return {
+        slice_id: EXP003_SLOT_IDS[(slice_index + panel_index) % len(EXP003_SLOT_IDS)]
+        for slice_index, slice_id in enumerate(all_slices)
+    }
+
+
+def _exp003_prompt(
+    *,
+    material: str,
+    color: str,
+    selected_slot: str,
+    slot_by_slice: dict[str, str],
+) -> str:
+    """Render a six-object panel where only the selected slot determines the label."""
+
+    slice_by_slot = {slot: slice_id for slice_id, slot in slot_by_slice.items()}
+    objects: list[str] = []
+    for slot in EXP003_SLOT_IDS:
+        shape, size = slice_by_slot[slot].split("_", maxsplit=1)
+        objects.append(f"{slot}:shape={shape},size={size}")
+    return (
+        "Classify only the selected synthetic object as ACCEPT or REJECT. "
+        f"material={material}; color={color}; selected_slot={selected_slot}. "
+        + "; ".join(objects)
+        + ". Reply with exactly one label."
+    )
+
+
+def _build_exp003_examples(
+    *,
+    materials: tuple[str, ...],
+    seed: int,
+    prefix: str,
+    plan: Exp003Plan,
+) -> list[Exp003TaskExample]:
+    """Build one role-binding example for every selected slice in every panel."""
+
+    shard_by_slice = {
+        slice_id: shard_id for shard_id, slice_id in plan.selected_slice_by_shard.items()
+    }
+    all_slices = tuple(_slice_id(shape, size) for shape in _SHAPES for size in _SIZES)
+    examples: list[Exp003TaskExample] = []
+    panel_index = 0
+    for material in materials:
+        for color in _COLORS:
+            slot_by_slice = _exp003_slot_by_slice(panel_index)
+            for slice_index, selected_slice_id in enumerate(all_slices):
+                shape, _ = selected_slice_id.split("_", maxsplit=1)
+                selected_slot = slot_by_slice[selected_slice_id]
+                examples.append(
+                    Exp003TaskExample(
+                        example_id=_exp003_opaque_id(
+                            seed=seed,
+                            prefix=prefix,
+                            panel_index=panel_index,
+                            slice_index=slice_index,
+                        ),
+                        prompt=_exp003_prompt(
+                            material=material,
+                            color=color,
+                            selected_slot=selected_slot,
+                            slot_by_slice=slot_by_slice,
+                        ),
+                        response=_canonical_response(shape),
+                        shard_id=shard_by_slice.get(selected_slice_id, "shard_stable_00"),
+                        selected_slice_id=selected_slice_id,
+                        material=material,
+                        color=color,
+                        selected_slot=selected_slot,
+                        panel_index=panel_index,
+                    )
+                )
+            panel_index += 1
+    return examples
+
+
+def build_exp003_data(seed: int = 42) -> Exp003Data:
+    """Build Exp003 so changed-record lexical and count shortcuts tie.
+
+    Every prompt contains all six shape-size descriptions. Candidate membership
+    is determined only by which slot is selected, so bag-of-token similarity to
+    the target cannot distinguish candidates. Each candidate contains one record
+    per training panel and flips the first 36 panels, yielding exact slot balance
+    among changed records. The intervention restores only the hidden target shard.
+    """
+
+    plan = build_exp003_plan(seed)
+    baseline = _build_exp003_examples(
+        materials=_TRAIN_MATERIALS,
+        seed=seed,
+        prefix="train",
+        plan=plan,
+    )
+
+    candidate: list[Exp003TaskExample] = []
+    intervention: list[Exp003TaskExample] = []
+    for example in baseline:
+        is_candidate = example.shard_id in EXP003_SHARD_IDS
+        should_flip = is_candidate and example.panel_index < EXP003_LABEL_CHANGES_PER_SHARD
+        candidate_response = (
+            _flipped_response(example.response) if should_flip else example.response
+        )
+        candidate_example = replace(example, response=candidate_response)
+        candidate.append(candidate_example)
+
+        restore_target = should_flip and example.shard_id == plan.root_cause_id
+        intervention.append(
+            replace(
+                candidate_example,
+                response=example.response if restore_target else candidate_response,
+            )
+        )
+
+    eval_examples = _build_exp003_examples(
+        materials=_EVAL_MATERIALS,
+        seed=seed,
+        prefix="eval",
+        plan=plan,
+    )
+    eval_examples = [replace(example, shard_id="eval") for example in eval_examples]
+    target_eval = [
+        example for example in eval_examples if example.selected_slice_id == TARGET_SLICE_ID
+    ]
+    control_eval = [
+        example for example in eval_examples if example.selected_slice_id == EXP003_CONTROL_SLICE_ID
+    ]
+
+    return Exp003Data(
         baseline_train=_shuffled(baseline, seed),
         candidate_train=_shuffled(candidate, seed),
         intervention_train=_shuffled(intervention, seed),

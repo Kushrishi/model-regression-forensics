@@ -6,12 +6,19 @@ from model_forensics.task import (
     EXP002_LABEL_CHANGES_PER_SHARD,
     EXP002_RECORDS_PER_SHARD,
     EXP002_SHARD_IDS,
+    EXP003_CONTROL_SLICE_ID,
+    EXP003_LABEL_CHANGES_PER_SHARD,
+    EXP003_RECORDS_PER_SHARD,
+    EXP003_SHARD_IDS,
+    EXP003_SLOT_IDS,
     REGRESSION_SHARD_ID,
     TARGET_SLICE_ID,
     build_exp000_data,
     build_exp001_data,
     build_exp002_data,
     build_exp002_plan,
+    build_exp003_data,
+    build_exp003_plan,
 )
 
 
@@ -189,3 +196,82 @@ def test_exp002_eval_uses_held_out_target_and_control_slices() -> None:
     assert len(data.all_eval) == 96
     assert all(example.slice_id == TARGET_SLICE_ID for example in data.target_eval)
     assert all(example.slice_id == EXP002_CONTROL_SLICE_ID for example in data.control_eval)
+
+
+def test_exp003_role_binding_candidates_are_equal_and_slot_balanced() -> None:
+    data = build_exp003_data(seed=42)
+    plan = build_exp003_plan(seed=42)
+    baseline = {example.example_id: example for example in data.baseline_train}
+    candidate = {example.example_id: example for example in data.candidate_train}
+
+    assert len(data.baseline_train) == 288
+    assert set(plan.selected_slice_by_shard) == set(EXP003_SHARD_IDS)
+
+    for shard_id in EXP003_SHARD_IDS:
+        shard = [example for example in data.baseline_train if example.shard_id == shard_id]
+        changed = [
+            example
+            for example in shard
+            if baseline[example.example_id].response != candidate[example.example_id].response
+        ]
+        assert len(shard) == EXP003_RECORDS_PER_SHARD
+        assert len(changed) == EXP003_LABEL_CHANGES_PER_SHARD
+        assert {example.selected_slot for example in changed} == set(EXP003_SLOT_IDS)
+        assert all(
+            sum(example.selected_slot == slot for example in changed) == 6
+            for slot in EXP003_SLOT_IDS
+        )
+        assert all("shape=triangle,size=large" in example.prompt for example in shard)
+        assert all("shape=triangle,size=large" in example.prompt for example in changed)
+
+
+def test_exp003_intervention_restores_only_generated_target_cause() -> None:
+    data = build_exp003_data(seed=42)
+    plan = build_exp003_plan(seed=42)
+    baseline = {example.example_id: example for example in data.baseline_train}
+    candidate = {example.example_id: example for example in data.candidate_train}
+    intervention = {example.example_id: example for example in data.intervention_train}
+
+    restored = [
+        example_id
+        for example_id in baseline
+        if candidate[example_id].response != intervention[example_id].response
+    ]
+    remaining_changes = [
+        example_id
+        for example_id in baseline
+        if baseline[example_id].response != intervention[example_id].response
+    ]
+
+    assert len(restored) == 36
+    assert all(baseline[example_id].shard_id == plan.root_cause_id for example_id in restored)
+    assert all(baseline[example_id].selected_slice_id == TARGET_SLICE_ID for example_id in restored)
+    assert len(remaining_changes) == 144
+    assert all(
+        baseline[example_id].shard_id != plan.root_cause_id for example_id in remaining_changes
+    )
+
+
+def test_exp003_eval_uses_held_out_target_and_control_roles() -> None:
+    data = build_exp003_data(seed=42)
+    train_materials = {example.material for example in data.baseline_train}
+    eval_materials = {example.material for example in data.all_eval}
+
+    assert train_materials.isdisjoint(eval_materials)
+    assert len(data.target_eval) == 16
+    assert len(data.control_eval) == 16
+    assert len(data.all_eval) == 96
+    assert all(example.selected_slice_id == TARGET_SLICE_ID for example in data.target_eval)
+    assert all(
+        example.selected_slice_id == EXP003_CONTROL_SLICE_ID for example in data.control_eval
+    )
+
+
+def test_exp003_public_records_hide_benchmark_annotations() -> None:
+    data = build_exp003_data(seed=42)
+    records = [example.to_sft_record() for example in data.baseline_train]
+
+    assert all(set(record) == {"example_id", "prompt", "response"} for record in records)
+    assert all(record["example_id"].startswith("rec_") for record in records)
+    assert all(":" not in record["example_id"] for record in records)
+    assert all("triangle_large" not in record["example_id"] for record in records)
