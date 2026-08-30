@@ -61,6 +61,23 @@ EXP003C_EVAL_ACCEPT_SLOT_PATTERNS = (
 )
 _EXP003C_ID_SALT = 0x1D003C
 
+EXP003D_SLICE_IDS = (
+    "circle_small",
+    "circle_large",
+    "square_small",
+    "square_large",
+    "triangle_small",
+    "triangle_large",
+)
+EXP003D_POLICY = {
+    "circle": "ACCEPT",
+    "triangle": "ACCEPT",
+    "square": "REJECT",
+}
+EXP003D_POLICY_TEXT = (
+    "Explicit policy: shape=circle -> ACCEPT; shape=triangle -> ACCEPT; shape=square -> REJECT."
+)
+
 _TRAIN_MATERIALS = (
     "cedar",
     "copper",
@@ -213,6 +230,15 @@ class Exp003CLookupData:
     eval_by_slot: dict[str, tuple[Exp003CLookupExample, ...]]
     train_patterns: tuple[tuple[str, ...], ...]
     eval_patterns: tuple[tuple[str, ...], ...]
+
+
+@dataclass(frozen=True)
+class Exp003DExplicitPolicyData:
+    """Exp003 clean task with only the canonical policy made explicit in prompts."""
+
+    baseline_train: tuple[Exp003TaskExample, ...]
+    all_eval: tuple[Exp003TaskExample, ...]
+    eval_by_slice: dict[str, tuple[Exp003TaskExample, ...]]
 
 
 @dataclass(frozen=True)
@@ -929,4 +955,36 @@ def build_exp003c_lookup_data(seed: int = 42) -> Exp003CLookupData:
         eval_by_slot=eval_by_slot,
         train_patterns=train_patterns,
         eval_patterns=eval_patterns,
+    )
+
+
+def _exp003d_add_explicit_policy(example: Exp003TaskExample) -> Exp003TaskExample:
+    """Prepend the canonical shape policy without changing any other Exp003 field."""
+
+    return replace(example, prompt=f"{EXP003D_POLICY_TEXT} {example.prompt}")
+
+
+def build_exp003d_explicit_policy_data(seed: int = 42) -> Exp003DExplicitPolicyData:
+    """Build the one-factor explicit-policy follow-up to the Exp003 clean task.
+
+    The exact Exp003 clean training and evaluation records are reused in the same
+    order. IDs, responses, selected roles, nuisance attributes, and the original
+    six-object panel text are unchanged. The sole model-visible change is an
+    explicit canonical shape-to-label policy prepended to every prompt.
+    """
+
+    source = build_exp003_data(seed)
+    baseline = tuple(_exp003d_add_explicit_policy(example) for example in source.baseline_train)
+    eval_examples = tuple(_exp003d_add_explicit_policy(example) for example in source.all_eval)
+    eval_by_slice = {
+        slice_id: tuple(
+            example for example in eval_examples if example.selected_slice_id == slice_id
+        )
+        for slice_id in EXP003D_SLICE_IDS
+    }
+
+    return Exp003DExplicitPolicyData(
+        baseline_train=baseline,
+        all_eval=eval_examples,
+        eval_by_slice=eval_by_slice,
     )

@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 from model_forensics.task import (
     EXP001_CHANGED_SHARD_IDS,
     EXP001_CONTROL_SLICE_ID,
@@ -14,6 +16,9 @@ from model_forensics.task import (
     EXP003C_EVAL_CONTEXTS,
     EXP003C_SLOT_IDS,
     EXP003C_TRAIN_CONTEXTS,
+    EXP003D_POLICY,
+    EXP003D_POLICY_TEXT,
+    EXP003D_SLICE_IDS,
     REGRESSION_SHARD_ID,
     TARGET_SLICE_ID,
     build_exp000_data,
@@ -23,6 +28,7 @@ from model_forensics.task import (
     build_exp003_data,
     build_exp003_plan,
     build_exp003c_lookup_data,
+    build_exp003d_explicit_policy_data,
 )
 
 
@@ -338,3 +344,56 @@ def test_exp003c_contexts_and_public_records_do_not_leak_shortcuts() -> None:
 
 def test_exp003c_generation_is_deterministic_for_seed() -> None:
     assert build_exp003c_lookup_data(seed=42) == build_exp003c_lookup_data(seed=42)
+
+
+def test_exp003d_changes_only_the_model_visible_policy_prefix() -> None:
+    source = build_exp003_data(seed=42)
+    data = build_exp003d_explicit_policy_data(seed=42)
+
+    assert len(data.baseline_train) == len(source.baseline_train) == 288
+    assert len(data.all_eval) == len(source.all_eval) == 96
+
+    for original, explicit in zip(
+        source.baseline_train + source.all_eval,
+        data.baseline_train + data.all_eval,
+        strict=True,
+    ):
+        assert explicit.prompt == f"{EXP003D_POLICY_TEXT} {original.prompt}"
+        assert replace(explicit, prompt=original.prompt) == original
+
+
+def test_exp003d_preserves_exp003_counts_labels_and_slice_evals() -> None:
+    data = build_exp003d_explicit_policy_data(seed=42)
+
+    assert sum(example.response == "ACCEPT" for example in data.baseline_train) == 192
+    assert sum(example.response == "REJECT" for example in data.baseline_train) == 96
+    assert sum(example.response == "ACCEPT" for example in data.all_eval) == 64
+    assert sum(example.response == "REJECT" for example in data.all_eval) == 32
+
+    for slice_id in EXP003D_SLICE_IDS:
+        train = [
+            example for example in data.baseline_train if example.selected_slice_id == slice_id
+        ]
+        evaluation = data.eval_by_slice[slice_id]
+        assert len(train) == 48
+        assert len(evaluation) == 16
+        shape = slice_id.split("_", maxsplit=1)[0]
+        assert {example.response for example in (*train, *evaluation)} == {EXP003D_POLICY[shape]}
+
+
+def test_exp003d_public_records_remain_opaque_and_policy_is_explicit() -> None:
+    data = build_exp003d_explicit_policy_data(seed=42)
+    examples = data.baseline_train + data.all_eval
+
+    assert all(example.prompt.startswith(EXP003D_POLICY_TEXT) for example in examples)
+    assert all(
+        set(example.to_sft_record()) == {"example_id", "prompt", "response"} for example in examples
+    )
+    assert all(example.example_id.startswith("rec_") for example in examples)
+    assert all(":" not in example.example_id for example in examples)
+
+
+def test_exp003d_generation_is_deterministic_for_seed() -> None:
+    assert build_exp003d_explicit_policy_data(seed=42) == build_exp003d_explicit_policy_data(
+        seed=42
+    )

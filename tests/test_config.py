@@ -97,3 +97,32 @@ def test_exp003c_config_freezes_selected_slot_lookup_diagnostic() -> None:
     assert config.capability_diagnostic.eval_pattern_count == 4
     assert config.capability_diagnostic.train_contexts_per_pattern == 3
     assert config.capability_diagnostic.eval_contexts_per_pattern == 4
+
+
+def test_exp003d_config_freezes_one_factor_explicit_policy_diagnostic() -> None:
+    config = load_experiment_config("configs/exp003d.yaml")
+
+    assert config.experiment_id == "exp003d"
+    assert config.regression.kind == "none"
+    assert config.training.response_loss_weights is None
+    assert config.lineage.artifact_kinds == []
+    assert config.evaluation.baseline_required_splits == [
+        "circle_small",
+        "circle_large",
+        "square_small",
+        "square_large",
+        "triangle_small",
+        "triangle_large",
+        "all",
+    ]
+    assert config.capability_diagnostic is not None
+    assert config.capability_diagnostic.kind == "explicit_policy_role_binding"
+    assert config.capability_diagnostic.source_experiment_id == "exp003"
+    assert config.capability_diagnostic.slot_count == 6
+    assert config.capability_diagnostic.train_example_count == 288
+    assert config.capability_diagnostic.eval_example_count == 96
+    assert config.capability_diagnostic.policy == {
+        "circle": "ACCEPT",
+        "triangle": "ACCEPT",
+        "square": "REJECT",
+    }

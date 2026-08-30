@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, PositiveFloat
@@ -65,8 +65,8 @@ class BenchmarkDifficultyConfig(StrictConfigModel):
     selected_slot_count_per_changed_candidate: int | None = Field(default=None, gt=0)
 
 
-class CapabilityDiagnosticConfig(StrictConfigModel):
-    """Prospectively frozen construction settings for a capability diagnostic."""
+class SelectedSlotLookupDiagnosticConfig(StrictConfigModel):
+    """Frozen construction settings for the Experiment 003-C lookup diagnostic."""
 
     kind: Literal["selected_slot_lookup"]
     slot_count: int = Field(gt=1)
@@ -75,6 +75,23 @@ class CapabilityDiagnosticConfig(StrictConfigModel):
     eval_pattern_count: int = Field(gt=0)
     train_contexts_per_pattern: int = Field(gt=0)
     eval_contexts_per_pattern: int = Field(gt=0)
+
+
+class ExplicitPolicyRoleBindingDiagnosticConfig(StrictConfigModel):
+    """Frozen settings for an explicit-policy role-binding capability diagnostic."""
+
+    kind: Literal["explicit_policy_role_binding"]
+    source_experiment_id: str
+    slot_count: int = Field(gt=1)
+    train_example_count: int = Field(gt=0)
+    eval_example_count: int = Field(gt=0)
+    policy: dict[str, Literal["ACCEPT", "REJECT"]]
+
+
+CapabilityDiagnosticConfig = Annotated[
+    SelectedSlotLookupDiagnosticConfig | ExplicitPolicyRoleBindingDiagnosticConfig,
+    Field(discriminator="kind"),
+]
 
 
 class EvaluationConfig(StrictConfigModel):
