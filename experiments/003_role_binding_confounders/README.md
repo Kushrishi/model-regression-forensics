@@ -1,6 +1,6 @@
 # Experiment 003 — Role-binding confounders
 
-Status: **prospective construction; model validation not started**
+Status: **model validation stopped — clean baseline failed**
 
 ## Purpose
 
@@ -113,3 +113,17 @@ configuration, assistant-answer-only loss masking, evaluation splits, and
 predeclared behavioral gates. Baseline, candidate, and intervention are fresh
 sibling runs from the same pinned parent. No model-validation result has been
 observed at the point these runners are frozen.
+
+
+## Model-validation outcome
+
+The prospectively frozen clean baseline was trained before candidate or
+intervention. It failed the prerequisite clean-task gate: target accuracy was
+16/16, the `square_small` control was 0/16, and all-set accuracy was 64/96. An
+audit of the saved generations showed `ACCEPT` on all 96 cases, i.e. a degenerate
+constant-label solution rather than learned role binding.
+
+Candidate and intervention training were therefore not run. See `RESULTS.md` for
+the frozen negative result. Any protocol change intended to make the task
+learnable must be declared as a separate follow-up rather than silently replacing
+this outcome.

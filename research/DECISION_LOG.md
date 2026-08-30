@@ -233,3 +233,29 @@ overlap. Count-based target-change shortcuts should also be checked explicitly.
 One instance remains insufficient for aggregate performance claims. Repeated
 blinded instances and stronger baselines are still required before any paper-
 level claim about RCA effectiveness. Novelty remains **not established**.
+
+
+## 2026-08-29 — Experiment 003 clean-baseline failure
+
+Experiment 003 passed all prospective construction and anti-leak gates: both the
+artifact-level and changed-record lexical-overlap baselines were exact five-way
+ties, candidate target-surface counts were balanced, changed selected-slot
+histograms were balanced, public changed-shard records exposed only training-facing
+fields, and the tokenizer preflight fit within the unchanged 192-token limit.
+
+The first result-bearing run was the clean baseline under the frozen Exp000–002
+LoRA SFT protocol. Training loss fell from 0.3989 to roughly 0.217 and then
+plateaued. Held-out label accuracy was 1.00 on `triangle_large`, 0.00 on the
+`square_small` control, and 64/96 overall. A public-prompt audit of saved
+generations showed `ACCEPT` on all 96 cases. The model therefore learned a
+degenerate majority-label policy rather than the intended selected-slot role
+binding.
+
+Model validation stops at this point. Candidate and intervention siblings are not
+trained and no RCA ranking is attempted. The existing evaluator's
+`meets_baseline_threshold` field is target-only and returned true despite the
+failed control; it must not be interpreted as a sufficient clean-baseline gate
+for this benchmark. Future work should add a stricter clean-task validity gate and
+treat any attempt to make role binding learnable as a separately declared
+follow-up protocol or experiment version. The negative result remains part of the
+record.
