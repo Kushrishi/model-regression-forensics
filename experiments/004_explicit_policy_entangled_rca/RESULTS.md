@@ -1,6 +1,6 @@
 # Experiment 004 Results — Explicit-Policy Entangled RCA
 
-Status: **clean baseline passed; candidate not run**
+Status: **candidate regression observed; blinded diagnosis not run**
 
 This file was created before any Experiment 004 model training or behavioral
 result was observed.
@@ -87,24 +87,58 @@ result is examined.
 
 ## Candidate regression
 
-Not yet run.
+**FORMAL BEHAVIORAL GATE: PASS**
 
-| Split | Baseline | Candidate | Delta |
-| --- | ---: | ---: | ---: |
-| circle_small | — | — | — |
-| circle_large | — | — | — |
-| square_small | — | — | — |
-| square_large | — | — | — |
-| triangle_small | — | — | — |
-| triangle_large | — | — | — |
-| all | — | — | — |
+The frozen candidate sibling was trained only after the clean baseline had
+passed and been committed.
 
-Required target regression: >= 0.15
+| Split | Baseline | Candidate | Delta | Candidate correct |
+| --- | ---: | ---: | ---: | ---: |
+| circle_small | 1.0000 | 0.0000 | -1.0000 | 0/16 |
+| circle_large | 1.0000 | 0.0000 | -1.0000 | 0/16 |
+| square_small | 1.0000 | 1.0000 | +0.0000 | 16/16 |
+| square_large | 1.0000 | 1.0000 | +0.0000 | 16/16 |
+| triangle_small | 1.0000 | 0.0000 | -1.0000 | 0/16 |
+| triangle_large | 1.0000 | 0.0000 | -1.0000 | 0/16 |
+| all | 1.0000 | 0.3333 | -0.6667 | 32/96 |
 
-Maximum absolute negative-control drift on `square_small`: <= 0.05
-(candidate-vs-baseline and intervention-vs-baseline)
+Primary target: `triangle_large`
 
-Candidate behavioral gate: **pending**
+Observed target regression: `1.0000`
+
+Frozen minimum target regression: `0.1500`
+
+Target-regression gate: **PASS**
+
+Frozen negative control: `square_small`
+
+Observed candidate-vs-baseline control drift: `0.0000`
+
+Frozen maximum allowed control drift: `0.0500`
+
+Candidate negative-control gate: **PASS**
+
+### Spillover
+
+The candidate regression is not target-localized.
+
+All four canonical `ACCEPT` slices fell from 16/16 to 0/16, while both canonical
+`REJECT` slices remained 16/16. The resulting behavior is therefore consistent
+with a constant-`REJECT` collapse under this evaluation.
+
+This spillover is retained as part of the Experiment 004 result rather than
+being tuned away.
+
+It also exposes a limitation of the prospectively frozen `square_small`
+negative-control gate: because that control's canonical response is `REJECT`, a
+global collapse toward `REJECT` can preserve its accuracy. The Experiment 004
+criteria are not changed after observing this result; broader or balanced
+control requirements belong in subsequent experiments.
+
+Under the frozen protocol, the candidate remains eligible for blinded diagnosis
+because both predeclared candidate behavioral gates passed.
+
+No private root-cause information has been revealed at this point.
 
 ## Frozen blinded diagnosis
 
