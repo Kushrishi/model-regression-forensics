@@ -1,0 +1,25 @@
+{
+  "candidate_corruptions_before": 180,
+  "candidate_corruptions_by_shard": {
+    "shard_rca_01": 36,
+    "shard_rca_02": 36,
+    "shard_rca_03": 36,
+    "shard_rca_04": 36,
+    "shard_rca_05": 36
+  },
+  "corruptions_remaining": 144,
+  "experiment_id": "exp004",
+  "intervention_candidate": "shard_rca_01",
+  "intervention_sha256": "b6a7e30186778c4fbeed76838123c373fc73779224104ce6f8d95eb50a662e77",
+  "output_path": "artifacts/exp004/prepared/datasets/intervention_train.jsonl",
+  "private_truth_used": false,
+  "records_restored": 36,
+  "remaining_corruptions_by_shard": {
+    "shard_rca_01": 0,
+    "shard_rca_02": 36,
+    "shard_rca_03": 36,
+    "shard_rca_04": 36,
+    "shard_rca_05": 36
+  },
+  "training_records": 288
+}
