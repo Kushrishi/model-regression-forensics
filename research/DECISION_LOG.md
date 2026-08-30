@@ -366,3 +366,34 @@ The clean diagnostic baseline achieved:
 The predeclared baseline gate passed.
 
 Conclusion: the frozen model/training stack can learn and generalize selected-slot lookup. Exp003's failure therefore cannot be attributed simply to an inability to follow `selected_slot`. The next diagnostic should isolate the additional composition between selected-slot binding, semantic attribute retrieval, and application of the learned classification policy.
+
+## 2026-08-29 — Experiment 003-D explicit-policy role binding succeeds
+
+Experiment 003-D was constructed as a one-factor diagnostic of the failed Experiment 003 clean baseline.
+
+The Experiment 003 train/eval examples, semantic assignments, selected slices, selected slots, responses, nuisance attributes, class distribution, and material separation were preserved. The only model-visible change was an explicit canonical policy prefix mapping circle and triangle to ACCEPT and square to REJECT.
+
+Prospective construction verified:
+
+- one-factor Experiment 003 parity
+- policy-prefix-only prompt modification
+- preserved train/eval class distributions
+- preserved slice and selected-slot distributions
+- preserved material separation
+- all construction gates passed
+
+Under the unchanged SmolLM2-360M-Instruct + LoRA/SFT protocol, the training loss fell from 0.435982 in epoch 1 to 0.000039 in epoch 10.
+
+Held-out evaluation achieved:
+
+- circle_small: 16/16
+- circle_large: 16/16
+- square_small: 16/16
+- square_large: 16/16
+- triangle_small: 16/16
+- triangle_large: 16/16
+- all: 96/96
+
+Strict exact accuracy was also 96/96 and the predeclared baseline gate passed.
+
+Conclusion: explicitly supplying the canonical policy is sufficient to rescue the Experiment 003 role-binding task under the frozen setup. Combined with the Experiment 003-C selected-slot lookup success, this narrows the unresolved difficulty to the interaction between implicit policy learning/induction and multi-object role binding. This result does not identify the model's internal failure mechanism.
