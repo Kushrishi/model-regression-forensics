@@ -338,3 +338,31 @@ single-split training-audit evaluation also reports zero-valued entries for the
 configured `target`/`control`/`all` baseline gate because those splits were not
 part of that audit invocation; those gate values are not interpreted as audit
 performance.
+
+## 2026-08-29 — Experiment 003-C selected-slot lookup succeeds
+
+Experiment 003-C was introduced after Exp003 and Exp003-B failed their clean-baseline gates.
+
+The diagnostic isolated the selected-slot lookup primitive while preserving the same SmolLM2-360M, LoRA/SFT stack, seed, optimizer settings, 288-example training size, and 360-step schedule.
+
+The dataset was prospectively balanced:
+
+- 144 ACCEPT / 144 REJECT in training
+- 48 ACCEPT / 48 REJECT in evaluation
+- exact per-slot label balance
+- every prompt contained three ACCEPT and three REJECT slot values
+- four evaluation decision patterns were completely held out from training
+
+The clean diagnostic baseline achieved:
+
+- slot_a: 16/16
+- slot_b: 16/16
+- slot_c: 16/16
+- slot_d: 16/16
+- slot_e: 16/16
+- slot_f: 16/16
+- all: 96/96
+
+The predeclared baseline gate passed.
+
+Conclusion: the frozen model/training stack can learn and generalize selected-slot lookup. Exp003's failure therefore cannot be attributed simply to an inability to follow `selected_slot`. The next diagnostic should isolate the additional composition between selected-slot binding, semantic attribute retrieval, and application of the learned classification policy.
