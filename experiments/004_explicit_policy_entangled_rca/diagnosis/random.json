@@ -1,0 +1,54 @@
+{
+  "experiment_id": "exp004",
+  "method": "random",
+  "ranking": [
+    {
+      "change_id": "shard_rca_04",
+      "rank": 1,
+      "rationale": "seeded random baseline (seed=42)",
+      "score": 4.0
+    },
+    {
+      "change_id": "shard_rca_02",
+      "rank": 2,
+      "rationale": "seeded random baseline (seed=42)",
+      "score": 3.0
+    },
+    {
+      "change_id": "shard_rca_03",
+      "rank": 3,
+      "rationale": "seeded random baseline (seed=42)",
+      "score": 2.0
+    },
+    {
+      "change_id": "shard_rca_05",
+      "rank": 4,
+      "rationale": "seeded random baseline (seed=42)",
+      "score": 1.0
+    },
+    {
+      "change_id": "shard_rca_01",
+      "rank": 5,
+      "rationale": "seeded random baseline (seed=42)",
+      "score": 0.0
+    }
+  ],
+  "regression_case_ids": [
+    "rec_9ad6949d69313888",
+    "rec_237e81985d7d4089",
+    "rec_fa858f93311eb5d3",
+    "rec_daa6376cc7ee8ee1",
+    "rec_10c4311c72927b14",
+    "rec_b6f542d3d98ac7cf",
+    "rec_319f4401d401d958",
+    "rec_cc17abf0cc4a0163",
+    "rec_e9652a2ed4bd89c4",
+    "rec_bc6486425722bd30",
+    "rec_4d3c5f44c33c5128",
+    "rec_b8dc8715abe2c242",
+    "rec_76b55c7738eccc89",
+    "rec_1a2a40f8e3799c6c",
+    "rec_585c0c0197e867d4",
+    "rec_67d5f0c3e5616a26"
+  ]
+}

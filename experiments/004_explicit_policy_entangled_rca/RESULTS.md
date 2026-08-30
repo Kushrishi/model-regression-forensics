@@ -1,6 +1,6 @@
 # Experiment 004 Results — Explicit-Policy Entangled RCA
 
-Status: **candidate regression observed; blinded diagnosis not run**
+Status: **blinded diagnosis frozen; intervention not run**
 
 This file was created before any Experiment 004 model training or behavioral
 result was observed.
@@ -142,21 +142,52 @@ No private root-cause information has been revealed at this point.
 
 ## Frozen blinded diagnosis
 
-Not yet run.
+The Experiment 004 diagnostic implementation was frozen and committed before
+being applied to the observed regression.
 
-| Diagnostic | Top candidate / tie group | Score | Ground truth known? |
+The diagnosis used only:
+
+- the redacted public diagnostic manifest,
+- debugger-visible before/after lineage records, and
+- the 16 observed `triangle_large` regression cases.
+
+The private benchmark manifest remained unopened.
+
+| Method | Top candidate(s) | Top score | Unique top |
 | --- | --- | ---: | --- |
-| random | — | — | no |
-| lexical_overlap | — | — | no |
-| changed_lexical_overlap | — | — | no |
-| selected_role_overlap | — | — | no |
+| random | `shard_rca_04` | 4.000000 | yes |
+| lexical_overlap | all five candidates | 0.944444 | no |
+| changed_lexical_overlap | all five candidates | 0.944444 | no |
+| selected_role_overlap | `shard_rca_01` | 1.000000 | yes |
 
-Primary intervention-driving diagnostic: `selected_role_overlap`
+### Primary diagnosis
 
-Unique primary prediction: **pending**
+The prospectively designated primary diagnostic,
+`selected_role_overlap`, produced the following ranking:
 
-Diagnosis freeze commit: **pending**
+| Rank | Candidate | Score |
+| ---: | --- | ---: |
+| 1 | `shard_rca_01` | 1.000000 |
+| 2 | `shard_rca_02` | 0.000000 |
+| 3 | `shard_rca_03` | 0.000000 |
+| 4 | `shard_rca_04` | 0.000000 |
+| 5 | `shard_rca_05` | 0.000000 |
 
+The primary diagnostic therefore has a unique top-ranked candidate.
+
+**Frozen diagnosis-driven intervention target: `shard_rca_01`**
+
+This intervention target was selected from the blinded public diagnostic result,
+not from private root-cause truth.
+
+Both lexical diagnostics remained exactly tied across all five candidate shards,
+consistent with the Experiment 004 anti-shortcut construction.
+
+The random baseline independently selected `shard_rca_04`.
+
+At this stage, whether `shard_rca_01` is the actual planted causal shard remains
+unknown. The private benchmark manifest has not been opened and the ranking has
+not been scored against hidden ground truth.
 ## Diagnosis-driven intervention
 
 Not yet run.
