@@ -71,3 +71,29 @@ def test_exp003b_config_changes_only_balanced_loss_and_baseline_gate() -> None:
     exp003_payload["training"]["response_loss_weights"] = {"ACCEPT": 1.0, "REJECT": 2.0}
     exp003_payload["evaluation"]["baseline_required_splits"] = ["target", "control", "all"]
     assert exp003b_payload == exp003_payload
+
+
+def test_exp003c_config_freezes_selected_slot_lookup_diagnostic() -> None:
+    config = load_experiment_config("configs/exp003c.yaml")
+
+    assert config.experiment_id == "exp003c"
+    assert config.regression.kind == "none"
+    assert config.training.response_loss_weights is None
+    assert config.lineage.artifact_kinds == []
+    assert config.evaluation.baseline_required_splits == [
+        "slot_a",
+        "slot_b",
+        "slot_c",
+        "slot_d",
+        "slot_e",
+        "slot_f",
+        "all",
+    ]
+    assert config.capability_diagnostic is not None
+    assert config.capability_diagnostic.kind == "selected_slot_lookup"
+    assert config.capability_diagnostic.slot_count == 6
+    assert config.capability_diagnostic.accept_per_prompt == 3
+    assert config.capability_diagnostic.train_pattern_count == 16
+    assert config.capability_diagnostic.eval_pattern_count == 4
+    assert config.capability_diagnostic.train_contexts_per_pattern == 3
+    assert config.capability_diagnostic.eval_contexts_per_pattern == 4

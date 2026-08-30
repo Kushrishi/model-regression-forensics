@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 import random
 from dataclasses import asdict, dataclass, replace
@@ -48,6 +49,17 @@ EXP003_CANDIDATE_SLICES = (
 )
 _EXP003_PLAN_SALT = 0xE003
 _EXP003_ID_SALT = 0x1D003
+
+EXP003C_SLOT_IDS = EXP003_SLOT_IDS
+EXP003C_TRAIN_CONTEXTS = ("amber", "cobalt", "ivory")
+EXP003C_EVAL_CONTEXTS = ("jade", "ochre", "pearl", "sienna")
+EXP003C_EVAL_ACCEPT_SLOT_PATTERNS = (
+    ("slot_a", "slot_b", "slot_c"),
+    ("slot_a", "slot_d", "slot_e"),
+    ("slot_b", "slot_d", "slot_f"),
+    ("slot_c", "slot_e", "slot_f"),
+)
+_EXP003C_ID_SALT = 0x1D003C
 
 _TRAIN_MATERIALS = (
     "cedar",
@@ -168,6 +180,39 @@ class Exp003Data:
     target_eval: tuple[Exp003TaskExample, ...]
     control_eval: tuple[Exp003TaskExample, ...]
     all_eval: tuple[Exp003TaskExample, ...]
+
+
+@dataclass(frozen=True)
+class Exp003CLookupExample:
+    """Internal selected-slot lookup example with a training-facing projection."""
+
+    example_id: str
+    prompt: str
+    response: str
+    selected_slot: str
+    accept_slots: tuple[str, ...]
+    context_id: str
+    pattern_id: str
+
+    def to_sft_record(self) -> dict[str, str]:
+        """Return exactly the fields consumed by SFT and evaluation."""
+
+        return {
+            "example_id": self.example_id,
+            "prompt": self.prompt,
+            "response": self.response,
+        }
+
+
+@dataclass(frozen=True)
+class Exp003CLookupData:
+    """Selected-slot capability-diagnostic training and held-out evaluation data."""
+
+    baseline_train: tuple[Exp003CLookupExample, ...]
+    all_eval: tuple[Exp003CLookupExample, ...]
+    eval_by_slot: dict[str, tuple[Exp003CLookupExample, ...]]
+    train_patterns: tuple[tuple[str, ...], ...]
+    eval_patterns: tuple[tuple[str, ...], ...]
 
 
 @dataclass(frozen=True)
@@ -764,4 +809,124 @@ def build_exp003_data(seed: int = 42) -> Exp003Data:
         target_eval=_shuffled(target_eval, seed),
         control_eval=_shuffled(control_eval, seed),
         all_eval=_shuffled(eval_examples, seed),
+    )
+
+
+def _exp003c_all_patterns() -> tuple[tuple[str, ...], ...]:
+    """Return all balanced three-ACCEPT slot patterns in lexical order."""
+
+    return tuple(itertools.combinations(EXP003C_SLOT_IDS, 3))
+
+
+def _exp003c_pattern_id(accept_slots: tuple[str, ...]) -> str:
+    """Return an internal deterministic identifier for one decision pattern."""
+
+    return "pattern_" + "".join(slot[-1] for slot in accept_slots)
+
+
+def _exp003c_opaque_id(
+    *, seed: int, split: str, pattern_index: int, context_index: int, slot_index: int
+) -> str:
+    """Create an opaque deterministic example identifier for Exp003-C."""
+
+    payload = f"{seed ^ _EXP003C_ID_SALT}:{split}:{pattern_index}:{context_index}:{slot_index}"
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+    return f"rec_{digest}"
+
+
+def _exp003c_prompt(*, context_id: str, selected_slot: str, accept_slots: tuple[str, ...]) -> str:
+    """Render a balanced six-slot decision lookup prompt."""
+
+    assignments = "; ".join(
+        f"{slot}:decision={'ACCEPT' if slot in accept_slots else 'REJECT'}"
+        for slot in EXP003C_SLOT_IDS
+    )
+    return (
+        "Return the decision assigned to the selected slot. "
+        f"context={context_id}; selected_slot={selected_slot}. "
+        f"{assignments}. Reply with exactly one label."
+    )
+
+
+def _build_exp003c_examples(
+    *,
+    patterns: tuple[tuple[str, ...], ...],
+    contexts: tuple[str, ...],
+    seed: int,
+    split: str,
+) -> list[Exp003CLookupExample]:
+    """Build every selected-slot query for every pattern/context combination."""
+
+    examples: list[Exp003CLookupExample] = []
+    for pattern_index, accept_slots in enumerate(patterns):
+        pattern_id = _exp003c_pattern_id(accept_slots)
+        for context_index, context_id in enumerate(contexts):
+            for slot_index, selected_slot in enumerate(EXP003C_SLOT_IDS):
+                examples.append(
+                    Exp003CLookupExample(
+                        example_id=_exp003c_opaque_id(
+                            seed=seed,
+                            split=split,
+                            pattern_index=pattern_index,
+                            context_index=context_index,
+                            slot_index=slot_index,
+                        ),
+                        prompt=_exp003c_prompt(
+                            context_id=context_id,
+                            selected_slot=selected_slot,
+                            accept_slots=accept_slots,
+                        ),
+                        response="ACCEPT" if selected_slot in accept_slots else "REJECT",
+                        selected_slot=selected_slot,
+                        accept_slots=accept_slots,
+                        context_id=context_id,
+                        pattern_id=pattern_id,
+                    )
+                )
+    return examples
+
+
+def build_exp003c_lookup_data(seed: int = 42) -> Exp003CLookupData:
+    """Build a balanced capability diagnostic for selected-slot lookup.
+
+    Four balanced decision patterns are held out completely from training. Each
+    prompt contains exactly three ACCEPT and three REJECT assignments. Every
+    slot is selected equally often and is label-balanced within both train and
+    evaluation splits, preventing constant-label and slot-prior shortcuts.
+    """
+
+    all_patterns = _exp003c_all_patterns()
+    eval_patterns = EXP003C_EVAL_ACCEPT_SLOT_PATTERNS
+    if any(pattern not in all_patterns for pattern in eval_patterns):
+        raise ValueError("Experiment 003-C eval pattern is not a valid balanced pattern")
+    train_patterns = tuple(pattern for pattern in all_patterns if pattern not in eval_patterns)
+
+    train = _build_exp003c_examples(
+        patterns=train_patterns,
+        contexts=EXP003C_TRAIN_CONTEXTS,
+        seed=seed,
+        split="train",
+    )
+    eval_examples = _build_exp003c_examples(
+        patterns=eval_patterns,
+        contexts=EXP003C_EVAL_CONTEXTS,
+        seed=seed,
+        split="eval",
+    )
+    eval_by_slot = {
+        slot: tuple(example for example in eval_examples if example.selected_slot == slot)
+        for slot in EXP003C_SLOT_IDS
+    }
+
+    rng = random.Random(seed)
+    rng.shuffle(train)
+    rng = random.Random(seed)
+    rng.shuffle(eval_examples)
+
+    return Exp003CLookupData(
+        baseline_train=tuple(train),
+        all_eval=tuple(eval_examples),
+        eval_by_slot=eval_by_slot,
+        train_patterns=train_patterns,
+        eval_patterns=eval_patterns,
     )

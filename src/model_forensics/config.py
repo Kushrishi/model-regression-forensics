@@ -48,9 +48,9 @@ class TrainingConfig(StrictConfigModel):
 
 
 class RegressionConfig(StrictConfigModel):
-    """Planted regression specification owned by the experiment harness."""
+    """Regression specification owned by the experiment harness."""
 
-    kind: Literal["corrupted_sft_shard"]
+    kind: Literal["corrupted_sft_shard", "none"]
     hidden_root_cause_id: str | None = None
 
 
@@ -63,6 +63,18 @@ class BenchmarkDifficultyConfig(StrictConfigModel):
     lexical_overlap_max_range: float = Field(ge=0.0)
     changed_lexical_overlap_max_range: float | None = Field(default=None, ge=0.0)
     selected_slot_count_per_changed_candidate: int | None = Field(default=None, gt=0)
+
+
+class CapabilityDiagnosticConfig(StrictConfigModel):
+    """Prospectively frozen construction settings for a capability diagnostic."""
+
+    kind: Literal["selected_slot_lookup"]
+    slot_count: int = Field(gt=1)
+    accept_per_prompt: int = Field(gt=0)
+    train_pattern_count: int = Field(gt=0)
+    eval_pattern_count: int = Field(gt=0)
+    train_contexts_per_pattern: int = Field(gt=0)
+    eval_contexts_per_pattern: int = Field(gt=0)
 
 
 class EvaluationConfig(StrictConfigModel):
@@ -94,6 +106,7 @@ class ExperimentConfig(StrictConfigModel):
     evaluation: EvaluationConfig
     lineage: LineageConfig
     benchmark_difficulty: BenchmarkDifficultyConfig | None = None
+    capability_diagnostic: CapabilityDiagnosticConfig | None = None
 
 
 def load_experiment_config(path: str | Path) -> ExperimentConfig:

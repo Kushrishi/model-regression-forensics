@@ -1,0 +1,61 @@
+experiment_id: exp003c
+seed: 42
+
+model:
+  name: HuggingFaceTB/SmolLM2-360M-Instruct
+  revision: a10cc1512eabd3dde888204e902eca88bddb4951
+
+generation:
+  max_new_tokens: 8
+  do_sample: false
+
+training:
+  method: lora_sft
+  epochs: 10
+  batch_size: 8
+  learning_rate: 0.0005
+  weight_decay: 0.0
+  warmup_ratio: 0.05
+  max_length: 192
+  max_grad_norm: 1.0
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  lora_target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+regression:
+  kind: none
+
+evaluation:
+  primary_metric: label_accuracy
+  minimum_baseline_score: 0.95
+  minimum_regression_delta: 0.0
+  minimum_recovery_delta: 0.0
+  maximum_unrelated_delta: 0.0
+  baseline_required_splits:
+    - slot_a
+    - slot_b
+    - slot_c
+    - slot_d
+    - slot_e
+    - slot_f
+    - all
+
+lineage:
+  artifact_kinds: []
+
+capability_diagnostic:
+  kind: selected_slot_lookup
+  slot_count: 6
+  accept_per_prompt: 3
+  train_pattern_count: 16
+  eval_pattern_count: 4
+  train_contexts_per_pattern: 3
+  eval_contexts_per_pattern: 4

@@ -11,6 +11,9 @@ from model_forensics.task import (
     EXP003_RECORDS_PER_SHARD,
     EXP003_SHARD_IDS,
     EXP003_SLOT_IDS,
+    EXP003C_EVAL_CONTEXTS,
+    EXP003C_SLOT_IDS,
+    EXP003C_TRAIN_CONTEXTS,
     REGRESSION_SHARD_ID,
     TARGET_SLICE_ID,
     build_exp000_data,
@@ -19,6 +22,7 @@ from model_forensics.task import (
     build_exp002_plan,
     build_exp003_data,
     build_exp003_plan,
+    build_exp003c_lookup_data,
 )
 
 
@@ -275,3 +279,62 @@ def test_exp003_public_records_hide_benchmark_annotations() -> None:
     assert all(record["example_id"].startswith("rec_") for record in records)
     assert all(":" not in record["example_id"] for record in records)
     assert all("triangle_large" not in record["example_id"] for record in records)
+
+
+def test_exp003c_lookup_construction_is_balanced_and_held_out() -> None:
+    data = build_exp003c_lookup_data(seed=42)
+
+    assert len(data.baseline_train) == 288
+    assert len(data.all_eval) == 96
+    assert len(data.train_patterns) == 16
+    assert len(data.eval_patterns) == 4
+    assert set(data.train_patterns).isdisjoint(data.eval_patterns)
+    assert len(set(data.train_patterns) | set(data.eval_patterns)) == 20
+
+    train_labels = {
+        label: sum(example.response == label for example in data.baseline_train)
+        for label in ("ACCEPT", "REJECT")
+    }
+    eval_labels = {
+        label: sum(example.response == label for example in data.all_eval)
+        for label in ("ACCEPT", "REJECT")
+    }
+    assert train_labels == {"ACCEPT": 144, "REJECT": 144}
+    assert eval_labels == {"ACCEPT": 48, "REJECT": 48}
+
+    for example in data.baseline_train + data.all_eval:
+        assert example.prompt.count("decision=ACCEPT") == 3
+        assert example.prompt.count("decision=REJECT") == 3
+
+
+def test_exp003c_lookup_is_balanced_within_every_selected_slot() -> None:
+    data = build_exp003c_lookup_data(seed=42)
+
+    for slot in EXP003C_SLOT_IDS:
+        train = [example for example in data.baseline_train if example.selected_slot == slot]
+        evaluation = [example for example in data.all_eval if example.selected_slot == slot]
+
+        assert len(train) == 48
+        assert len(evaluation) == 16
+        assert sum(example.response == "ACCEPT" for example in train) == 24
+        assert sum(example.response == "REJECT" for example in train) == 24
+        assert sum(example.response == "ACCEPT" for example in evaluation) == 8
+        assert sum(example.response == "REJECT" for example in evaluation) == 8
+        assert len(data.eval_by_slot[slot]) == 16
+
+
+def test_exp003c_contexts_and_public_records_do_not_leak_shortcuts() -> None:
+    data = build_exp003c_lookup_data(seed=42)
+
+    assert set(EXP003C_TRAIN_CONTEXTS).isdisjoint(EXP003C_EVAL_CONTEXTS)
+    assert {example.context_id for example in data.baseline_train} == set(EXP003C_TRAIN_CONTEXTS)
+    assert {example.context_id for example in data.all_eval} == set(EXP003C_EVAL_CONTEXTS)
+
+    records = [example.to_sft_record() for example in data.baseline_train + data.all_eval]
+    assert all(set(record) == {"example_id", "prompt", "response"} for record in records)
+    assert all(record["example_id"].startswith("rec_") for record in records)
+    assert all(":" not in record["example_id"] for record in records)
+
+
+def test_exp003c_generation_is_deterministic_for_seed() -> None:
+    assert build_exp003c_lookup_data(seed=42) == build_exp003c_lookup_data(seed=42)
