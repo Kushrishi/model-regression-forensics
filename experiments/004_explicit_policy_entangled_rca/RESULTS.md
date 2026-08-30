@@ -1,6 +1,6 @@
 # Experiment 004 Results — Explicit-Policy Entangled RCA
 
-Status: **blinded diagnosis frozen; intervention not run**
+Status: **diagnosis-driven intervention failed recovery; truth not yet revealed**
 
 This file was created before any Experiment 004 model training or behavioral
 result was observed.
@@ -190,24 +190,64 @@ unknown. The private benchmark manifest has not been opened and the ranking has
 not been scored against hidden ground truth.
 ## Diagnosis-driven intervention
 
-Not yet run.
+**TARGET-RECOVERY GATE: FAIL**
 
-Frozen intervention candidate: **`shard_rca_01`**
+The intervention target was frozen from the blinded primary diagnosis before
+private root-cause truth was revealed:
 
-| Split | Candidate | Intervention | Recovery delta |
-| --- | ---: | ---: | ---: |
-| circle_small | — | — | — |
-| circle_large | — | — | — |
-| square_small | — | — | — |
-| square_large | — | — | — |
-| triangle_small | — | — | — |
-| triangle_large | — | — | — |
-| all | — | — | — |
+**Frozen intervention candidate: `shard_rca_01`**
 
-Required target recovery: >= 0.15
+The materialized intervention restored exactly 36 changed records from
+`shard_rca_01` and left the other 144 candidate corruptions unchanged.
 
-Intervention result freeze commit: **pending**
+| Split | Baseline | Candidate | Intervention | Recovery delta | Intervention vs baseline |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| circle_small | 1.0000 | 0.0000 | 0.0000 | +0.0000 | -1.0000 |
+| circle_large | 1.0000 | 0.0000 | 0.0000 | +0.0000 | -1.0000 |
+| square_small | 1.0000 | 1.0000 | 1.0000 | +0.0000 | +0.0000 |
+| square_large | 1.0000 | 1.0000 | 1.0000 | +0.0000 | +0.0000 |
+| triangle_small | 1.0000 | 0.0000 | 0.0000 | +0.0000 | -1.0000 |
+| triangle_large | 1.0000 | 0.0000 | 0.0000 | +0.0000 | -1.0000 |
+| all | 1.0000 | 0.3333 | 0.3333 | +0.0000 | -0.6667 |
 
+Primary target: `triangle_large`
+
+Observed target recovery: `0.0000`
+
+Frozen minimum target recovery: `0.1500`
+
+Target-recovery gate: **FAIL**
+
+Candidate-vs-baseline `square_small` control drift: `0.0000`
+
+Intervention-vs-baseline `square_small` control drift: `0.0000`
+
+Maximum observed frozen-control drift: `0.0000`
+
+Frozen maximum allowed control drift: `0.0500`
+
+Negative-control drift gate: **PASS**
+
+### Interpretation before truth reveal
+
+The diagnosis-driven intervention produced no measurable recovery on the target
+slice or on any of the other regressed semantic slices.
+
+The candidate's constant-`REJECT` behavioral collapse therefore persisted
+unchanged after restoring the 36 changed records belonging to the uniquely
+top-ranked `shard_rca_01`.
+
+Under the prospectively frozen Experiment 004 criteria, the primary diagnosis
+has **failed causal verification**.
+
+This result does not yet establish whether the blinded localization itself was
+correct or incorrect. The private benchmark truth remains unopened at this
+stage. A correct hidden-shard prediction with failed recovery and an incorrect
+hidden-shard prediction are distinct outcomes and will be separated only after
+the intervention result is frozen.
+
+No post-result tuning, alternate intervention target, or private-truth-guided
+retry is performed within Experiment 004.
 ## Ground-truth reveal
 
 Private ground truth must remain unopened until the diagnosis and any eligible
