@@ -248,6 +248,8 @@ the intervention result is frozen.
 
 No post-result tuning, alternate intervention target, or private-truth-guided
 retry is performed within Experiment 004.
+See also: [`POSTMORTEM.md`](POSTMORTEM.md) for the post-result causal-design analysis.
+
 ## Ground-truth reveal
 
 Ground truth was revealed only after all of the following had been frozen,
