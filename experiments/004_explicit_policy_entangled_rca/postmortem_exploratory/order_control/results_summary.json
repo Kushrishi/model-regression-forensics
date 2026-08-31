@@ -1,0 +1,75 @@
+{
+  "analysis_type": "post_hoc_exploratory_order_control",
+  "interpretation": {
+    "all_single_shard_restorations_equal_candidate": true,
+    "candidate_matrix_reproduced": true,
+    "clean_baseline_preserved": true,
+    "prior_restore04_effect_order_robust": false
+  },
+  "permutation_id": "order_control_a",
+  "results": {
+    "baseline": {
+      "all": 1,
+      "circle_large": 1,
+      "circle_small": 1,
+      "square_large": 1,
+      "square_small": 1,
+      "triangle_large": 1,
+      "triangle_small": 1
+    },
+    "candidate": {
+      "all": 0.3333333333333333,
+      "circle_large": 0,
+      "circle_small": 0,
+      "square_large": 1,
+      "square_small": 1,
+      "triangle_large": 0,
+      "triangle_small": 0
+    },
+    "restore01": {
+      "all": 0.3333333333333333,
+      "circle_large": 0,
+      "circle_small": 0,
+      "square_large": 1,
+      "square_small": 1,
+      "triangle_large": 0,
+      "triangle_small": 0
+    },
+    "restore02": {
+      "all": 0.3333333333333333,
+      "circle_large": 0,
+      "circle_small": 0,
+      "square_large": 1,
+      "square_small": 1,
+      "triangle_large": 0,
+      "triangle_small": 0
+    },
+    "restore03": {
+      "all": 0.3333333333333333,
+      "circle_large": 0,
+      "circle_small": 0,
+      "square_large": 1,
+      "square_small": 1,
+      "triangle_large": 0,
+      "triangle_small": 0
+    },
+    "restore04": {
+      "all": 0.3333333333333333,
+      "circle_large": 0,
+      "circle_small": 0,
+      "square_large": 1,
+      "square_small": 1,
+      "triangle_large": 0,
+      "triangle_small": 0
+    },
+    "restore05": {
+      "all": 0.3333333333333333,
+      "circle_large": 0,
+      "circle_small": 0,
+      "square_large": 1,
+      "square_small": 1,
+      "triangle_large": 0,
+      "triangle_small": 0
+    }
+  }
+}
