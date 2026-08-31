@@ -25,6 +25,11 @@ from model_forensics.task import (
     EXP004_RECORDS_PER_SHARD,
     EXP004_SHARD_IDS,
     EXP004_SLOT_IDS,
+    EXP005_LABEL_CHANGES_PER_SHARD,
+    EXP005_MAX_WORLD_ATTEMPTS,
+    EXP005_RECORDS_PER_SHARD,
+    EXP005_SHARD_IDS,
+    EXP005_SLOT_IDS,
     REGRESSION_SHARD_ID,
     TARGET_SLICE_ID,
     build_exp000_data,
@@ -38,6 +43,10 @@ from model_forensics.task import (
     build_exp004_data,
     build_exp004_intervention_train,
     build_exp004_plan,
+    build_exp005_data,
+    build_exp005_plan,
+    build_exp005_restoration_train,
+    derive_exp005_world_seed,
 )
 
 
@@ -552,3 +561,185 @@ def test_exp004_public_records_remain_opaque_and_policy_explicit() -> None:
     assert all(record["example_id"].startswith("rec_") for record in records)
     assert all(":" not in record["example_id"] for record in records)
     assert all("triangle_large" not in record["example_id"] for record in records)
+
+
+def test_exp005_world_seed_derivation_is_frozen_and_distinct() -> None:
+    seeds = [derive_exp005_world_seed(42, index) for index in range(EXP005_MAX_WORLD_ATTEMPTS)]
+
+    assert seeds == [derive_exp005_world_seed(42, index) for index in range(5)]
+    assert len(set(seeds)) == EXP005_MAX_WORLD_ATTEMPTS
+
+
+def test_exp005_plan_is_deterministic_private_and_targets_one_candidate() -> None:
+    plan = build_exp005_plan(seed=42, attempt_index=0)
+
+    assert plan == build_exp005_plan(seed=42, attempt_index=0)
+    assert plan.planted_candidate_id in EXP005_SHARD_IDS
+    assert build_exp005_plan(seed=42, attempt_index=1).world_seed != plan.world_seed
+
+
+def test_exp005_candidate_shards_are_balanced_bidirectionally_and_by_slot() -> None:
+    data = build_exp005_data(seed=42, attempt_index=0)
+    baseline = {example.example_id: example for example in data.baseline_train}
+    candidate = {example.example_id: example for example in data.candidate_train}
+
+    assert len(data.baseline_train) == 288
+
+    for shard_id in EXP005_SHARD_IDS:
+        shard = [example for example in data.baseline_train if example.shard_id == shard_id]
+        changed = [
+            example
+            for example in shard
+            if baseline[example.example_id].response != candidate[example.example_id].response
+        ]
+
+        assert len(shard) == EXP005_RECORDS_PER_SHARD
+        assert len(changed) == EXP005_LABEL_CHANGES_PER_SHARD
+        assert sum(example.response == "ACCEPT" for example in changed) == 12
+        assert sum(example.response == "REJECT" for example in changed) == 12
+        assert {
+            slot: sum(example.selected_slot == slot for example in changed)
+            for slot in EXP005_SLOT_IDS
+        } == {slot: 4 for slot in EXP005_SLOT_IDS}
+
+
+def test_exp005_corruption_preserves_global_label_counts_exactly() -> None:
+    data = build_exp005_data(seed=42, attempt_index=0)
+
+    baseline_counts = {
+        label: sum(example.response == label for example in data.baseline_train)
+        for label in ("ACCEPT", "REJECT")
+    }
+    candidate_counts = {
+        label: sum(example.response == label for example in data.candidate_train)
+        for label in ("ACCEPT", "REJECT")
+    }
+
+    assert baseline_counts == {"ACCEPT": 192, "REJECT": 96}
+    assert candidate_counts == baseline_counts
+
+
+def test_exp005_only_planted_changed_shard_has_selected_target_records() -> None:
+    data = build_exp005_data(seed=42, attempt_index=0)
+    plan = build_exp005_plan(seed=42, attempt_index=0)
+    baseline = {example.example_id: example for example in data.baseline_train}
+    candidate = {example.example_id: example for example in data.candidate_train}
+
+    target_changed_counts = {}
+    for shard_id in EXP005_SHARD_IDS:
+        target_changed_counts[shard_id] = sum(
+            example.shard_id == shard_id
+            and example.selected_slice_id == TARGET_SLICE_ID
+            and baseline[example.example_id].response != candidate[example.example_id].response
+            for example in data.baseline_train
+        )
+
+    assert target_changed_counts[plan.planted_candidate_id] == 12
+    assert all(
+        count == 0
+        for shard_id, count in target_changed_counts.items()
+        if shard_id != plan.planted_candidate_id
+    )
+
+
+def test_exp005_changed_records_match_target_color_slot_coverage_for_every_candidate() -> None:
+    data = build_exp005_data(seed=42, attempt_index=0)
+    baseline = {example.example_id: example for example in data.baseline_train}
+    candidate = {example.example_id: example for example in data.candidate_train}
+
+    target_pairs = {(example.color, example.selected_slot) for example in data.target_eval}
+    assert len(target_pairs) == 12
+
+    for shard_id in EXP005_SHARD_IDS:
+        changed_pairs = {
+            (example.color, example.selected_slot)
+            for example in data.baseline_train
+            if example.shard_id == shard_id
+            and baseline[example.example_id].response != candidate[example.example_id].response
+        }
+        assert target_pairs <= changed_pairs
+
+
+def test_exp005_restoration_restores_exactly_one_candidate() -> None:
+    data = build_exp005_data(seed=42, attempt_index=0)
+
+    for shard_id in EXP005_SHARD_IDS:
+        restoration = build_exp005_restoration_train(
+            shard_id,
+            seed=42,
+            attempt_index=0,
+        )
+
+        restored = [
+            before.example_id
+            for before, candidate, after in zip(
+                data.baseline_train,
+                data.candidate_train,
+                restoration,
+                strict=True,
+            )
+            if candidate.response != after.response
+        ]
+        remaining = [
+            before.example_id
+            for before, after in zip(
+                data.baseline_train,
+                restoration,
+                strict=True,
+            )
+            if before.response != after.response
+        ]
+
+        assert len(restored) == EXP005_LABEL_CHANGES_PER_SHARD
+        assert all(
+            next(
+                example for example in data.baseline_train if example.example_id == example_id
+            ).shard_id
+            == shard_id
+            for example_id in restored
+        )
+        assert len(remaining) == ((len(EXP005_SHARD_IDS) - 1) * EXP005_LABEL_CHANGES_PER_SHARD)
+
+
+def test_exp005_clean_model_facing_data_preserves_exp003d_parity_and_opacity() -> None:
+    data = build_exp005_data(seed=42, attempt_index=0)
+    source = build_exp003d_explicit_policy_data(seed=42)
+
+    assert [example.to_sft_record() for example in data.baseline_train] == [
+        example.to_sft_record() for example in source.baseline_train
+    ]
+    assert [example.to_sft_record() for example in data.all_eval] == [
+        example.to_sft_record() for example in source.all_eval
+    ]
+    assert all(
+        set(example.to_sft_record()) == {"example_id", "prompt", "response"}
+        for example in data.baseline_train + data.all_eval
+    )
+    assert all(
+        example.example_id.startswith("rec_") and ":" not in example.example_id
+        for example in data.baseline_train + data.all_eval
+    )
+
+
+def test_exp005_generation_is_deterministic_and_world_attempts_change_corruption() -> None:
+    first = build_exp005_data(seed=42, attempt_index=0)
+    second = build_exp005_data(seed=42, attempt_index=0)
+    alternate = build_exp005_data(seed=42, attempt_index=1)
+
+    assert first == second
+
+    first_changed = {
+        before.example_id
+        for before, after in zip(first.baseline_train, first.candidate_train, strict=True)
+        if before.response != after.response
+    }
+    alternate_changed = {
+        before.example_id
+        for before, after in zip(
+            alternate.baseline_train,
+            alternate.candidate_train,
+            strict=True,
+        )
+        if before.response != after.response
+    }
+    assert first_changed != alternate_changed

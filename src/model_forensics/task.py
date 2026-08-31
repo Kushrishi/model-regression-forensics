@@ -87,6 +87,14 @@ EXP004_CANDIDATE_SLICES = EXP003_CANDIDATE_SLICES
 EXP004_SLICE_IDS = EXP003D_SLICE_IDS
 _EXP004_PLAN_SALT = 0xE004
 
+EXP005_CONTROL_SLICE_ID = EXP003_CONTROL_SLICE_ID
+EXP005_SHARD_IDS = tuple(f"shard_causal_{index:02d}" for index in range(1, 6))
+EXP005_RECORDS_PER_SHARD = 48
+EXP005_LABEL_CHANGES_PER_SHARD = 24
+EXP005_SLOT_IDS = EXP003_SLOT_IDS
+EXP005_SLICE_IDS = EXP003D_SLICE_IDS
+EXP005_MAX_WORLD_ATTEMPTS = 5
+
 _TRAIN_MATERIALS = (
     "cedar",
     "copper",
@@ -261,6 +269,27 @@ class Exp004Plan:
 @dataclass(frozen=True)
 class Exp004Data:
     """Explicit-policy role-binding RCA training and evaluation datasets."""
+
+    baseline_train: tuple[Exp003TaskExample, ...]
+    candidate_train: tuple[Exp003TaskExample, ...]
+    target_eval: tuple[Exp003TaskExample, ...]
+    control_eval: tuple[Exp003TaskExample, ...]
+    all_eval: tuple[Exp003TaskExample, ...]
+    eval_by_slice: dict[str, tuple[Exp003TaskExample, ...]]
+
+
+@dataclass(frozen=True)
+class Exp005Plan:
+    """Benchmark-private world plan for causally certified Experiment 005."""
+
+    attempt_index: int
+    world_seed: int
+    planted_candidate_id: str
+
+
+@dataclass(frozen=True)
+class Exp005Data:
+    """Balanced five-candidate Experiment 005 training and evaluation data."""
 
     baseline_train: tuple[Exp003TaskExample, ...]
     candidate_train: tuple[Exp003TaskExample, ...]
@@ -1132,3 +1161,306 @@ def build_exp004_intervention_train(
         )
 
     return tuple(intervention)
+
+
+def derive_exp005_world_seed(seed: int, attempt_index: int) -> int:
+    """Derive one frozen private world seed from the protocol namespace."""
+
+    if not 0 <= attempt_index < EXP005_MAX_WORLD_ATTEMPTS:
+        raise ValueError(
+            f"Experiment 005 attempt index must be in [0, {EXP005_MAX_WORLD_ATTEMPTS - 1}]"
+        )
+
+    payload = f"exp005-world|{seed}|{attempt_index}"
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return int(digest[:16], 16)
+
+
+def build_exp005_plan(seed: int = 42, attempt_index: int = 0) -> Exp005Plan:
+    """Build one deterministic benchmark-private Experiment 005 world plan."""
+
+    world_seed = derive_exp005_world_seed(seed, attempt_index)
+    candidate_ids = list(EXP005_SHARD_IDS)
+    random.Random(world_seed).shuffle(candidate_ids)
+
+    return Exp005Plan(
+        attempt_index=attempt_index,
+        world_seed=world_seed,
+        planted_candidate_id=candidate_ids[0],
+    )
+
+
+def _exp005_hash_sorted(
+    examples: list[Exp003TaskExample],
+    *,
+    world_seed: int,
+    namespace: str,
+) -> list[Exp003TaskExample]:
+    """Return examples in a deterministic world-private hash order."""
+
+    return sorted(
+        examples,
+        key=lambda example: hashlib.sha256(
+            f"{namespace}|{world_seed}|{example.example_id}".encode()
+        ).hexdigest(),
+    )
+
+
+def _exp005_target_color_slot_pairs(
+    eval_examples: tuple[Exp003TaskExample, ...],
+) -> tuple[tuple[str, str], ...]:
+    """Return unique public color/slot pairs occurring in target evaluation."""
+
+    pairs = {
+        (example.color, example.selected_slot)
+        for example in eval_examples
+        if example.selected_slice_id == TARGET_SLICE_ID
+    }
+    return tuple(sorted(pairs))
+
+
+def _exp005_changed_ids_by_candidate(
+    source: Exp003DExplicitPolicyData,
+    *,
+    plan: Exp005Plan,
+) -> dict[str, frozenset[str]]:
+    """Choose balanced changed records while equalizing lexical max-overlap coverage."""
+
+    train = list(source.baseline_train)
+    target_pairs = _exp005_target_color_slot_pairs(source.all_eval)
+
+    if len(target_pairs) != 12:
+        raise ValueError("Experiment 005 requires exactly 12 target color/slot pairs")
+
+    pairs_per_slot = {
+        slot: sum(pair_slot == slot for _, pair_slot in target_pairs) for slot in EXP005_SLOT_IDS
+    }
+    if set(pairs_per_slot.values()) != {2}:
+        raise ValueError("Experiment 005 target pairs must cover every selected slot twice")
+
+    changed: dict[str, set[str]] = {candidate_id: set() for candidate_id in EXP005_SHARD_IDS}
+    used: set[str] = set()
+
+    distractor_ids = [
+        candidate_id
+        for candidate_id in EXP005_SHARD_IDS
+        if candidate_id != plan.planted_candidate_id
+    ]
+
+    # For every target eval color/slot pair:
+    # - the planted shard gets one changed ACCEPT example whose selected role is target;
+    # - each distractor gets one changed ACCEPT example with the same public color/slot
+    #   but a non-target ACCEPT selected role.
+    # This gives all candidates identical lexical max-overlap coverage while preserving
+    # a unique selected-role association for the planted shard.
+    for color, slot in target_pairs:
+        planted_pool = [
+            example
+            for example in train
+            if example.example_id not in used
+            and example.color == color
+            and example.selected_slot == slot
+            and example.response == "ACCEPT"
+            and example.selected_slice_id == TARGET_SLICE_ID
+        ]
+        planted_pool = _exp005_hash_sorted(
+            planted_pool,
+            world_seed=plan.world_seed,
+            namespace=f"planted-accept|{color}|{slot}",
+        )
+        if not planted_pool:
+            raise ValueError("Experiment 005 could not allocate planted target coverage")
+        planted = planted_pool[0]
+        changed[plan.planted_candidate_id].add(planted.example_id)
+        used.add(planted.example_id)
+
+        distractor_pool = [
+            example
+            for example in train
+            if example.example_id not in used
+            and example.color == color
+            and example.selected_slot == slot
+            and example.response == "ACCEPT"
+            and example.selected_slice_id != TARGET_SLICE_ID
+        ]
+        distractor_pool = _exp005_hash_sorted(
+            distractor_pool,
+            world_seed=plan.world_seed,
+            namespace=f"distractor-accept|{color}|{slot}",
+        )
+        if len(distractor_pool) < len(distractor_ids):
+            raise ValueError("Experiment 005 lacks non-target ACCEPT coverage")
+
+        ordered_distractors = sorted(
+            distractor_ids,
+            key=lambda candidate_id: hashlib.sha256(
+                f"distractor-order|{plan.world_seed}|{color}|{slot}|{candidate_id}".encode()
+            ).hexdigest(),
+        )
+        for candidate_id, example in zip(
+            ordered_distractors,
+            distractor_pool[: len(ordered_distractors)],
+            strict=True,
+        ):
+            changed[candidate_id].add(example.example_id)
+            used.add(example.example_id)
+
+    # Every candidate currently has 12 ACCEPT->REJECT changes, two per slot.
+    # Add exactly two REJECT->ACCEPT examples per slot for every candidate.
+    for slot in EXP005_SLOT_IDS:
+        reject_pool = [
+            example
+            for example in train
+            if example.example_id not in used
+            and example.selected_slot == slot
+            and example.response == "REJECT"
+        ]
+        reject_pool = _exp005_hash_sorted(
+            reject_pool,
+            world_seed=plan.world_seed,
+            namespace=f"reject|{slot}",
+        )
+        required = 2 * len(EXP005_SHARD_IDS)
+        if len(reject_pool) < required:
+            raise ValueError("Experiment 005 lacks REJECT records for balanced corruption")
+
+        candidate_order = sorted(
+            EXP005_SHARD_IDS,
+            key=lambda candidate_id: hashlib.sha256(
+                f"reject-order|{plan.world_seed}|{slot}|{candidate_id}".encode()
+            ).hexdigest(),
+        )
+        cursor = 0
+        for candidate_id in candidate_order:
+            for example in reject_pool[cursor : cursor + 2]:
+                changed[candidate_id].add(example.example_id)
+                used.add(example.example_id)
+            cursor += 2
+
+    frozen = {candidate_id: frozenset(example_ids) for candidate_id, example_ids in changed.items()}
+
+    baseline_by_id = {example.example_id: example for example in source.baseline_train}
+    for _candidate_id, example_ids in frozen.items():
+        examples = [baseline_by_id[example_id] for example_id in example_ids]
+        if len(examples) != EXP005_LABEL_CHANGES_PER_SHARD:
+            raise ValueError("Experiment 005 changed-record count invariant failed")
+        if sum(example.response == "ACCEPT" for example in examples) != 12:
+            raise ValueError("Experiment 005 ACCEPT->REJECT balance invariant failed")
+        if sum(example.response == "REJECT" for example in examples) != 12:
+            raise ValueError("Experiment 005 REJECT->ACCEPT balance invariant failed")
+        slot_counts = {
+            slot: sum(example.selected_slot == slot for example in examples)
+            for slot in EXP005_SLOT_IDS
+        }
+        if set(slot_counts.values()) != {4}:
+            raise ValueError("Experiment 005 changed-slot balance invariant failed")
+
+    return frozen
+
+
+def build_exp005_data(seed: int = 42, attempt_index: int = 0) -> Exp005Data:
+    """Build one balanced, blinded Experiment 005 candidate world."""
+
+    source = build_exp003d_explicit_policy_data(seed)
+    plan = build_exp005_plan(seed, attempt_index)
+    changed_ids_by_candidate = _exp005_changed_ids_by_candidate(source, plan=plan)
+
+    changed_owner = {
+        example_id: candidate_id
+        for candidate_id, example_ids in changed_ids_by_candidate.items()
+        for example_id in example_ids
+    }
+    if len(changed_owner) != (len(EXP005_SHARD_IDS) * EXP005_LABEL_CHANGES_PER_SHARD):
+        raise ValueError("Experiment 005 changed sets overlap")
+
+    remaining = [
+        example for example in source.baseline_train if example.example_id not in changed_owner
+    ]
+    remaining = _exp005_hash_sorted(
+        remaining,
+        world_seed=plan.world_seed,
+        namespace="unchanged-fillers",
+    )
+
+    filler_owner: dict[str, str] = {}
+    cursor = 0
+    for candidate_id in sorted(EXP005_SHARD_IDS):
+        for example in remaining[cursor : cursor + 24]:
+            filler_owner[example.example_id] = candidate_id
+        cursor += 24
+
+    if len(filler_owner) != 24 * len(EXP005_SHARD_IDS):
+        raise ValueError("Experiment 005 filler allocation failed")
+
+    baseline: list[Exp003TaskExample] = []
+    candidate: list[Exp003TaskExample] = []
+
+    for example in source.baseline_train:
+        shard_id = changed_owner.get(
+            example.example_id,
+            filler_owner.get(example.example_id, "shard_stable_00"),
+        )
+        baseline_example = replace(example, shard_id=shard_id)
+        baseline.append(baseline_example)
+
+        should_flip = example.example_id in changed_owner
+        candidate.append(
+            replace(
+                baseline_example,
+                response=(
+                    _flipped_response(baseline_example.response)
+                    if should_flip
+                    else baseline_example.response
+                ),
+            )
+        )
+
+    eval_examples = source.all_eval
+    eval_by_slice = {
+        slice_id: tuple(
+            example for example in eval_examples if example.selected_slice_id == slice_id
+        )
+        for slice_id in EXP005_SLICE_IDS
+    }
+
+    return Exp005Data(
+        baseline_train=tuple(baseline),
+        candidate_train=tuple(candidate),
+        target_eval=eval_by_slice[TARGET_SLICE_ID],
+        control_eval=eval_by_slice[EXP005_CONTROL_SLICE_ID],
+        all_eval=eval_examples,
+        eval_by_slice=eval_by_slice,
+    )
+
+
+def build_exp005_restoration_train(
+    restoration_candidate_id: str,
+    *,
+    seed: int = 42,
+    attempt_index: int = 0,
+) -> tuple[Exp003TaskExample, ...]:
+    """Restore exactly one candidate shard for private certification or intervention."""
+
+    if restoration_candidate_id not in EXP005_SHARD_IDS:
+        raise ValueError(f"Unknown Experiment 005 candidate: {restoration_candidate_id}")
+
+    data = build_exp005_data(seed, attempt_index)
+    restoration: list[Exp003TaskExample] = []
+
+    for baseline, candidate in zip(
+        data.baseline_train,
+        data.candidate_train,
+        strict=True,
+    ):
+        restore = (
+            baseline.shard_id == restoration_candidate_id
+            and baseline.response != candidate.response
+        )
+        restoration.append(
+            replace(
+                candidate,
+                response=baseline.response if restore else candidate.response,
+            )
+        )
+
+    return tuple(restoration)
