@@ -1,6 +1,8 @@
 # Experiment 005 — Causally Certified RCA
 
-Status: **prospective protocol — no Experiment 005 world generated or model result observed**
+Status: **complete — benchmark-construction negative result; no world certified**
+
+Observed results are recorded in [`RESULTS.md`](RESULTS.md).
 
 ## Research question
 
