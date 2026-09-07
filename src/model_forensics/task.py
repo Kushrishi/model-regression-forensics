@@ -95,6 +95,18 @@ EXP005_SLOT_IDS = EXP003_SLOT_IDS
 EXP005_SLICE_IDS = EXP003D_SLICE_IDS
 EXP005_MAX_WORLD_ATTEMPTS = 5
 
+EXP006_CONTROL_SLICE_ID = EXP003_CONTROL_SLICE_ID
+EXP006_ROLE_IDS = tuple(f"role_{index:02d}" for index in range(1, 6))
+EXP006_SHARD_IDS = tuple(f"shard_semantic_{index:02d}" for index in range(1, 6))
+EXP006_RECORDS_PER_SHARD = 48
+EXP006_LABEL_CHANGES_PER_SHARD = 12
+EXP006_SLOT_IDS = EXP003_SLOT_IDS
+EXP006_SLICE_IDS = EXP003D_SLICE_IDS
+EXP006_MAX_WORLD_ATTEMPTS = 5
+EXP006_FROZEN_SEED = 42
+EXP006_FROZEN_MANIFEST_SHA256 = "275743ec6bd5ce130fd149da0b621b6a9d59c578d56518c5aaca3ed897011c27"
+_EXP006_SHARD_BY_ROLE = dict(zip(EXP006_ROLE_IDS, EXP006_SHARD_IDS, strict=True))
+
 _TRAIN_MATERIALS = (
     "cedar",
     "copper",
@@ -297,6 +309,39 @@ class Exp005Data:
     control_eval: tuple[Exp003TaskExample, ...]
     all_eval: tuple[Exp003TaskExample, ...]
     eval_by_slice: dict[str, tuple[Exp003TaskExample, ...]]
+
+
+@dataclass(frozen=True)
+class Exp006Plan:
+    """Benchmark-private frozen world plan for Experiment 006."""
+
+    attempt_index: int
+    world_seed: int
+    planted_candidate_id: str
+
+
+@dataclass(frozen=True)
+class Exp006Data:
+    """Semantic-balanced five-candidate Experiment 006 data."""
+
+    baseline_train: tuple[Exp003TaskExample, ...]
+    candidate_train: tuple[Exp003TaskExample, ...]
+    target_eval: tuple[Exp003TaskExample, ...]
+    control_eval: tuple[Exp003TaskExample, ...]
+    all_eval: tuple[Exp003TaskExample, ...]
+    eval_by_slice: dict[str, tuple[Exp003TaskExample, ...]]
+
+
+@dataclass(frozen=True)
+class _Exp006FrozenWorld:
+    """One solver-certified Experiment 006 world from the frozen manifest."""
+
+    attempt_index: int
+    world_seed: int
+    root_role: str
+    protected_accept_order: tuple[str, ...]
+    quotas_by_role: dict[str, dict[str, int]]
+    changed_ids_by_role: dict[str, tuple[str, ...]]
 
 
 @dataclass(frozen=True)
@@ -1445,6 +1490,423 @@ def build_exp005_restoration_train(
         raise ValueError(f"Unknown Experiment 005 candidate: {restoration_candidate_id}")
 
     data = build_exp005_data(seed, attempt_index)
+    restoration: list[Exp003TaskExample] = []
+
+    for baseline, candidate in zip(
+        data.baseline_train,
+        data.candidate_train,
+        strict=True,
+    ):
+        restore = (
+            baseline.shard_id == restoration_candidate_id
+            and baseline.response != candidate.response
+        )
+        restoration.append(
+            replace(
+                candidate,
+                response=baseline.response if restore else candidate.response,
+            )
+        )
+
+    return tuple(restoration)
+
+
+def derive_exp006_world_seed(seed: int, attempt_index: int) -> int:
+    """Derive one Experiment 006 world seed from the frozen protocol namespace."""
+
+    if not 0 <= attempt_index < EXP006_MAX_WORLD_ATTEMPTS:
+        raise ValueError(
+            f"Experiment 006 attempt index must be in [0, {EXP006_MAX_WORLD_ATTEMPTS - 1}]"
+        )
+
+    payload = f"exp006-world|{seed}|{attempt_index}"
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return int(digest[:16], 16)
+
+
+def _load_exp006_frozen_world(attempt_index: int) -> _Exp006FrozenWorld:
+    """Load and validate one solver-certified Experiment 006 world."""
+
+    if not 0 <= attempt_index < EXP006_MAX_WORLD_ATTEMPTS:
+        raise ValueError(
+            f"Experiment 006 attempt index must be in [0, {EXP006_MAX_WORLD_ATTEMPTS - 1}]"
+        )
+
+    manifest_path = Path(__file__).with_name("data") / "exp006_frozen_worlds.json"
+    if not manifest_path.is_file():
+        raise FileNotFoundError(f"Experiment 006 frozen manifest not found: {manifest_path}")
+
+    manifest_bytes = manifest_path.read_bytes()
+    manifest_sha256 = hashlib.sha256(manifest_bytes).hexdigest()
+    if manifest_sha256 != EXP006_FROZEN_MANIFEST_SHA256:
+        raise ValueError("Experiment 006 frozen manifest hash mismatch")
+
+    manifest = json.loads(manifest_bytes)
+    expected_world_keys = {str(index) for index in range(EXP006_MAX_WORLD_ATTEMPTS)}
+    if set(manifest) != expected_world_keys:
+        raise ValueError("Experiment 006 frozen manifest has unexpected world keys")
+
+    raw = manifest[str(attempt_index)]
+    if not isinstance(raw, dict):
+        raise ValueError("Experiment 006 frozen world must be a mapping")
+
+    if raw.get("attempt_index") != attempt_index:
+        raise ValueError("Experiment 006 frozen world attempt index mismatch")
+
+    world_seed = raw.get("world_seed")
+    root_role = raw.get("root_role")
+    protected_accept_order = raw.get("protected_accept_order")
+    quotas_by_role = raw.get("quotas_by_role")
+    changed_ids_by_role = raw.get("changed_ids_by_role")
+
+    if not isinstance(world_seed, int):
+        raise ValueError("Experiment 006 frozen world seed is invalid")
+    if root_role not in EXP006_ROLE_IDS:
+        raise ValueError("Experiment 006 frozen root role is invalid")
+    if not isinstance(protected_accept_order, list) or not all(
+        isinstance(slice_id, str) for slice_id in protected_accept_order
+    ):
+        raise ValueError("Experiment 006 protected ACCEPT order is invalid")
+    if len(protected_accept_order) != 3 or set(protected_accept_order) != {
+        "circle_small",
+        "circle_large",
+        "triangle_small",
+    }:
+        raise ValueError("Experiment 006 protected ACCEPT order is incomplete")
+    if not isinstance(quotas_by_role, dict) or set(quotas_by_role) != set(EXP006_ROLE_IDS):
+        raise ValueError("Experiment 006 frozen world has unexpected semantic quotas")
+
+    protected_slices = {
+        "circle_small",
+        "circle_large",
+        "square_small",
+        "square_large",
+        "triangle_small",
+    }
+    frozen_quotas: dict[str, dict[str, int]] = {}
+
+    for role_id in EXP006_ROLE_IDS:
+        raw_quota = quotas_by_role[role_id]
+        if not isinstance(raw_quota, dict) or not all(
+            isinstance(slice_id, str) and isinstance(count, int) and count > 0
+            for slice_id, count in raw_quota.items()
+        ):
+            raise ValueError("Experiment 006 semantic quota is invalid")
+
+        quota = dict(raw_quota)
+        if sum(quota.values()) != EXP006_LABEL_CHANGES_PER_SHARD:
+            raise ValueError("Experiment 006 semantic quota does not contain 12 changes")
+
+        if role_id == root_role:
+            if quota != {TARGET_SLICE_ID: EXP006_LABEL_CHANGES_PER_SHARD}:
+                raise ValueError("Experiment 006 root semantic quota is invalid")
+        elif set(quota) != protected_slices:
+            raise ValueError("Experiment 006 distractor semantic quota is incomplete")
+
+        frozen_quotas[role_id] = quota
+
+    protected_aggregate = {
+        slice_id: sum(
+            frozen_quotas[role_id].get(slice_id, 0)
+            for role_id in EXP006_ROLE_IDS
+            if role_id != root_role
+        )
+        for slice_id in protected_slices
+    }
+    accept_a, accept_b, accept_c = protected_accept_order
+    expected_protected_aggregate = {
+        accept_a: 9,
+        accept_b: 9,
+        accept_c: 8,
+        "square_small": 11,
+        "square_large": 11,
+    }
+    if protected_aggregate != expected_protected_aggregate:
+        raise ValueError("Experiment 006 protected semantic aggregate is invalid")
+
+    if not isinstance(changed_ids_by_role, dict):
+        raise ValueError("Experiment 006 changed-ID mapping is invalid")
+    if set(changed_ids_by_role) != set(EXP006_ROLE_IDS):
+        raise ValueError("Experiment 006 frozen world has unexpected role IDs")
+
+    frozen_changed: dict[str, tuple[str, ...]] = {}
+    all_ids: set[str] = set()
+
+    for role_id in EXP006_ROLE_IDS:
+        raw_ids = changed_ids_by_role[role_id]
+        if not isinstance(raw_ids, list) or not all(
+            isinstance(example_id, str) for example_id in raw_ids
+        ):
+            raise ValueError("Experiment 006 changed IDs must be strings")
+
+        example_ids = tuple(raw_ids)
+        if len(example_ids) != EXP006_LABEL_CHANGES_PER_SHARD:
+            raise ValueError("Experiment 006 changed-record count invariant failed")
+        if len(set(example_ids)) != len(example_ids):
+            raise ValueError("Experiment 006 contains duplicate changed IDs within one role")
+        if all_ids.intersection(example_ids):
+            raise ValueError("Experiment 006 changed sets overlap")
+
+        all_ids.update(example_ids)
+        frozen_changed[role_id] = example_ids
+
+    expected_total = len(EXP006_ROLE_IDS) * EXP006_LABEL_CHANGES_PER_SHARD
+    if len(all_ids) != expected_total:
+        raise ValueError("Experiment 006 frozen world changed-ID total is invalid")
+
+    return _Exp006FrozenWorld(
+        attempt_index=attempt_index,
+        world_seed=world_seed,
+        root_role=root_role,
+        protected_accept_order=tuple(protected_accept_order),
+        quotas_by_role=frozen_quotas,
+        changed_ids_by_role=frozen_changed,
+    )
+
+
+def build_exp006_plan(seed: int = 42, attempt_index: int = 0) -> Exp006Plan:
+    """Build one benchmark-private plan from the frozen Experiment 006 worlds."""
+
+    if seed != EXP006_FROZEN_SEED:
+        raise ValueError(
+            f"Experiment 006 is frozen only for seed={EXP006_FROZEN_SEED}; got seed={seed}"
+        )
+
+    world = _load_exp006_frozen_world(attempt_index)
+    expected_world_seed = derive_exp006_world_seed(seed, attempt_index)
+    if world.world_seed != expected_world_seed:
+        raise ValueError("Experiment 006 frozen world seed does not match the protocol namespace")
+
+    return Exp006Plan(
+        attempt_index=attempt_index,
+        world_seed=world.world_seed,
+        planted_candidate_id=_EXP006_SHARD_BY_ROLE[world.root_role],
+    )
+
+
+def _exp006_hash_sorted(
+    examples: list[Exp003TaskExample],
+    *,
+    world_seed: int,
+    namespace: str,
+) -> list[Exp003TaskExample]:
+    """Return examples in a deterministic Experiment 006 hash order."""
+
+    return sorted(
+        examples,
+        key=lambda example: hashlib.sha256(
+            f"exp006|{namespace}|{world_seed}|{example.example_id}".encode()
+        ).hexdigest(),
+    )
+
+
+def _exp006_changed_ids_by_candidate(
+    source: Exp003DExplicitPolicyData,
+    *,
+    plan: Exp006Plan,
+) -> dict[str, frozenset[str]]:
+    """Return the frozen solver-certified changed IDs for one Experiment 006 world."""
+
+    world = _load_exp006_frozen_world(plan.attempt_index)
+    if world.world_seed != plan.world_seed:
+        raise ValueError("Experiment 006 plan and frozen world seed disagree")
+    if _EXP006_SHARD_BY_ROLE[world.root_role] != plan.planted_candidate_id:
+        raise ValueError("Experiment 006 plan and frozen root role disagree")
+
+    baseline_by_id = {example.example_id: example for example in source.baseline_train}
+    changed: dict[str, frozenset[str]] = {}
+    used: set[str] = set()
+
+    for role_id in EXP006_ROLE_IDS:
+        candidate_id = _EXP006_SHARD_BY_ROLE[role_id]
+        example_ids = frozenset(world.changed_ids_by_role[role_id])
+
+        unknown = example_ids.difference(baseline_by_id)
+        if unknown:
+            raise ValueError("Experiment 006 frozen manifest references unknown training IDs")
+
+        examples = [baseline_by_id[example_id] for example_id in example_ids]
+
+        slot_counts = {
+            slot: sum(example.selected_slot == slot for example in examples)
+            for slot in EXP006_SLOT_IDS
+        }
+        if set(slot_counts.values()) != {2}:
+            raise ValueError("Experiment 006 changed-slot balance invariant failed")
+
+        color_counts = {
+            color: sum(example.color == color for example in examples) for color in _COLORS
+        }
+        color_values = tuple(color_counts.values())
+        if max(color_values) - min(color_values) > 2 or max(color_values) > 4:
+            raise ValueError("Experiment 006 color-balance invariant failed")
+
+        material_counts = {
+            material: sum(example.material == material for example in examples)
+            for material in _TRAIN_MATERIALS
+        }
+        if max(material_counts.values()) > 2:
+            raise ValueError("Experiment 006 material-concentration invariant failed")
+
+        semantic_counts = {
+            slice_id: sum(example.selected_slice_id == slice_id for example in examples)
+            for slice_id in EXP006_SLICE_IDS
+        }
+        observed_quota = {slice_id: count for slice_id, count in semantic_counts.items() if count}
+        if observed_quota != world.quotas_by_role[role_id]:
+            raise ValueError(
+                "Experiment 006 changed records do not match the frozen semantic quota"
+            )
+
+        if candidate_id == plan.planted_candidate_id:
+            if semantic_counts[TARGET_SLICE_ID] != EXP006_LABEL_CHANGES_PER_SHARD:
+                raise ValueError("Experiment 006 planted candidate is not target-pure")
+            if any(example.response != "ACCEPT" for example in examples):
+                raise ValueError("Experiment 006 planted changes must all be ACCEPT->REJECT")
+            if set(color_values) != {3}:
+                raise ValueError("Experiment 006 planted candidate must be color-perfect")
+            if max(material_counts.values()) != 1:
+                raise ValueError("Experiment 006 planted candidate must use all materials once")
+        elif semantic_counts[TARGET_SLICE_ID] != 0:
+            raise ValueError("Experiment 006 distractor changed set contains target records")
+
+        if used.intersection(example_ids):
+            raise ValueError("Experiment 006 changed sets overlap")
+
+        used.update(example_ids)
+        changed[candidate_id] = example_ids
+
+    changed_examples = [baseline_by_id[example_id] for example_id in used]
+
+    accept_to_reject = sum(example.response == "ACCEPT" for example in changed_examples)
+    reject_to_accept = sum(example.response == "REJECT" for example in changed_examples)
+    if (accept_to_reject, reject_to_accept) != (38, 22):
+        raise ValueError("Experiment 006 global corruption-direction invariant failed")
+
+    protected_counts = {
+        slice_id: sum(example.selected_slice_id == slice_id for example in changed_examples)
+        for slice_id in (
+            "circle_small",
+            "circle_large",
+            "square_small",
+            "square_large",
+            "triangle_small",
+        )
+    }
+    if protected_counts["square_small"] != 11 or protected_counts["square_large"] != 11:
+        raise ValueError("Experiment 006 protected square aggregate invariant failed")
+
+    protected_accept_counts = sorted(
+        protected_counts[slice_id]
+        for slice_id in ("circle_small", "circle_large", "triangle_small")
+    )
+    if protected_accept_counts != [8, 9, 9]:
+        raise ValueError("Experiment 006 protected ACCEPT aggregate invariant failed")
+
+    return changed
+
+
+def build_exp006_data(seed: int = 42, attempt_index: int = 0) -> Exp006Data:
+    """Build one frozen semantic-balanced Experiment 006 candidate world."""
+
+    source = build_exp003d_explicit_policy_data(seed)
+    plan = build_exp006_plan(seed, attempt_index)
+    changed_ids_by_candidate = _exp006_changed_ids_by_candidate(source, plan=plan)
+
+    changed_owner = {
+        example_id: candidate_id
+        for candidate_id, example_ids in changed_ids_by_candidate.items()
+        for example_id in example_ids
+    }
+    expected_changed = len(EXP006_SHARD_IDS) * EXP006_LABEL_CHANGES_PER_SHARD
+    if len(changed_owner) != expected_changed:
+        raise ValueError("Experiment 006 changed sets overlap")
+
+    remaining = [
+        example for example in source.baseline_train if example.example_id not in changed_owner
+    ]
+    remaining = _exp006_hash_sorted(
+        remaining,
+        world_seed=plan.world_seed,
+        namespace="unchanged-fillers",
+    )
+
+    fillers_per_candidate = EXP006_RECORDS_PER_SHARD - EXP006_LABEL_CHANGES_PER_SHARD
+    filler_owner: dict[str, str] = {}
+    cursor = 0
+
+    for candidate_id in sorted(EXP006_SHARD_IDS):
+        for example in remaining[cursor : cursor + fillers_per_candidate]:
+            filler_owner[example.example_id] = candidate_id
+        cursor += fillers_per_candidate
+
+    expected_fillers = fillers_per_candidate * len(EXP006_SHARD_IDS)
+    if len(filler_owner) != expected_fillers:
+        raise ValueError("Experiment 006 filler allocation failed")
+
+    baseline: list[Exp003TaskExample] = []
+    candidate: list[Exp003TaskExample] = []
+
+    for example in source.baseline_train:
+        shard_id = changed_owner.get(
+            example.example_id,
+            filler_owner.get(example.example_id, "shard_stable_00"),
+        )
+        baseline_example = replace(example, shard_id=shard_id)
+        baseline.append(baseline_example)
+
+        should_flip = example.example_id in changed_owner
+        candidate.append(
+            replace(
+                baseline_example,
+                response=(
+                    _flipped_response(baseline_example.response)
+                    if should_flip
+                    else baseline_example.response
+                ),
+            )
+        )
+
+    for candidate_id in EXP006_SHARD_IDS:
+        shard_size = sum(example.shard_id == candidate_id for example in baseline)
+        if shard_size != EXP006_RECORDS_PER_SHARD:
+            raise ValueError("Experiment 006 candidate shard-size invariant failed")
+
+    candidate_accept = sum(example.response == "ACCEPT" for example in candidate)
+    candidate_reject = sum(example.response == "REJECT" for example in candidate)
+    if (candidate_accept, candidate_reject) != (176, 112):
+        raise ValueError("Experiment 006 candidate label-count invariant failed")
+
+    eval_examples = source.all_eval
+    eval_by_slice = {
+        slice_id: tuple(
+            example for example in eval_examples if example.selected_slice_id == slice_id
+        )
+        for slice_id in EXP006_SLICE_IDS
+    }
+
+    return Exp006Data(
+        baseline_train=tuple(baseline),
+        candidate_train=tuple(candidate),
+        target_eval=eval_by_slice[TARGET_SLICE_ID],
+        control_eval=eval_by_slice[EXP006_CONTROL_SLICE_ID],
+        all_eval=eval_examples,
+        eval_by_slice=eval_by_slice,
+    )
+
+
+def build_exp006_restoration_train(
+    restoration_candidate_id: str,
+    *,
+    seed: int = 42,
+    attempt_index: int = 0,
+) -> tuple[Exp003TaskExample, ...]:
+    """Restore exactly one Experiment 006 candidate shard."""
+
+    if restoration_candidate_id not in EXP006_SHARD_IDS:
+        raise ValueError(f"Unknown Experiment 006 candidate: {restoration_candidate_id}")
+
+    data = build_exp006_data(seed, attempt_index)
     restoration: list[Exp003TaskExample] = []
 
     for baseline, candidate in zip(
