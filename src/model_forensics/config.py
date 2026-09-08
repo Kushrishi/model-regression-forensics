@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, PositiveFloat
+from pydantic import BaseModel, ConfigDict, Field, PositiveFloat, PositiveInt, model_validator
 
 from model_forensics.lineage import ArtifactKind
 
@@ -94,6 +94,28 @@ CapabilityDiagnosticConfig = Annotated[
 ]
 
 
+class SensitivityCalibrationConfig(StrictConfigModel):
+    """Prospective corruption-strength calibration settings."""
+
+    kind: Literal["sensitivity_grid"]
+    strengths: list[PositiveInt] = Field(min_length=1)
+    calibration_world_count: int = Field(gt=0)
+    minimum_passing_worlds: int = Field(gt=0)
+    selection_rule: Literal["minimum_strength_meeting_gate"]
+    calibration_materials: list[str] = Field(min_length=1)
+    certification_world_count: int = Field(gt=0)
+
+    @model_validator(mode="after")
+    def validate_protocol(self) -> SensitivityCalibrationConfig:
+        if self.strengths != sorted(set(self.strengths)):
+            raise ValueError("calibration strengths must be unique and increasing")
+        if self.minimum_passing_worlds > self.calibration_world_count:
+            raise ValueError("minimum passing worlds cannot exceed calibration world count")
+        if len(self.calibration_materials) != len(set(self.calibration_materials)):
+            raise ValueError("calibration materials must be unique")
+        return self
+
+
 class EvaluationConfig(StrictConfigModel):
     """Primary metric and thresholds required for a successful experiment."""
 
@@ -124,6 +146,7 @@ class ExperimentConfig(StrictConfigModel):
     lineage: LineageConfig
     benchmark_difficulty: BenchmarkDifficultyConfig | None = None
     capability_diagnostic: CapabilityDiagnosticConfig | None = None
+    calibration: SensitivityCalibrationConfig | None = None
 
 
 def load_experiment_config(path: str | Path) -> ExperimentConfig:

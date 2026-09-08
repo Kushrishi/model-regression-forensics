@@ -444,3 +444,32 @@ measure target materiality on calibration data that is disjoint from final
 certification evaluation, freeze a deterministic selection rule, and only then
 run untouched certification worlds. No Experiment 007 protocol or result is
 claimed frozen by this entry.
+
+## 2026-09-07 — Experiment 007 prospective calibration design
+
+Experiment 006 ended after all five frozen worlds produced zero regression on
+the intended `triangle_large` target. Semantic balancing changed the protected
+failure patterns but did not make the planted target corruption behaviorally
+material.
+
+Experiment 007 therefore separates development-only behavioral sensitivity
+calibration from final certification.
+
+The prospective corruption-strength grid is 12, 24, 36, and 48 changed labels
+per candidate. Two deterministic calibration worlds are reserved for each
+strength. A strength qualifies only when both calibration worlds satisfy the
+same localized target-regression and protected-slice drift requirements used by
+the certification benchmark. The smallest qualifying strength is selected. If
+none qualifies, the experiment stops without extending the grid.
+
+Calibration evaluation uses a new four-material family: bronze, cotton, quartz,
+and velvet. The existing bamboo, ceramic, marble, and wool evaluation family is
+reserved for certification and may not influence strength selection.
+
+Five deterministic certification worlds are reserved per possible strength.
+All calibration and certification constructions must be generated and frozen
+before any Experiment 007 model result is observed. Only the five certification
+worlds belonging to the selected strength may be used after calibration.
+
+The construction implementation and solver-certified manifests remain to be
+completed. No Experiment 007 model training is authorized by this design entry.
