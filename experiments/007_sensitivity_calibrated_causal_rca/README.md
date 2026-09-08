@@ -101,9 +101,16 @@ An exhaustive admissible target-dose scan tested:
 
 Only target doses 9 and 18 were feasible under the amended construction.
 
-A separate local-trade capacity proof produced seven distinct valid worlds at
+An initial local-trade capacity proof produced seven distinct valid worlds at
 dose 9 and seven distinct valid worlds at dose 18 without model training or
-certification evaluation.
+certification evaluation. A subsequent pre-model identity-overlap audit showed
+that mere distinctness could still leave those worlds too similar.
+
+The frozen construction therefore adds a pairwise diversity gate: among the
+seven worlds at a fixed target dose, any two worlds may share at most 144 of
+their 180 changed-record identities. Equivalently, at least 36 changed records
+must differ between every pair of worlds at that dose. This criterion is frozen
+before any Experiment 007 behavioral result.
 
 ## Prospective target-dose grid
 
@@ -347,6 +354,10 @@ No Experiment 007 model has been trained.
 
 Solver feasibility is complete. The next allowed work is deterministic
 construction implementation, manifest generation, and certification API binding.
+
+Frozen construction manifest SHA-256:
+
+`a6c5be745c5f4f4a97db7bf882651591886d25a0f125d967a147b861b19bdc28`
 
 The protocol is not considered fully frozen until:
 

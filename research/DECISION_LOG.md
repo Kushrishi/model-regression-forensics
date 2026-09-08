@@ -507,3 +507,28 @@ This amendment was driven only by pre-model construction feasibility and
 anti-leak considerations. No Experiment 007 model result had been observed,
 certification evaluation remained untouched, and no behavioral threshold was
 changed.
+
+## 2026-09-07 — Experiment 007 pre-model world-diversity refinement
+
+After the first deterministic 14-world manifest was generated, a read-only
+record-identity audit showed that the seven worlds at each target dose were
+formally distinct but still near-clones. Mean pairwise changed-record overlap
+was 165.71/180 at dose 9 and 164.14/180 at dose 18; pairwise maxima were
+173/180 and 170/180 respectively.
+
+Because this audit used only construction identities, before any model training
+or certification evaluation, the protocol was strengthened prospectively. At a
+fixed target dose, any pair of frozen worlds may now share at most 144 of 180
+changed-record identities. This guarantees that at least 36 changed records
+differ between every pair of worlds at that dose.
+
+A deterministic sequence of exact two-record trades demonstrated seven worlds
+at each dose satisfying this stronger diversity gate while preserving all
+previous semantic, flip-direction, selected-slot, color, material-histogram,
+and within-world changed-record non-overlap constraints.
+
+The regenerated manifest is pinned by SHA-256:
+`a6c5be745c5f4f4a97db7bf882651591886d25a0f125d967a147b861b19bdc28`.
+
+No Experiment 007 model result was observed, no certification evaluation was
+used, and no behavioral threshold was changed.
