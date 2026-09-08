@@ -397,3 +397,50 @@ Held-out evaluation achieved:
 Strict exact accuracy was also 96/96 and the predeclared baseline gate passed.
 
 Conclusion: explicitly supplying the canonical policy is sufficient to rescue the Experiment 003 role-binding task under the frozen setup. Combined with the Experiment 003-C selected-slot lookup success, this narrows the unresolved difficulty to the interaction between implicit policy learning/induction and multi-object role binding. This result does not identify the model's internal failure mechanism.
+
+## 2026-09-07 — Research record catch-up through Experiment 006
+
+The repository-level decision log had not yet been updated for Experiments 004
+through 006. Their committed protocols and result files remain the authoritative
+per-experiment record. This entry records the resulting research progression
+without changing those frozen outcomes.
+
+Experiment 004 returned to the primary RCA benchmark using the explicit-policy
+role-binding task validated by Experiment 003-D. The clean sibling achieved
+96/96. The corrupted candidate satisfied the prospectively declared target and
+negative-control gates but exhibited broad constant-REJECT behavior across all
+canonical ACCEPT slices. The frozen `selected_role_overlap` diagnostic uniquely
+localized the hidden target-associated shard and was correct after authorized
+truth reveal. Restoring that shard produced zero `triangle_large` recovery.
+End-to-end causal verification therefore failed despite correct localization.
+
+The post-hoc Experiment 004 restoration sweep found that four of five
+individual restorations had no measured effect. One alternative shard produced
+a small broad change, but that effect disappeared under the frozen
+alternative-order control. These exploratory results were not used to revise
+the confirmatory Experiment 004 result.
+
+Experiment 005 prospectively strengthened causal certification and preserved
+aggregate clean and corrupted label counts. Five allowed worlds all passed
+construction and clean capability, but none produced the required localized
+`triangle_large` regression. Causal certification was never reached.
+
+Experiment 006 redesigned corruption directly in semantic space while
+preserving the same frozen model and training regime. All five clean siblings
+again scored 96/96. Across the five candidate worlds, `triangle_large`
+regression was exactly 0.0 every time. Worlds 0 and 2 showed moderate protected
+square degradation, World 3 showed complete failure of both square slices, and
+Worlds 1 and 4 remained perfect. Zero of five worlds passed the
+localized-regression gate. Private causal certification, blinded diagnostics,
+and restoration remained unauthorized.
+
+The resulting benchmark-design lesson is narrower than a claim about model
+internals: statistical and semantic balancing alone did not guarantee that the
+planted corruption was behaviorally material on the intended target.
+
+Experiment 007 is therefore opened as a separately named follow-up. Its working
+direction is sensitivity-calibrated benchmark construction: prospectively
+measure target materiality on calibration data that is disjoint from final
+certification evaluation, freeze a deterministic selection rule, and only then
+run untouched certification worlds. No Experiment 007 protocol or result is
+claimed frozen by this entry.

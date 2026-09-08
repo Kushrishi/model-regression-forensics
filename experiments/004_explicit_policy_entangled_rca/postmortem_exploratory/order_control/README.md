@@ -1,6 +1,6 @@
 # Experiment 004 — Post-hoc training-order control
 
-Status: **design frozen; models not run**
+Status: **complete — post-hoc exploratory order control**
 
 This analysis is:
 

@@ -1,6 +1,6 @@
 # Experiment 004 — Post-hoc causal restoration sweep
 
-Status: **exploratory harness frozen; model sweep not yet run**
+Status: **complete — post-hoc exploratory restoration sweep**
 
 This directory contains post-hoc exploratory work performed only after the
 confirmatory Experiment 004 result, intervention failure, ground-truth reveal,

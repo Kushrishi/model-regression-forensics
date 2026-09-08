@@ -32,29 +32,44 @@ A diagnosis is treated as meaningful only when the benchmark is itself learnable
 
 ## Current status
 
-The repository currently contains the complete research record through **Experiment 003-D**.
+The repository contains the complete research record through **Experiment 006**.
 
-The strongest result so far is not a claim of a new algorithm. It is a progressively hardened experimental framework that has already exposed several ways regression debugging can produce misleading conclusions:
+The project has progressed from validating a reproducible regression-debugging
+pipeline to testing increasingly strict requirements for causal root-cause
+analysis.
 
-- an apparently successful diagnosis can rely on trivial lexical overlap;
-- a harder benchmark can fail because the clean model cannot learn the task at all;
-- balancing class loss does not necessarily repair that failure;
-- isolated capabilities can succeed even when their composition fails;
-- causal verification by intervention can reveal spillover that a ranking score alone would hide.
+The main lesson so far is that a plausible attribution score is not enough.
+The benchmark must first produce a valid localized behavioral regression, and
+a suspected cause must then demonstrate material recovery under controlled
+intervention.
 
-Experiment 004 is the next planned major RCA benchmark.
+Experiments 004 through 006 sharpened that requirement:
+
+- Experiment 004 correctly localized the benchmark-designated target shard, but
+  restoring that shard produced no target recovery.
+- Experiment 005 showed that preserving aggregate class counts was not
+  sufficient to produce an admissible localized regression.
+- Experiment 006 controlled corruption directly in semantic space, but the
+  intended `triangle_large` behavior still did not regress in any of five
+  frozen worlds.
+
+Experiment 007 is now the active follow-up. Its protocol has not yet been
+frozen.
 
 ## Experiment summary
 
 | Experiment | Question | Result | Interpretation |
 | --- | --- | --- | --- |
-| **000 — Protocol validation** | Can the full baseline → regression → diagnosis → recovery pipeline be reproduced on a controlled task? | **Complete** | Established the reproducible SFT/evaluation/provenance pipeline. |
-| **001 — Blinded multicandidate** | Can a debugger identify one hidden causal shard among five changed shards? | **Diagnostic success, benchmark shortcut found** | The hidden cause was recoverable, but whole-artifact lexical overlap made the task too easy. |
-| **002 — Entangled distractors** | Does diagnosis still work when target-relevant language is entangled across all candidate shards? | **Complete** | Whole-artifact lexical scores tied. Changed-record analysis uniquely localized the hidden cause. Selective restoration recovered the target behavior, with cross-slice spillover recorded. |
-| **003 — Role-binding confounders** | Can the benchmark defeat lexical shortcuts by putting all semantic terms into every prompt? | **Clean baseline failed** | The model achieved 64/96 overall and did not learn the intended task reliably, so candidate/intervention RCA runs were stopped. |
-| **003-B — Balanced loss** | Was the 2:1 ACCEPT/REJECT imbalance causing the Exp003 failure? | **Failed to rescue baseline** | Class weighting introduced more REJECT predictions but still did not produce a learnable clean baseline. |
-| **003-C — Selected-slot lookup** | Can the same model/training stack learn the selected-slot lookup primitive by itself? | **96/96 held-out** | Selected-slot lookup is learnable under the frozen setup, including held-out decision patterns. |
-| **003-D — Explicit-policy role binding** | Can the Exp003 task be solved if the shape→decision policy is supplied explicitly? | **96/96 held-out** | A one-factor policy-prefix change rescued the original role-binding task. |
+| **000 — Protocol validation** | Can the full baseline → regression → diagnosis → recovery pipeline be reproduced on a controlled task? | **Complete** | Established the reproducible SFT, evaluation, and provenance pipeline. |
+| **001 — Blinded multicandidate** | Can a debugger identify one hidden causal shard among five changed shards? | **Diagnostic success; shortcut found** | The hidden cause was recoverable, but whole-artifact lexical overlap made the task too easy. |
+| **002 — Entangled distractors** | Does diagnosis still work when target-relevant language is entangled across all candidate shards? | **Complete** | Whole-artifact lexical scores tied. Changed-record analysis uniquely localized the hidden cause. Selective restoration recovered the target with recorded spillover. |
+| **003 — Role-binding confounders** | Can the benchmark defeat lexical shortcuts by putting all semantic terms into every prompt? | **Clean baseline failed** | The model achieved 64/96 overall and did not reliably learn the intended task, so RCA stopped. |
+| **003-B — Balanced loss** | Was the 2:1 ACCEPT/REJECT imbalance causing the Exp003 failure? | **Failed to rescue baseline** | Class weighting changed predictions but did not produce a trustworthy clean baseline. |
+| **003-C — Selected-slot lookup** | Can the same model/training stack learn the selected-slot lookup primitive by itself? | **96/96 held-out** | Selected-slot lookup is learnable under the frozen setup. |
+| **003-D — Explicit-policy role binding** | Can the Exp003 task be solved if the shape→decision policy is supplied explicitly? | **96/96 held-out** | A one-factor explicit-policy change rescued the role-binding task. |
+| **004 — Explicit-policy entangled RCA** | Can blinded localization and diagnosis-driven restoration work on the now-learnable role-binding task? | **Localization correct; causal verification failed** | The task-aware diagnostic correctly localized the hidden target shard, but selective restoration produced zero target recovery. |
+| **005 — Causally certified RCA** | Can a balanced corruption construction create a localized regression before causal certification? | **0/5 worlds qualified** | Clean behavior remained perfect, but no candidate world produced the required target-localized regression. |
+| **006 — Semantic-balanced causal RCA** | Does controlling corruption directly in semantic space repair the Exp005 construction failure? | **0/5 worlds qualified** | All five clean siblings scored 96/96, but `triangle_large` regression remained exactly 0.0 in every candidate world. |
 
 Detailed protocols and results live under [`experiments/`](experiments/).
 
@@ -124,7 +139,7 @@ The current experimental stack uses:
 - artifact hashes and runtime provenance;
 - prospective construction and anti-leak gates.
 
-The current frozen model used in the 003 diagnostic series is:
+The primary frozen model used from the 003 diagnostic series through Experiments 004–006 is:
 
 ```text
 HuggingFaceTB/SmolLM2-360M-Instruct
@@ -213,27 +228,69 @@ experiments/<experiment>/RESULTS.md
 
 ## Current findings
 
-The evidence so far supports several practical observations:
+The evidence so far supports several practical observations.
 
 ### 1. Whole-artifact lexical similarity can be a misleading RCA shortcut
 
-Experiment 001 produced a successful blinded diagnosis, but inspection showed that the correct shard was also lexically obvious at the whole-artifact level. The benchmark was therefore strengthened rather than treating the result as sufficient evidence.
+Experiment 001 produced a successful blinded diagnosis, but the correct shard
+was also lexically obvious at the whole-artifact level. The benchmark was
+strengthened rather than treating that result as sufficient evidence.
 
 ### 2. Change-focused analysis can remain informative when whole-artifact similarity is neutralized
 
-Experiment 002 deliberately entangled target-relevant content across all five changed shards. Whole-artifact lexical ranking became uninformative by construction, while analysis restricted to the changed records uniquely identified the hidden target-relevant change.
+Experiment 002 deliberately entangled target-relevant content across all five
+changed shards. Whole-artifact lexical ranking became uninformative by
+construction, while analysis restricted to changed records uniquely identified
+the hidden target-relevant change.
 
 ### 3. Intervention provides information that ranking alone does not
 
-Selective restoration of the suspected Exp002 cause recovered the intended target behavior, but also produced cross-slice spillover. That spillover is part of the result and limits how narrowly the intervention can be interpreted.
+Selective restoration in Experiment 002 recovered the intended target behavior
+but also produced cross-slice spillover. Recovery and unrelated-behavior
+effects therefore need to be evaluated separately.
 
 ### 4. A failed clean baseline is a benchmark failure, not an RCA result
 
-Experiment 003 was stopped before candidate/intervention analysis because the clean baseline did not reliably learn the task. This prevented model-capability failure from being misreported as forensic-method failure.
+Experiment 003 was stopped before candidate or intervention analysis because
+the clean baseline did not reliably learn the task.
 
-### 5. The Exp003 difficulty is compositional under the frozen setup
+### 5. Controlled capability tests narrowed the Experiment 003 failure
 
-Exp003-C showed that selected-slot lookup alone was learned perfectly. Exp003-D showed that the original multi-object task was also learned perfectly when the policy was written explicitly. The remaining failure therefore lies in a more specific interaction than either capability alone.
+Experiment 003-C showed that selected-slot lookup alone was learned perfectly.
+Experiment 003-D showed that the multi-object task was also learned perfectly
+when the canonical policy was supplied explicitly.
+
+### 6. Correct localization does not by itself establish causal influence
+
+Experiment 004's task-aware diagnostic correctly and uniquely localized the
+hidden target-associated shard before truth reveal. Restoring exactly that
+shard nevertheless produced zero target recovery.
+
+The experiment therefore separated successful localization from successful
+causal verification.
+
+### 7. Aggregate label balance is not sufficient benchmark control
+
+Experiment 005 preserved aggregate clean and corrupted class counts, but all
+five allowed candidate worlds failed the localized-regression gate.
+
+The repeated failure exposed conditional semantic structure as an additional
+benchmark-design concern.
+
+### 8. Semantic balancing is still not sufficient to guarantee target materiality
+
+Experiment 006 controlled corruption directly in semantic space across five
+prospectively frozen candidate worlds.
+
+Every fresh clean sibling scored 96/96.
+
+Yet the intended `triangle_large` regression was exactly 0.0 in all five
+candidate worlds. Some worlds instead damaged protected square behavior, while
+others produced no measurable regression.
+
+The next benchmark-design problem is therefore to establish behavioral
+materiality prospectively without selecting or tuning on the final
+certification evaluation.
 
 ## Limitations
 
@@ -252,24 +309,37 @@ Current limitations include:
 
 These limitations are deliberate targets for later experiments rather than hidden assumptions.
 
-## Next: Experiment 004
+## Next: Experiment 007 — Sensitivity-Calibrated Causal RCA
 
-Experiment 004 is intended to return from capability debugging to the primary RCA question.
+Experiment 007 is the active follow-up to the five-world negative result from
+Experiment 006.
 
-The planned benchmark should combine the lessons from Experiments 001–003:
+Its protocol is **not yet frozen**.
 
-- a prospectively verified learnable clean baseline;
-- multi-object prompts that resist simple lexical shortcuts;
-- explicit policy access to avoid the Exp003 learnability failure;
-- multiple opaque candidate lineage changes;
-- equalized candidate/change statistics where practical;
-- predeclared diagnostic ranking rules;
-- hidden benchmark-owned root cause;
-- target and control behavior;
-- selective intervention for causal verification;
-- no post-result retuning if the planted regression fails to materialize.
+The working design direction is to separate two questions that Experiments 005
+and 006 implicitly combined:
 
-Later work should expand from single benchmark instances toward repeated seeds, repeated generated worlds, stronger baselines, and additional model regimes.
+1. Can a corruption construction measurably influence the intended target
+   behavior?
+2. Once that construction is frozen, can blinded RCA identify and causally
+   verify the responsible training change on untouched certification data?
+
+The intended design principle is to use a prospectively declared calibration
+stage that is disjoint from final certification evaluation.
+
+A small corruption-strength family may be evaluated during calibration, with a
+deterministic rule selecting the minimum strength that satisfies predeclared
+target-regression and protected-behavior criteria.
+
+Only after that selection is frozen would untouched certification worlds be
+run.
+
+The calibration procedure, data separation, candidate construction, selection
+rule, leakage controls, certification worlds, stopping rule, and claim boundary
+must all be committed before any result-bearing Experiment 007 training.
+
+Experiment 007 must not use the final certification evaluation to choose a
+corruption strength or repair a failed world.
 
 ## Research rules
 
@@ -287,5 +357,5 @@ Later work should expand from single benchmark instances toward repeated seeds, 
 ---
 
 **Research status:** active.
-**Current stable history:** Experiments 000 through 003-D.
-**Next major experiment:** 004.
+**Current stable history:** Experiments 000 through 006.
+**Active follow-up:** Experiment 007 — protocol design in progress.

@@ -1,6 +1,6 @@
 # Experiment 004 — Explicit-Policy Entangled RCA
 
-Status: **prospective protocol — no Experiment 004 model result observed**
+Status: **complete — localization correct; causal verification failed**
 
 ## Research question
 
