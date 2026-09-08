@@ -54,14 +54,18 @@ lineage:
 
 calibration:
   kind: sensitivity_grid
-  strengths:
-    - 12
-    - 24
-    - 36
-    - 48
+  target_doses:
+    - 9
+    - 18
+  changes_per_candidate: 36
+  accept_to_reject_per_candidate: 24
+  reject_to_accept_per_candidate: 12
+  material_count_min: 2
+  material_count_max: 4
+  require_identical_material_histogram: true
   calibration_world_count: 2
   minimum_passing_worlds: 2
-  selection_rule: minimum_strength_meeting_gate
+  selection_rule: minimum_target_dose_meeting_gate
   calibration_materials:
     - bronze
     - cotton

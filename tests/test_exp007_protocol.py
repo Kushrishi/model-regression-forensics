@@ -42,10 +42,16 @@ def test_exp007_config_freezes_model_training_and_calibration_scaffold() -> None
 
     assert config.calibration is not None
     assert config.calibration.kind == "sensitivity_grid"
-    assert config.calibration.strengths == [12, 24, 36, 48]
+    assert config.calibration.target_doses == [9, 18]
+    assert config.calibration.changes_per_candidate == 36
+    assert config.calibration.accept_to_reject_per_candidate == 24
+    assert config.calibration.reject_to_accept_per_candidate == 12
+    assert config.calibration.material_count_min == 2
+    assert config.calibration.material_count_max == 4
+    assert config.calibration.require_identical_material_histogram is True
     assert config.calibration.calibration_world_count == 2
     assert config.calibration.minimum_passing_worlds == 2
-    assert config.calibration.selection_rule == "minimum_strength_meeting_gate"
+    assert config.calibration.selection_rule == "minimum_target_dose_meeting_gate"
     assert config.calibration.calibration_materials == [
         "bronze",
         "cotton",
@@ -59,10 +65,16 @@ def test_sensitivity_calibration_rejects_invalid_selection_protocol() -> None:
     with pytest.raises(ValidationError):
         SensitivityCalibrationConfig(
             kind="sensitivity_grid",
-            strengths=[24, 12],
+            target_doses=[18, 9],
+            changes_per_candidate=36,
+            accept_to_reject_per_candidate=24,
+            reject_to_accept_per_candidate=12,
+            material_count_min=2,
+            material_count_max=4,
+            require_identical_material_histogram=True,
             calibration_world_count=2,
             minimum_passing_worlds=2,
-            selection_rule="minimum_strength_meeting_gate",
+            selection_rule="minimum_target_dose_meeting_gate",
             calibration_materials=["bronze", "cotton", "quartz", "velvet"],
             certification_world_count=5,
         )
@@ -70,10 +82,16 @@ def test_sensitivity_calibration_rejects_invalid_selection_protocol() -> None:
     with pytest.raises(ValidationError):
         SensitivityCalibrationConfig(
             kind="sensitivity_grid",
-            strengths=[12, 24],
+            target_doses=[9, 18],
+            changes_per_candidate=36,
+            accept_to_reject_per_candidate=24,
+            reject_to_accept_per_candidate=12,
+            material_count_min=2,
+            material_count_max=4,
+            require_identical_material_histogram=True,
             calibration_world_count=2,
             minimum_passing_worlds=3,
-            selection_rule="minimum_strength_meeting_gate",
+            selection_rule="minimum_target_dose_meeting_gate",
             calibration_materials=["bronze", "cotton", "quartz", "velvet"],
             certification_world_count=5,
         )
@@ -82,8 +100,8 @@ def test_sensitivity_calibration_rejects_invalid_selection_protocol() -> None:
 def test_exp007_readme_preserves_pre_model_boundary() -> None:
     readme = Path("experiments/007_sensitivity_calibrated_causal_rca/README.md").read_text()
 
-    assert "12, 24, 36, 48" in readme
-    assert 'sha256("exp007-calibration|42|strength|world_index")' in readme
-    assert 'sha256("exp007-certification|42|strength|world_index")' in readme
+    assert "9, 18" in readme
+    assert 'sha256("exp007-calibration|42|target_dose|world_index")' in readme
+    assert 'sha256("exp007-certification|42|target_dose|world_index")' in readme
     assert "No Experiment 007 model has been trained." in readme
     assert "manifest hash is recorded here" in readme

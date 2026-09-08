@@ -4,7 +4,7 @@ Status: **prospective design scaffold — no Experiment 007 model result observe
 
 ## Research question
 
-Can a behaviorally effective corruption strength be selected prospectively on
+Can a behaviorally effective target corruption dose be selected prospectively on
 development-only calibration data and then transfer to untouched certification
 worlds strongly enough to support causal model-regression RCA?
 
@@ -68,88 +68,129 @@ certification examples.
 Each evaluation family contains the same six semantic slices with 16 examples
 per slice and 96 examples total.
 
-Certification evaluation may not influence corruption-strength selection.
+Certification evaluation may not influence target-dose selection.
 
 No candidate model may be evaluated on certification data until calibration has
-selected and frozen a strength.
+selected and frozen a target dose.
 
-## Prospective corruption-strength grid
+## Pre-model feasibility amendment
 
-Experiment 007 freezes exactly four candidate strengths:
+The initial Experiment 007 scaffold proposed varying total corruption strength
+over 12, 24, 36, and 48 changed labels per candidate.
 
-- 12 changed labels per candidate;
-- 24 changed labels per candidate;
-- 36 changed labels per candidate;
-- 48 changed labels per candidate.
+Before any Experiment 007 model was trained, solver-only feasibility analysis
+identified two avoidable observability problems:
 
-No intermediate or additional strength may be added after any model result is
-observed.
+- varying total changed-record count could reveal corruption magnitude directly;
+- the planted candidate could have a different flip-direction signature from
+  distractors.
 
-These values are chosen because the 48-example training capacity of each
-semantic slice permits exact balancing at every strength across:
+The protocol is therefore amended prospectively, before any behavioral result,
+to hold total corruption magnitude and flip-direction totals fixed while
+varying only the target-specific corruption dose.
 
-- six selected slots;
-- four colors;
-- twelve training materials.
+Solver analysis also showed that exact simultaneous balancing of selected slot,
+color, and material is structurally infeasible under five-way changed-record
+non-overlap. Exact direction-specific slot and color balance are retained.
+Material is instead controlled by requiring the same bounded material histogram
+across all five candidates within a world.
 
-For strength `k`, every candidate must therefore contain:
+An exhaustive admissible target-dose scan tested:
 
-- exactly `k` changed records;
-- exactly `48 - k` unchanged records;
-- exactly `k / 6` changed examples per selected slot;
-- exactly `k / 4` changed examples per color;
-- exactly `k / 12` changed examples per training material.
+3, 6, 9, 12, 15, 18, 21, 24.
+
+Only target doses 9 and 18 were feasible under the amended construction.
+
+A separate local-trade capacity proof produced seven distinct valid worlds at
+dose 9 and seven distinct valid worlds at dose 18 without model training or
+certification evaluation.
+
+## Prospective target-dose grid
+
+Experiment 007 freezes exactly two target doses:
+
+- 9 `triangle_large` changes in the planted candidate;
+- 18 `triangle_large` changes in the planted candidate.
+
+Every candidate at either dose contains exactly:
+
+- 36 changed records and 12 unchanged records;
+- 24 clean `ACCEPT` records changed to `REJECT`;
+- 12 clean `REJECT` records changed to `ACCEPT`;
+- four `ACCEPT` to `REJECT` changes per selected slot;
+- two `REJECT` to `ACCEPT` changes per selected slot;
+- six `ACCEPT` to `REJECT` changes per color;
+- three `REJECT` to `ACCEPT` changes per color.
+
+For each training material, every candidate must contain between two and four
+changed records. Within a world, all five candidates must have exactly the same
+twelve-material changed-record histogram.
+
+No additional target dose may be introduced after any model result is observed.
 
 ## Five-candidate construction
 
 Every calibration and certification world contains five opaque candidate
 dataset shards.
 
-All five candidates use the same strength within a world.
-
 One benchmark-private candidate is the planted target-associated candidate.
 
-Its changed records must all:
+At target dose 9, its `ACCEPT` to `REJECT` allocation is:
 
-- belong to `triangle_large`;
-- be clean `ACCEPT` examples;
-- become `REJECT` examples.
+- 9 `triangle_large`;
+- 5 `circle_small`;
+- 5 `circle_large`;
+- 5 `triangle_small`.
 
-The four distractor candidates may not contain `triangle_large` changes.
+At target dose 18, its `ACCEPT` to `REJECT` allocation is:
 
-Distractor changes must come only from the five protected semantic slices.
+- 18 `triangle_large`;
+- 2 `circle_small`;
+- 2 `circle_large`;
+- 2 `triangle_small`.
 
-Their semantic allocation must be solver-certified so that:
+Each of the four distractors contains:
 
-- all five protected slices are represented in every distractor whenever
-  mathematically possible;
-- per-distractor protected-slice counts differ by at most one;
-- aggregate protected-slice counts across all four distractors differ by at
-  most one;
-- selected-slot, color, and material balance remain exact;
-- changed-record sets do not overlap;
-- all five observable candidates have the same record count and changed-record
-  count.
+- zero `triangle_large` changes;
+- 8 `circle_small` changes;
+- 8 `circle_large` changes;
+- 8 `triangle_small` changes.
 
-The exact solver-certified record identities must be frozen before any
-Experiment 007 model training.
+Every candidate also contains exactly:
+
+- 6 `square_small` `REJECT` to `ACCEPT` changes;
+- 6 `square_large` `REJECT` to `ACCEPT` changes.
+
+Within every world:
+
+- all five candidates have the same total changed-record count;
+- all five candidates have the same flip-direction totals;
+- direction-specific selected-slot balance is exact;
+- direction-specific color balance is exact;
+- each material contributes between two and four changed records per candidate;
+- the complete material histogram is identical across all five candidates;
+- changed-record sets are mutually non-overlapping across all five candidates;
+- candidate identifiers are opaque and the planted role is benchmark-private.
+
+The exact solver-certified record identities and private role assignment must be
+frozen before any Experiment 007 model training.
 
 ## Frozen world families
 
 Before result-bearing training, the implementation must materialize all
-candidate constructions for every allowed strength.
+candidate constructions for every allowed target dose.
 
-Calibration uses exactly two deterministic worlds per strength.
+Calibration uses exactly two deterministic worlds per target dose.
 
 Calibration world seeds are derived from the frozen namespace:
 
-`sha256("exp007-calibration|42|strength|world_index")`
+`sha256("exp007-calibration|42|target_dose|world_index")`
 
-Certification uses exactly five deterministic worlds per strength.
+Certification uses exactly five deterministic worlds per target dose.
 
 Certification world seeds are derived from the frozen namespace:
 
-`sha256("exp007-certification|42|strength|world_index")`
+`sha256("exp007-certification|42|target_dose|world_index")`
 
 The implementation must freeze the digest-to-integer conversion, generated
 world manifests, and manifest hash before any model result is observed.
@@ -176,7 +217,7 @@ calibration.
 
 ## Calibration candidate gate
 
-For each strength, evaluate both frozen calibration worlds.
+For each target dose, evaluate both frozen calibration worlds.
 
 A calibration world passes only when:
 
@@ -185,32 +226,32 @@ A calibration world passes only when:
 2. absolute drift on every protected non-target slice is at most 0.05;
 3. all six semantic slices and aggregate accuracy are reported.
 
-A strength qualifies only if both calibration worlds pass.
+A target dose qualifies only if both calibration worlds pass.
 
-The selected strength is the smallest qualifying strength.
+The selected target dose is the smallest qualifying dose.
 
-Strengths are considered strictly in increasing order:
+Target doses are considered strictly in increasing order:
 
-12, 24, 36, 48.
+9, 18.
 
-Once a strength qualifies, larger strengths are not trained or inspected.
+Once a target dose qualifies, the larger dose is not trained or inspected.
 
-If no strength qualifies, Experiment 007 stops with a benchmark-construction
-negative result.
+If neither target dose qualifies, Experiment 007 stops with a benchmark-
+construction negative result.
 
 The grid may not be extended and thresholds may not be weakened.
 
 ## Freeze-before-certification boundary
 
-The selected calibration strength and its supporting calibration gate results
+The selected calibration target dose and its supporting calibration gate results
 must be materialized and frozen before certification evaluation is used.
 
 After that boundary:
 
-- calibration results may not change the selected strength;
+- calibration results may not change the selected target dose;
 - certification failures may not trigger recalibration;
 - no new calibration world may be generated;
-- no new corruption strength may be introduced.
+- no new target dose may be introduced.
 
 ## Certification worlds
 
@@ -275,8 +316,8 @@ reveal discipline established in Experiments 004-006.
 Valid outcomes include:
 
 - calibration clean baseline failure;
-- no strength passes calibration;
-- calibration selects a strength but no certification world reproduces the
+- no target dose passes calibration;
+- calibration selects a target dose but no certification world reproduces the
   localized regression;
 - a certification world passes behaviorally but fails private causal
   certification;
@@ -292,8 +333,8 @@ certification evaluation.
 
 A positive Experiment 007 result would support only a narrow controlled claim:
 
-under this frozen synthetic task and model regime, a corruption strength chosen
-prospectively on disjoint calibration data transferred to untouched
+under this frozen synthetic task and model regime, a target-specific
+corruption dose chosen prospectively on disjoint calibration data transferred to untouched
 certification data and enabled a causally certified training-data regression
 benchmark on which blinded RCA could be evaluated.
 
@@ -304,7 +345,8 @@ production-scale model debugging.
 
 No Experiment 007 model has been trained.
 
-The next allowed work is construction implementation and solver feasibility.
+Solver feasibility is complete. The next allowed work is deterministic
+construction implementation, manifest generation, and certification API binding.
 
 The protocol is not considered fully frozen until:
 

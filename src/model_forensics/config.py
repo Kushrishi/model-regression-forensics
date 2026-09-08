@@ -95,20 +95,37 @@ CapabilityDiagnosticConfig = Annotated[
 
 
 class SensitivityCalibrationConfig(StrictConfigModel):
-    """Prospective corruption-strength calibration settings."""
+    """Prospective target-dose calibration settings."""
 
     kind: Literal["sensitivity_grid"]
-    strengths: list[PositiveInt] = Field(min_length=1)
+    target_doses: list[PositiveInt] = Field(min_length=1)
+    changes_per_candidate: PositiveInt
+    accept_to_reject_per_candidate: PositiveInt
+    reject_to_accept_per_candidate: PositiveInt
+    material_count_min: PositiveInt
+    material_count_max: PositiveInt
+    require_identical_material_histogram: bool
     calibration_world_count: int = Field(gt=0)
     minimum_passing_worlds: int = Field(gt=0)
-    selection_rule: Literal["minimum_strength_meeting_gate"]
+    selection_rule: Literal["minimum_target_dose_meeting_gate"]
     calibration_materials: list[str] = Field(min_length=1)
     certification_world_count: int = Field(gt=0)
 
     @model_validator(mode="after")
     def validate_protocol(self) -> SensitivityCalibrationConfig:
-        if self.strengths != sorted(set(self.strengths)):
-            raise ValueError("calibration strengths must be unique and increasing")
+        if self.target_doses != sorted(set(self.target_doses)):
+            raise ValueError("target doses must be unique and increasing")
+        if (
+            self.changes_per_candidate
+            != self.accept_to_reject_per_candidate + self.reject_to_accept_per_candidate
+        ):
+            raise ValueError("flip-direction counts must sum to total changes")
+        if self.material_count_min > self.material_count_max:
+            raise ValueError("material count minimum cannot exceed maximum")
+        if any(dose > self.accept_to_reject_per_candidate for dose in self.target_doses):
+            raise ValueError("target dose cannot exceed ACCEPT-to-REJECT count")
+        if any((self.accept_to_reject_per_candidate - dose) % 3 for dose in self.target_doses):
+            raise ValueError("remaining ACCEPT-side changes must divide across three slices")
         if self.minimum_passing_worlds > self.calibration_world_count:
             raise ValueError("minimum passing worlds cannot exceed calibration world count")
         if len(self.calibration_materials) != len(set(self.calibration_materials)):

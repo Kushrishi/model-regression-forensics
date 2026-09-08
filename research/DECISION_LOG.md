@@ -473,3 +473,37 @@ worlds belonging to the selected strength may be used after calibration.
 
 The construction implementation and solver-certified manifests remain to be
 completed. No Experiment 007 model training is authorized by this design entry.
+
+## 2026-09-07 — Experiment 007 pre-model feasibility amendment
+
+Before any Experiment 007 model training or certification evaluation, solver-
+only feasibility analysis showed that the initial 12/24/36/48 total-corruption
+grid was not the strongest prospective construction.
+
+Varying total changed-record count could expose corruption magnitude directly,
+and the initial planted construction could also differ observably from
+distractors in flip-direction signature. The design was therefore amended
+before behavioral results so every candidate contains exactly 36 changed
+records: 24 `ACCEPT` to `REJECT` changes and 12 `REJECT` to `ACCEPT` changes.
+
+The calibration variable is now target-specific dose rather than total
+corruption magnitude. An exhaustive admissible dose scan under exact semantic,
+direction-specific selected-slot, direction-specific color, matched bounded
+material-histogram, and five-way changed-record non-overlap constraints tested
+target doses 3, 6, 9, 12, 15, 18, 21, and 24. Only doses 9 and 18 were feasible.
+
+Exact simultaneous selected-slot, color, and material balancing was
+structurally infeasible under five-way non-overlap. The amended protocol
+therefore retains exact direction-specific slot and color balance and requires
+each candidate material count to lie between 2 and 4 while all five candidates
+within a world share the same material histogram.
+
+A zero-objective feasibility solve plus exact constraint-preserving local
+two-record trades demonstrated capacity for seven distinct valid worlds at
+target dose 9 and seven at target dose 18, matching the required two
+calibration and five certification worlds per dose.
+
+This amendment was driven only by pre-model construction feasibility and
+anti-leak considerations. No Experiment 007 model result had been observed,
+certification evaluation remained untouched, and no behavioral threshold was
+changed.
