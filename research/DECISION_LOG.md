@@ -550,3 +550,54 @@ certification output.
 
 At this freeze boundary, Experiment 007 model training remained NOT_STARTED
 and certification model evaluation remained NOT_STARTED.
+
+## 2026-09-08 — Experiment 007 calibration negative result
+
+Experiment 007 completed the full prospectively frozen calibration grid and
+stopped before certification.
+
+The deterministic clean calibration baseline scored 96/96. Target dose 9
+produced material `triangle_large` regression in both calibration worlds, but
+zero of two worlds passed because protected semantic slices drifted far beyond
+the frozen 0.05 limit. Dose 9 therefore did not qualify.
+
+The frozen protocol then authorized target dose 18. Exact clean-training and
+calibration-evaluation parity was verified before reusing the deterministic
+clean sibling. Independently trained clean adapters from the two dose-9 worlds
+were byte-identical, with identical training configuration, seed, loss
+trajectory, and model-facing training data.
+
+Both dose-18 calibration worlds reduced `triangle_large`, `triangle_small`,
+`circle_small`, and `circle_large` accuracy from 1.0 to 0.0 while both square
+slices remained at 1.0. Zero of two dose-18 worlds passed. The formal
+calibration result was therefore 0/2 at dose 9 and 0/2 at dose 18.
+
+No target dose qualified. The grid was not extended and the thresholds were not
+changed. Certification evaluation remained untouched. No selection artifact,
+private causal certification, restoration run, order control, blinded
+diagnostic, truth reveal, or diagnosis-driven intervention was authorized.
+
+After the confirmatory result was closed, a read-only audit reconstructed the
+semantic intervention matrix from the exact model-facing training JSONL files.
+
+At dose 9, `triangle_large` contained 9/48 flipped labels, while each protected
+ACCEPT slice (`circle_small`, `circle_large`, and `triangle_small`) contained
+37/48. At dose 18, the target contained 18/48 flips while each of those
+protected ACCEPT slices contained 34/48. Both square slices contained 30/48
+flips at both doses. The complete candidate dataset contained 180 changed
+labels out of 288 records.
+
+This post-hoc audit identifies a structural benchmark-design conflict: the
+model-facing construction directly corrupted protected ACCEPT behaviors more
+heavily than the intended target while the behavioral contract required those
+same protected slices to remain nearly unchanged.
+
+Experiment 007 is therefore recorded as a benchmark-construction negative
+result. It demonstrated reproducible behavioral materiality but not locality.
+Because the localized-regression prerequisite failed, Experiment 007 provides
+no evidence for or against blinded attribution accuracy or causal restoration.
+
+The next benchmark-design iteration, if pursued, must validate the complete
+model-facing semantic intervention matrix prospectively before model training
+and ensure that concurrent nuisance changes are compatible with the protected-
+behavior contract.

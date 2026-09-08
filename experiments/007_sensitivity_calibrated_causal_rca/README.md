@@ -1,6 +1,6 @@
 # Experiment 007 — Sensitivity-Calibrated Causal RCA
 
-Status: **prospective design scaffold — no Experiment 007 model result observed**
+Status: **completed — calibration negative result; certification not opened**
 
 ## Research question
 
@@ -348,25 +348,65 @@ benchmark on which blinded RCA could be evaluated.
 It would not establish general causal attribution for neural networks or
 production-scale model debugging.
 
-## Current execution boundary
+## Final execution outcome
 
-No Experiment 007 model has been trained.
+Experiment 007 completed calibration under the frozen protocol and stopped
+before certification because neither prospective target dose qualified.
 
-Solver feasibility is complete. The next allowed work is deterministic
-construction implementation, manifest generation, and certification API binding.
+Calibration results:
+
+- target dose 9: 0/2 calibration worlds passed;
+- target dose 18: 0/2 calibration worlds passed;
+- the clean calibration baseline scored 96/96 on the complete calibration
+  evaluation family;
+- every observed candidate produced a material `triangle_large` regression;
+- no target dose satisfied the protected-slice locality requirement.
+
+At dose 9, World 0 reduced `triangle_large` accuracy from 1.0 to 0.125 while
+also strongly degrading protected ACCEPT slices. World 1 reduced
+`triangle_large`, `triangle_small`, `circle_small`, and `circle_large` to 0.0
+while both square slices remained at 1.0.
+
+At dose 18, both calibration worlds produced the same semantic pattern:
+`triangle_large`, `triangle_small`, `circle_small`, and `circle_large` all
+scored 0.0, while `square_small` and `square_large` remained at 1.0.
+
+The formal calibration summaries therefore rejected both allowed doses. The
+frozen grid was not extended and no threshold was weakened.
+
+No calibration-selection artifact was created. Certification evaluation was
+never opened. Private causal certification, restoration training, order
+control, blinded diagnostics, truth reveal, and diagnosis-driven intervention
+were not authorized and were not run.
+
+A post-hoc read-only audit of the already-generated model-facing training data
+was then performed to understand the failed locality contract. This audit did
+not change or re-score the confirmatory calibration result.
+
+The audit found:
+
+- at dose 9, `triangle_large` had 9/48 flipped labels, while each protected
+  ACCEPT slice (`circle_small`, `circle_large`, `triangle_small`) had 37/48;
+- at dose 18, `triangle_large` had 18/48 flipped labels, while each protected
+  ACCEPT slice had 34/48;
+- both square slices had 30/48 flipped labels at both doses;
+- the complete candidate training set contained 180 changed labels out of 288.
+
+Thus, under the actual model-facing construction, each protected ACCEPT slice
+received substantially more direct label corruption than the intended target,
+even though the behavioral gate required every protected slice to stay within
+0.05 of the clean baseline.
+
+Experiment 007 is therefore closed as a benchmark-construction negative result.
+The experiment establishes that the frozen sensitivity grid produced
+behaviorally material but non-local regressions. The post-hoc audit identifies
+a structural conflict between the candidate construction and the protected-
+behavior contract. It does not establish a failure of the blinded attribution
+methods, because those methods were never authorized to run.
 
 Frozen construction manifest SHA-256:
 
 `a6c5be745c5f4f4a97db7bf882651591886d25a0f125d967a147b861b19bdc28`
-
-The protocol is not considered fully frozen until:
-
-- the calibration-data generator is implemented and tested;
-- all calibration and certification world manifests are generated;
-- every construction gate passes;
-- the manifest hash is recorded here;
-- the certification API binding is tested;
-- the complete pre-model quality gate passes.
 
 ## Pre-model execution-boundary freeze
 

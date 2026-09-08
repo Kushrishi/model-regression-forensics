@@ -103,5 +103,5 @@ def test_exp007_readme_preserves_pre_model_boundary() -> None:
     assert "9, 18" in readme
     assert 'sha256("exp007-calibration|42|target_dose|world_index")' in readme
     assert 'sha256("exp007-certification|42|target_dose|world_index")' in readme
-    assert "No Experiment 007 model has been trained." in readme
-    assert "manifest hash is recorded here" in readme
+    assert "No Experiment 007 behavioral result was observed before this execution-layer" in readme
+    assert "a6c5be745c5f4f4a97db7bf882651591886d25a0f125d967a147b861b19bdc28" in readme
