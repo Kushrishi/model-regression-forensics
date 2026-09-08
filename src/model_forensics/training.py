@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import math
+import os
+import platform
 import random
 from collections import Counter
 from dataclasses import dataclass
@@ -188,6 +190,34 @@ def _select_device(torch: Any) -> str:
     if torch.cuda.is_available():
         return "cuda"
     return "cpu"
+
+
+def _runtime_execution_metadata(
+    torch: Any,
+    *,
+    device: str,
+) -> dict[str, Any]:
+    """Describe the execution backend without changing training behavior."""
+
+    mps_backend = getattr(torch.backends, "mps", None)
+
+    mps_built = bool(mps_backend.is_built()) if mps_backend is not None else False
+    mps_available = bool(mps_backend.is_available()) if mps_backend is not None else False
+
+    return {
+        "device": device,
+        "platform_system": platform.system(),
+        "platform_release": platform.release(),
+        "platform_machine": platform.machine(),
+        "python_version": platform.python_version(),
+        "cpu_count": os.cpu_count(),
+        "torch_num_threads": torch.get_num_threads(),
+        "torch_num_interop_threads": torch.get_num_interop_threads(),
+        "mps_built": mps_built,
+        "mps_available": mps_available,
+        "cuda_available": bool(torch.cuda.is_available()),
+        "torch": torch.__version__,
+    }
 
 
 def _set_seed(torch: Any, seed: int) -> None:
@@ -377,8 +407,10 @@ def train_lora_sft_run(
         },
         "training": training.model_dump(),
         "runtime": {
-            "device": device,
-            "torch": torch.__version__,
+            **_runtime_execution_metadata(
+                torch,
+                device=device,
+            ),
             "transformers": transformers.__version__,
             "peft": peft.__version__,
         },
