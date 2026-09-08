@@ -532,3 +532,21 @@ The regenerated manifest is pinned by SHA-256:
 
 No Experiment 007 model result was observed, no certification evaluation was
 used, and no behavioral threshold was changed.
+
+## 2026-09-07 — Experiment 007 execution-boundary freeze
+
+The Experiment 007 runner layer was completed before model execution.
+
+Calibration and certification are separated in code. Certification requires a
+frozen minimum-dose selection artifact. Dose 18 may not be inspected after
+dose 9 qualifies. Candidate behavioral gates are bound to the exact prepared
+world using the prepared-world identity plus training-file, evaluation-file,
+and adapter provenance. Restoration and order-control preparation require a
+passed localized-regression gate from the matching certification world.
+
+The generic tested certification abstraction is reused for Experiment 007
+candidate gating, causal certification, order control, and public
+certification output.
+
+At this freeze boundary, Experiment 007 model training remained NOT_STARTED
+and certification model evaluation remained NOT_STARTED.

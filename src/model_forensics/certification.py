@@ -550,3 +550,89 @@ def exp006_public_certification_payload(
         causal_certification=causal_certification,
         order_control=order_control,
     )
+
+
+def evaluate_exp007_candidate_gate(
+    *,
+    baseline_summary: dict[str, Any],
+    candidate_summary: dict[str, Any],
+    minimum_baseline_score: float,
+    minimum_regression_delta: float,
+    maximum_unrelated_delta: float,
+) -> CandidateGateResult:
+    """Evaluate the frozen Experiment 007 localized-regression gate."""
+
+    return _evaluate_candidate_gate(
+        experiment_id="exp007",
+        baseline_summary=baseline_summary,
+        candidate_summary=candidate_summary,
+        minimum_baseline_score=minimum_baseline_score,
+        minimum_regression_delta=minimum_regression_delta,
+        maximum_unrelated_delta=maximum_unrelated_delta,
+    )
+
+
+def evaluate_exp007_causal_certification(
+    *,
+    baseline_summary: dict[str, Any],
+    candidate_summary: dict[str, Any],
+    restoration_summaries: dict[str, dict[str, Any]],
+    planted_candidate_id: str,
+    candidate_ids: tuple[str, ...],
+    minimum_recovery_delta: float,
+    maximum_unrelated_delta: float,
+) -> CausalCertificationResult:
+    """Evaluate the private Experiment 007 five-restoration gates."""
+
+    return _evaluate_causal_certification(
+        experiment_id="exp007",
+        baseline_summary=baseline_summary,
+        candidate_summary=candidate_summary,
+        restoration_summaries=restoration_summaries,
+        planted_candidate_id=planted_candidate_id,
+        candidate_ids=candidate_ids,
+        minimum_recovery_delta=minimum_recovery_delta,
+        maximum_unrelated_delta=maximum_unrelated_delta,
+    )
+
+
+def evaluate_exp007_order_control(
+    *,
+    baseline_summary: dict[str, Any],
+    candidate_summary: dict[str, Any],
+    planted_restoration_summary: dict[str, Any],
+    minimum_baseline_score: float,
+    minimum_regression_delta: float,
+    minimum_recovery_delta: float,
+    maximum_unrelated_delta: float,
+) -> OrderControlResult:
+    """Evaluate the frozen Experiment 007 alternative-order gates."""
+
+    return _evaluate_order_control(
+        experiment_id="exp007",
+        baseline_summary=baseline_summary,
+        candidate_summary=candidate_summary,
+        planted_restoration_summary=planted_restoration_summary,
+        minimum_baseline_score=minimum_baseline_score,
+        minimum_regression_delta=minimum_regression_delta,
+        minimum_recovery_delta=minimum_recovery_delta,
+        maximum_unrelated_delta=maximum_unrelated_delta,
+    )
+
+
+def exp007_public_certification_payload(
+    *,
+    construction_gate_passed: bool,
+    candidate_gate: CandidateGateResult,
+    causal_certification: CausalCertificationResult,
+    order_control: OrderControlResult,
+) -> dict[str, object]:
+    """Return only the Experiment 007 protocol-approved public boundary."""
+
+    return _public_certification_payload(
+        experiment_id="exp007",
+        construction_gate_passed=construction_gate_passed,
+        candidate_gate=candidate_gate,
+        causal_certification=causal_certification,
+        order_control=order_control,
+    )

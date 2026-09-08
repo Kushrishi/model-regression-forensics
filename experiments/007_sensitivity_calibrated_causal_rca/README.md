@@ -367,3 +367,34 @@ The protocol is not considered fully frozen until:
 - the manifest hash is recorded here;
 - the certification API binding is tested;
 - the complete pre-model quality gate passes.
+
+## Pre-model execution-boundary freeze
+
+The Experiment 007 execution layer was implemented and validated before any
+model training or certification model evaluation.
+
+The frozen workflow enforces these boundaries programmatically:
+
+- calibration evaluation uses only the dedicated calibration materials;
+- certification preparation requires a frozen calibration-selection artifact
+  bound to the frozen manifest and Experiment 007 config;
+- dose 18 cannot be supplied to the selection step after dose 9 qualifies;
+- each candidate gate is bound to the exact prepared phase, target dose, and
+  world index;
+- baseline and candidate adapters are verified against the exact training-file
+  SHA-256 values from that prepared world;
+- baseline and candidate evaluations are verified against both their matching
+  trained adapters and every frozen evaluation-file SHA-256 value;
+- restoration and order-control preparation require a passed localized-
+  regression gate from the matching certification world and manifest;
+- benchmark-private planted-candidate identity remains excluded from
+  diagnostic lineage;
+- calibration, certification, and training/evaluation identities remain
+  disjoint according to the frozen protocol.
+
+Experiment 007 reuses the existing generic certification abstraction for
+candidate gating, causal certification, order control, and public
+certification output.
+
+No Experiment 007 behavioral result was observed before this execution-layer
+freeze.
