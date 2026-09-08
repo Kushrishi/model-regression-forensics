@@ -1,6 +1,6 @@
 # Experiment 006 — Semantic-Balanced Causal RCA
 
-Status: **protocol frozen — not yet executed**
+Status: **complete — benchmark-construction negative result; no world certified**
 
 ## Research question
 
