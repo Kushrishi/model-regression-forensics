@@ -2,77 +2,79 @@
 
 > **Active ML research project**
 
+Model Regression Forensics studies a practical model-debugging problem:
+
+> **When a model regresses after retraining, can we identify which training change caused the regression and verify that diagnosis experimentally?**
+
 ## The problem
 
-A model works correctly. It gets retrained with new or changed data. The new
-version starts failing on something the old version handled correctly.
+A model can perform correctly before retraining and then lose a capability after
+new data or training changes are introduced.
 
-Finding the failure is usually easier than answering the harder question:
+Measuring the regression is only the first step. The more difficult question is
+identifying which training change caused it.
 
-> **Which training change actually caused it?**
+A training change may appear strongly related to a failure without actually
+being responsible for the model's behavior. This project therefore treats
+diagnosis and verification as separate problems.
 
-That is the problem I am studying with Model Regression Forensics.
+## Approach
 
-The idea is straightforward:
+The research follows a controlled workflow:
 
-**model gets worse → inspect what changed during training → rank likely causes
-→ undo a suspected change → retrain → check whether the failure disappears**
+1. Compare a clean reference model with a retrained model.
+2. Measure which behaviors changed.
+3. Record and analyze the training changes that could explain the regression.
+4. Rank the most plausible causes.
+5. Reverse individual candidate changes and retrain under the same conditions.
+6. Measure whether the target behavior recovers while unrelated behavior
+   remains stable.
 
-If reversing a change repairs the model, that is much stronger evidence than
-simply saying the change looked suspicious.
-
-## What I am testing
-
-The project uses controlled language-model training experiments where I know
-exactly what changed between training runs.
-
-Each experiment asks three main questions:
-
-1. **What behavior got worse?**
-2. **Which training change is most likely responsible?**
-3. **If that change is reversed and the model is retrained, does the behavior recover?**
-
-The third question is the most important. A training change can look highly
-related to a failure without actually being what caused it.
+The final step is essential. A candidate is not treated as a verified cause
+simply because it receives a high ranking.
 
 ## Current status
 
 Experiments **000 through 007 are complete**.
 
-The experiments became stricter over time because earlier versions exposed
-ways the debugging process could give a convincing answer for the wrong reason.
+The experimental series has progressively exposed weaknesses in both the
+debugging method and the benchmark used to evaluate it.
 
-For example:
+Key findings so far include:
 
-- Experiment 001 found a simple text-matching shortcut that made the debugging
-  result look stronger than it really was.
-- Experiment 004 identified the intended suspicious training change, but
-  reversing it did not repair the model.
-- Experiments 005 and 006 showed that a debugging benchmark is not useful if
-  the training changes do not actually create the intended model failure.
-- Experiment 007 finally created a strong target failure, but it also damaged
-  unrelated behavior, so the experiment stopped rather than treating that as a
-  successful result.
+- simple lexical similarity can create misleading attribution signals;
+- correctly localizing a suspicious training change does not establish that it
+  caused the regression;
+- a benchmark is not useful if the intended regression never appears;
+- creating a target regression is also insufficient if unrelated behaviors
+  degrade at the same time.
+
+These failures were retained as experimental results and used to strengthen
+later designs rather than being tuned away after observing the outcome.
 
 ## Experiment 008
 
-Experiment 008 is active now.
+Experiment 008 is the active experiment.
 
-The setup was completely defined before model training began.
+Its design was fixed before result-bearing model training began. Each test world
+contains five recorded training-data changes. One change modifies supervision
+for the target behavior, while four controlled distractor changes preserve
+correct labels for protected behavior.
 
-It starts with a clean model and five possible training-data changes. One is
-designed to create a specific failure. The other four are distractions.
+The clean reference model has completed evaluation with **96/96 held-out
+accuracy**, including **16/16 on each of the six evaluated behavior slices**.
 
-The clean reference model has now scored **96/96 held-out test cases**, including
-perfect performance on every individual behavior being measured.
+Candidate-model evaluation is now in progress.
 
-The changed models are now being evaluated.
+If both candidate worlds satisfy the predefined target-regression and
+protected-behavior criteria, each candidate training change will then be
+reversed independently and the model retrained.
 
-If both changed-model runs produce the intended isolated failure, the next step
-is simple: reverse each of the five possible changes one at a time, retrain, and
-see which reversal actually repairs the model.
+A successful causal result would require one restoration to recover the target
+behavior while the other restorations do not, without introducing meaningful
+degradation elsewhere.
 
-No Experiment 008 causal result is being claimed yet.
+No Experiment 008 causal result is claimed at the current stage.
 
 ## Experiment summary
 
