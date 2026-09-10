@@ -21,7 +21,7 @@ structured training lineage
         ↓
 multiple plausible data changes
         ↓
-blinded candidate-cause ranking
+truth-isolated candidate-cause ranking
         ↓
 selective intervention
         ↓
@@ -32,29 +32,41 @@ A diagnosis is treated as meaningful only when the benchmark is itself learnable
 
 ## Current status
 
-The repository contains the complete research record through **Experiment 006**.
+The repository contains the complete research record through **Experiment 007**,
+with **Experiment 008** now active under a prospectively frozen two-world
+protocol.
 
-The project has progressed from validating a reproducible regression-debugging
+The project has progressed from demonstrating a reproducible regression-debugging
 pipeline to testing increasingly strict requirements for causal root-cause
 analysis.
 
-The main lesson so far is that a plausible attribution score is not enough.
-The benchmark must first produce a valid localized behavioral regression, and
-a suspected cause must then demonstrate material recovery under controlled
-intervention.
+The central lesson remains that attribution is not causal verification. A valid
+experiment must first produce a localized behavioral regression, and the
+suspected cause must then demonstrate selective recovery under controlled
+counterfactual restoration.
 
-Experiments 004 through 006 sharpened that requirement:
+Experiments 004 through 007 progressively tightened that requirement:
 
 - Experiment 004 correctly localized the benchmark-designated target shard, but
   restoring that shard produced no target recovery.
-- Experiment 005 showed that preserving aggregate class counts was not
-  sufficient to produce an admissible localized regression.
+- Experiment 005 showed that preserving aggregate class counts was insufficient
+  to produce an admissible localized regression.
 - Experiment 006 controlled corruption directly in semantic space, but the
-  intended `triangle_large` behavior still did not regress in any of five
-  frozen worlds.
+  intended `triangle_large` behavior still did not regress.
+- Experiment 007 established target materiality during calibration, but the same
+  intervention also damaged protected behavior. Materiality therefore did not
+  imply locality, and causal certification was not authorized.
 
-Experiment 007 is now the active follow-up. Its protocol has not yet been
-frozen.
+Experiment 008 was designed as the final major iteration of the current
+synthetic shape substrate. Its scientific construction was committed before
+model training. The public frozen manifest is truth-free, both worlds satisfy
+the prospective static construction gates, and the clean baseline has now
+scored **96/96 held-out with 16/16 on every semantic slice**.
+
+Frozen candidate evaluation is the active stage. No Experiment 008 causal
+success is claimed unless both candidate worlds first pass the localized
+regression gate and subsequent counterfactual restoration uniquely supports a
+cause.
 
 ## Experiment summary
 
@@ -70,6 +82,8 @@ frozen.
 | **004 — Explicit-policy entangled RCA** | Can blinded localization and diagnosis-driven restoration work on the now-learnable role-binding task? | **Localization correct; causal verification failed** | The task-aware diagnostic correctly localized the hidden target shard, but selective restoration produced zero target recovery. |
 | **005 — Causally certified RCA** | Can a balanced corruption construction create a localized regression before causal certification? | **0/5 worlds qualified** | Clean behavior remained perfect, but no candidate world produced the required target-localized regression. |
 | **006 — Semantic-balanced causal RCA** | Does controlling corruption directly in semantic space repair the Exp005 construction failure? | **0/5 worlds qualified** | All five clean siblings scored 96/96, but `triangle_large` regression remained exactly 0.0 in every candidate world. |
+| **007 — Sensitivity-calibrated causal RCA** | Can calibration establish target materiality before untouched causal certification? | **Materiality achieved; locality failed** | Candidate training produced strong target regression, but protected behaviors also regressed, so certification and restoration were not run. |
+| **008 — Selective causal RCA** | Can a prospectively frozen intervention isolate target corruption from policy-correct nuisance changes and support unique counterfactual recovery? | **Active; clean baseline 96/96** | Two worlds were frozen before training. The clean baseline passed perfectly; candidate evaluation is underway. |
 
 Detailed protocols and results live under [`experiments/`](experiments/).
 
@@ -133,13 +147,13 @@ The current experimental stack uses:
 - pinned model revisions;
 - LoRA supervised fine-tuning;
 - held-out behavioral evaluation;
-- blinded diagnostic ranking;
+- truth-isolated diagnostic ranking;
 - selective intervention datasets;
 - target/control/full-slice evaluation;
 - artifact hashes and runtime provenance;
 - prospective construction and anti-leak gates.
 
-The primary frozen model used from the 003 diagnostic series through Experiments 004–006 is:
+The primary frozen model used from the 003 diagnostic series through Experiments 004–008 is:
 
 ```text
 HuggingFaceTB/SmolLM2-360M-Instruct
@@ -292,6 +306,27 @@ The next benchmark-design problem is therefore to establish behavioral
 materiality prospectively without selecting or tuning on the final
 certification evaluation.
 
+### 9. Target materiality does not guarantee behavioral locality
+
+Experiment 007 solved the materiality problem that blocked Experiment 006:
+candidate training could strongly regress `triangle_large`.
+
+However, the same construction also damaged protected behavior. Because the
+prospectively declared locality gate failed, certification and restoration were
+not run.
+
+### 10. Experiment 008 is prospectively frozen before result-bearing candidate evaluation
+
+Experiment 008 separates one target-specific policy-inconsistent intervention
+from four policy-correct nuisance permutations while preserving the global
+prompt multiset.
+
+Both frozen worlds passed their static construction gates before model
+training. The shared clean baseline then scored 96/96 held-out.
+
+This establishes benchmark readiness, not causal success. Candidate evaluation,
+counterfactual restoration, and diagnostic scoring remain result-bearing stages.
+
 ## Limitations
 
 The project is still early-stage research.
@@ -309,37 +344,48 @@ Current limitations include:
 
 These limitations are deliberate targets for later experiments rather than hidden assumptions.
 
-## Next: Experiment 007 — Sensitivity-Calibrated Causal RCA
+## Current: Experiment 008 — Selective Causal RCA
 
-Experiment 007 is the active follow-up to the five-world negative result from
-Experiment 006.
+Experiment 008 is the active follow-up to the locality failure in Experiment
+007 and the final major iteration planned for the current synthetic shape
+substrate.
 
-Its protocol is **not yet frozen**.
+Its protocol was committed before model training.
 
-The working design direction is to separate two questions that Experiments 005
-and 006 implicitly combined:
+The two frozen worlds each contain five debugger-visible candidate data changes.
+Exactly one candidate introduces target-specific policy-inconsistent
+supervision. The other four are policy-correct nuisance permutations designed
+to alter deterministic training order/content placement without introducing
+incorrect protected labels.
 
-1. Can a corruption construction measurably influence the intended target
-   behavior?
-2. Once that construction is frozen, can blinded RCA identify and causally
-   verify the responsible training change on untouched certification data?
+The public frozen manifest does not explicitly contain root truth. Because root
+identities were visible during benchmark-construction validation, Experiment
+008 does **not** claim investigator blinding. Instead, diagnostic methods are
+evaluated through a truth-isolated interface and scored against private truth
+only after their rankings are frozen.
 
-The intended design principle is to use a prospectively declared calibration
-stage that is disjoint from final certification evaluation.
+The clean baseline is shared across both worlds because the clean training and
+evaluation inputs are byte-identical. A fresh CPU run under recorded runtime
+provenance scored **96/96 overall and 16/16 on every slice**.
 
-A small corruption-strength family may be evaluated during calibration, with a
-deterministic rule selecting the minimum strength that satisfies predeclared
-target-regression and protected-behavior criteria.
+The next required gate is candidate locality:
 
-Only after that selection is frozen would untouched certification worlds be
-run.
+1. target regression on `triangle_large` must be at least the frozen minimum;
+2. every protected slice must remain within the frozen drift bound;
+3. both frozen worlds must pass;
+4. failed worlds are not repaired by changing seeds, thresholds, dose, or
+   hardware backend.
 
-The calibration procedure, data separation, candidate construction, selection
-rule, leakage controls, certification worlds, stopping rule, and claim boundary
-must all be committed before any result-bearing Experiment 007 training.
+Only if both candidate worlds pass will the experiment proceed to five
+independent counterfactual restorations per world.
 
-Experiment 007 must not use the final certification evaluation to choose a
-corruption strength or repair a failed world.
+A causal diagnosis requires the true restoration to recover the target while
+protected behavior remains stable, non-root restorations to fail to produce
+material target recovery, and exactly one candidate to satisfy the recovery
+criterion.
+
+If the frozen candidate construction fails, the current shape substrate is
+retired rather than tuned into an Experiment 009.
 
 ## Research rules
 
@@ -357,5 +403,5 @@ corruption strength or repair a failed world.
 ---
 
 **Research status:** active.
-**Current stable history:** Experiments 000 through 006.
-**Active follow-up:** Experiment 007 — protocol design in progress.
+**Current stable history:** Experiments 000 through 007.
+**Active follow-up:** Experiment 008 — frozen candidate evaluation.
