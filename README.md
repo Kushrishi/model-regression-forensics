@@ -1,72 +1,78 @@
 # Model Regression Forensics
 
-> **Active research project. Novelty is not established.**
+> **Active ML research project**
 
-Model Regression Forensics investigates a narrow ML debugging question:
+## The problem
 
-> **Can an automated debugger localize the training change responsible for an observed model regression and verify that diagnosis through controlled intervention rather than correlation alone?**
+A model works correctly. It gets retrained with new or changed data. The new
+version starts failing on something the old version handled correctly.
 
-The project uses controlled synthetic fine-tuning experiments to study **training-lineage-aware root-cause analysis (RCA)** for behavioral regressions in language models. The emphasis is not just on ranking suspicious data changes, but on designing benchmarks that resist easy shortcuts and on verifying suspected causes through selective intervention.
+Finding the failure is usually easier than answering the harder question:
 
-## Research wedge
+> **Which training change actually caused it?**
 
-Adjacent work already covers important pieces of this problem, including behavioral model diffing, training-data attribution, predictive data debugging, ML pipeline RCA, and influence estimation.
+That is the problem I am studying with Model Regression Forensics.
 
-The working wedge here is narrower:
+The idea is straightforward:
 
-```text
-behavioral regression
-        ↓
-structured training lineage
-        ↓
-multiple plausible data changes
-        ↓
-truth-isolated candidate-cause ranking
-        ↓
-selective intervention
-        ↓
-verified recovery
-```
+**model gets worse → inspect what changed during training → rank likely causes
+→ undo a suspected change → retrain → check whether the failure disappears**
 
-A diagnosis is treated as meaningful only when the benchmark is itself learnable, the hidden cause is not leaked to the diagnostic method, and the suspected cause can be tested by intervention.
+If reversing a change repairs the model, that is much stronger evidence than
+simply saying the change looked suspicious.
+
+## What I am testing
+
+The project uses controlled language-model training experiments where I know
+exactly what changed between training runs.
+
+Each experiment asks three main questions:
+
+1. **What behavior got worse?**
+2. **Which training change is most likely responsible?**
+3. **If that change is reversed and the model is retrained, does the behavior recover?**
+
+The third question is the most important. A training change can look highly
+related to a failure without actually being what caused it.
 
 ## Current status
 
-The repository contains the complete research record through **Experiment 007**,
-with **Experiment 008** now active under a prospectively frozen two-world
-protocol.
+Experiments **000 through 007 are complete**.
 
-The project has progressed from demonstrating a reproducible regression-debugging
-pipeline to testing increasingly strict requirements for causal root-cause
-analysis.
+The experiments became stricter over time because earlier versions exposed
+ways the debugging process could give a convincing answer for the wrong reason.
 
-The central lesson remains that attribution is not causal verification. A valid
-experiment must first produce a localized behavioral regression, and the
-suspected cause must then demonstrate selective recovery under controlled
-counterfactual restoration.
+For example:
 
-Experiments 004 through 007 progressively tightened that requirement:
+- Experiment 001 found a simple text-matching shortcut that made the debugging
+  result look stronger than it really was.
+- Experiment 004 identified the intended suspicious training change, but
+  reversing it did not repair the model.
+- Experiments 005 and 006 showed that a debugging benchmark is not useful if
+  the training changes do not actually create the intended model failure.
+- Experiment 007 finally created a strong target failure, but it also damaged
+  unrelated behavior, so the experiment stopped rather than treating that as a
+  successful result.
 
-- Experiment 004 correctly localized the benchmark-designated target shard, but
-  restoring that shard produced no target recovery.
-- Experiment 005 showed that preserving aggregate class counts was insufficient
-  to produce an admissible localized regression.
-- Experiment 006 controlled corruption directly in semantic space, but the
-  intended `triangle_large` behavior still did not regress.
-- Experiment 007 established target materiality during calibration, but the same
-  intervention also damaged protected behavior. Materiality therefore did not
-  imply locality, and causal certification was not authorized.
+## Experiment 008
 
-Experiment 008 was designed as the final major iteration of the current
-synthetic shape substrate. Its scientific construction was committed before
-model training. The public frozen manifest is truth-free, both worlds satisfy
-the prospective static construction gates, and the clean baseline has now
-scored **96/96 held-out with 16/16 on every semantic slice**.
+Experiment 008 is active now.
 
-Frozen candidate evaluation is the active stage. No Experiment 008 causal
-success is claimed unless both candidate worlds first pass the localized
-regression gate and subsequent counterfactual restoration uniquely supports a
-cause.
+The setup was completely defined before model training began.
+
+It starts with a clean model and five possible training-data changes. One is
+designed to create a specific failure. The other four are distractions.
+
+The clean reference model has now scored **96/96 held-out test cases**, including
+perfect performance on every individual behavior being measured.
+
+The changed models are now being evaluated.
+
+If both changed-model runs produce the intended isolated failure, the next step
+is simple: reverse each of the five possible changes one at a time, retrain, and
+see which reversal actually repairs the model.
+
+No Experiment 008 causal result is being claimed yet.
 
 ## Experiment summary
 
@@ -113,9 +119,9 @@ The narrow conclusion is:
 
 This does **not** establish the model's internal failure mechanism, and it should not be generalized to language models broadly.
 
-## Why benchmark design matters
+## Why the test itself has to be trustworthy
 
-A regression-forensics benchmark can produce an impressive-looking result for the wrong reason.
+A debugging experiment can produce an impressive-looking result for the wrong reason.
 
 This repository therefore treats benchmark validation as part of the research contribution:
 
@@ -291,7 +297,7 @@ five allowed candidate worlds failed the localized-regression gate.
 The repeated failure exposed conditional semantic structure as an additional
 benchmark-design concern.
 
-### 8. Semantic balancing is still not sufficient to guarantee target materiality
+### 8. Better-controlled training changes still did not create the intended failure
 
 Experiment 006 controlled corruption directly in semantic space across five
 prospectively frozen candidate worlds.
@@ -306,7 +312,7 @@ The next benchmark-design problem is therefore to establish behavioral
 materiality prospectively without selecting or tuning on the final
 certification evaluation.
 
-### 9. Target materiality does not guarantee behavioral locality
+### 9. Creating the target failure is not enough if unrelated behavior also breaks
 
 Experiment 007 solved the materiality problem that blocked Experiment 006:
 candidate training could strongly regress `triangle_large`.
@@ -315,7 +321,7 @@ However, the same construction also damaged protected behavior. Because the
 prospectively declared locality gate failed, certification and restoration were
 not run.
 
-### 10. Experiment 008 is prospectively frozen before result-bearing candidate evaluation
+### 10. Experiment 008 was defined before the result-bearing training runs
 
 Experiment 008 separates one target-specific policy-inconsistent intervention
 from four policy-correct nuisance permutations while preserving the global
@@ -344,48 +350,49 @@ Current limitations include:
 
 These limitations are deliberate targets for later experiments rather than hidden assumptions.
 
-## Current: Experiment 008 — Selective Causal RCA
+## Current experiment: Experiment 008
 
-Experiment 008 is the active follow-up to the locality failure in Experiment
-007 and the final major iteration planned for the current synthetic shape
-substrate.
+Experiment 008 is the final major test planned on the current synthetic task.
 
-Its protocol was committed before model training.
+The setup is:
 
-The two frozen worlds each contain five debugger-visible candidate data changes.
-Exactly one candidate introduces target-specific policy-inconsistent
-supervision. The other four are policy-correct nuisance permutations designed
-to alter deterministic training order/content placement without introducing
-incorrect protected labels.
+1. Start with clean training data and a model that solves the task.
+2. Introduce five different training-data changes.
+3. One change is designed to create a specific failure.
+4. The other four should not create that failure.
+5. Train the changed model.
+6. Check whether the intended behavior gets worse while unrelated behavior
+   remains stable.
+7. If both frozen test worlds pass, reverse each possible change one at a time.
+8. Retrain and measure which reversal actually repairs the failure.
 
-The public frozen manifest does not explicitly contain root truth. Because root
-identities were visible during benchmark-construction validation, Experiment
-008 does **not** claim investigator blinding. Instead, diagnostic methods are
-evaluated through a truth-isolated interface and scored against private truth
-only after their rankings are frozen.
+The strongest result would be for exactly one restoration to repair the broken
+behavior while the other four do not.
 
-The clean baseline is shared across both worlds because the clean training and
-evaluation inputs are byte-identical. A fresh CPU run under recorded runtime
-provenance scored **96/96 overall and 16/16 on every slice**.
+The experiment was defined and committed before these training runs. This
+prevents changing the benchmark after seeing the results.
 
-The next required gate is candidate locality:
+The clean reference run is complete:
 
-1. target regression on `triangle_large` must be at least the frozen minimum;
-2. every protected slice must remain within the frozen drift bound;
-3. both frozen worlds must pass;
-4. failed worlds are not repaired by changing seeds, thresholds, dose, or
-   hardware backend.
+- overall: **96 / 96**
+- circle_small: **16 / 16**
+- circle_large: **16 / 16**
+- triangle_small: **16 / 16**
+- triangle_large: **16 / 16**
+- square_small: **16 / 16**
+- square_large: **16 / 16**
 
-Only if both candidate worlds pass will the experiment proceed to five
-independent counterfactual restorations per world.
+The changed-model evaluation is now in progress.
 
-A causal diagnosis requires the true restoration to recover the target while
-protected behavior remains stable, non-root restorations to fail to produce
-material target recovery, and exactly one candidate to satisfy the recovery
-criterion.
+### Technical details
 
-If the frozen candidate construction fails, the current shape substrate is
-retired rather than tuned into an Experiment 009.
+The Experiment 008 directory contains the exact model revision, training
+parameters, dataset hashes, runtime information, benchmark construction,
+evaluation thresholds, and restoration rules.
+
+The public summary intentionally does not treat a diagnostic ranking as proof
+that something caused the regression. A controlled restoration test is required
+before making that claim.
 
 ## Research rules
 
@@ -404,4 +411,4 @@ retired rather than tuned into an Experiment 009.
 
 **Research status:** active.
 **Current stable history:** Experiments 000 through 007.
-**Active follow-up:** Experiment 008 — frozen candidate evaluation.
+**Active follow-up:** Experiment 008 — changed-model evaluation.
