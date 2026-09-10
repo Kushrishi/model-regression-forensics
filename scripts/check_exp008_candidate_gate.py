@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from model_forensics.certification import (
-    evaluate_exp007_candidate_gate as evaluate_candidate_gate,
+    evaluate_exp008_candidate_gate as evaluate_candidate_gate,
 )
 from model_forensics.config import load_experiment_config
 from model_forensics.exp008 import (

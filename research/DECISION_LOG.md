@@ -601,3 +601,26 @@ The next benchmark-design iteration, if pursued, must validate the complete
 model-facing semantic intervention matrix prospectively before model training
 and ensure that concurrent nuisance changes are compatible with the protected-
 behavior contract.
+
+## 2026-09-10 — Experiment 008 candidate-gate wrapper defect
+
+After the Experiment 008 World 0 candidate model had already been trained and
+evaluated, `scripts/check_exp008_candidate_gate.py` failed before evaluating the
+frozen behavioral gate.
+
+The checker incorrectly imported `evaluate_exp007_candidate_gate`, whose
+experiment-identity validation requires `experiment_id == "exp007"`. Experiment
+008 evaluation summaries correctly contain `experiment_id == "exp008"`.
+
+The correction is limited to experiment-identity plumbing:
+
+- add an `evaluate_exp008_candidate_gate` wrapper around the existing generic
+  candidate-gate implementation;
+- make the Experiment 008 checker call that wrapper;
+- add regression tests for the Experiment 008 identity boundary.
+
+No Experiment 008 config, threshold, dataset, frozen manifest, world definition,
+training artifact, adapter, evaluation case, evaluation result, or scientific
+criterion is changed. World 0 is not retrained. Its formal gate status remains
+pending until the corrected checker is rerun against the already-generated
+artifacts.
