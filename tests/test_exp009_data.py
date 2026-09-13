@@ -108,8 +108,7 @@ def test_exact_canonical_duplicates_are_collapsed_before_partitioning() -> None:
     assert partition.duplicate_occurrences_beyond_first == 1
 
     partition_ids = {
-        record.content_id
-        for record in (*partition.development_train, *partition.development_eval)
+        record.content_id for record in (*partition.development_train, *partition.development_eval)
     }
     assert len(partition_ids) == 5
     assert duplicate_a.content_id in partition_ids
