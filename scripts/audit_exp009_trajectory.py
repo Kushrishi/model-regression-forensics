@@ -15,14 +15,18 @@ def _write_if_absent_or_identical(path: Path, content: str) -> None:
     if path.exists():
         existing = path.read_text(encoding="utf-8")
         if existing != content:
-            raise FileExistsError(f"refusing to overwrite different trajectory audit artifact: {path}")
+            raise FileExistsError(
+                f"refusing to overwrite different trajectory audit artifact: {path}"
+            )
         return
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Audit Exp009 stable slots and trajectory schedules")
+    parser = argparse.ArgumentParser(
+        description="Audit Exp009 stable slots and trajectory schedules"
+    )
     parser.add_argument(
         "--cache-path",
         type=Path,
