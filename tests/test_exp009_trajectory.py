@@ -30,9 +30,7 @@ def test_stable_slots_are_input_order_independent() -> None:
     reverse = build_stable_training_slots(tuple(reversed(records)))
 
     assert forward == reverse
-    assert [slot.slot_id for slot in forward] == [
-        f"slot_{index:06d}" for index in range(1, 9)
-    ]
+    assert [slot.slot_id for slot in forward] == [f"slot_{index:06d}" for index in range(1, 9)]
     assert [slot.content_id for slot in forward] == sorted(record.content_id for record in records)
 
 
@@ -51,15 +49,18 @@ def test_trajectory_seed_family_is_reproducible_and_trajectory_specific() -> Non
     assert first == repeated
     assert first != second
     assert first.trajectory_id == 0
-    assert len(
-        {
-            first.python_seed,
-            first.torch_seed,
-            first.classifier_head_seed,
-            first.dropout_seed,
-            first.data_order_seed,
-        }
-    ) == 5
+    assert (
+        len(
+            {
+                first.python_seed,
+                first.torch_seed,
+                first.classifier_head_seed,
+                first.dropout_seed,
+                first.data_order_seed,
+            }
+        )
+        == 5
+    )
     assert all(
         0 <= seed < 2**63
         for seed in (
@@ -107,10 +108,7 @@ def test_schedule_hash_changes_with_trajectory_or_epoch_count() -> None:
 
 
 def test_trajectory_manifest_is_text_free_and_auditable() -> None:
-    records = tuple(
-        _record("intent", f"PRIVATE-TEXT-{index}")
-        for index in range(12)
-    )
+    records = tuple(_record("intent", f"PRIVATE-TEXT-{index}") for index in range(12))
     slots = build_stable_training_slots(records)
 
     manifest = trajectory_manifest(slots, trajectory_id=7, epochs=3)
