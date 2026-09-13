@@ -1,0 +1,54 @@
+from __future__ import annotations
+
+import argparse
+
+from model_forensics.config import load_experiment_config
+from model_forensics.exp008 import EXP008_SHARD_IDS
+from model_forensics.training import train_lora_sft_run
+
+RESTORATION_SPLITS = tuple(f"restoration_{candidate_id}_train" for candidate_id in EXP008_SHARD_IDS)
+
+TRAIN_SPLITS = (
+    "baseline_train",
+    "candidate_train",
+    *RESTORATION_SPLITS,
+)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Train one Experiment 008 baseline, candidate, or restoration LoRA SFT sibling."
+        )
+    )
+    parser.add_argument(
+        "--config",
+        default="configs/exp008.yaml",
+    )
+    parser.add_argument("--prepared", required=True)
+    parser.add_argument(
+        "--train-split",
+        choices=TRAIN_SPLITS,
+        required=True,
+    )
+    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--output-root", required=True)
+    args = parser.parse_args()
+
+    config = load_experiment_config(args.config)
+
+    if config.experiment_id != "exp008":
+        raise ValueError("training requires Experiment 008 config")
+
+    train_lora_sft_run(
+        config=config,
+        prepared=args.prepared,
+        train_split=args.train_split,
+        run_id=args.run_id,
+        output_root=args.output_root,
+        preparation_command=("scripts/prepare_exp008.py / scripts/prepare_exp008_certification.py"),
+    )
+
+
+if __name__ == "__main__":
+    main()

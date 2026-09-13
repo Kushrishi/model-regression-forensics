@@ -636,3 +636,23 @@ def exp007_public_certification_payload(
         causal_certification=causal_certification,
         order_control=order_control,
     )
+
+
+def evaluate_exp008_candidate_gate(
+    *,
+    baseline_summary: dict[str, Any],
+    candidate_summary: dict[str, Any],
+    minimum_baseline_score: float,
+    minimum_regression_delta: float,
+    maximum_unrelated_delta: float,
+) -> CandidateGateResult:
+    """Evaluate the frozen Experiment 008 localized-regression gate."""
+
+    return _evaluate_candidate_gate(
+        experiment_id="exp008",
+        baseline_summary=baseline_summary,
+        candidate_summary=candidate_summary,
+        minimum_baseline_score=minimum_baseline_score,
+        minimum_regression_delta=minimum_regression_delta,
+        maximum_unrelated_delta=maximum_unrelated_delta,
+    )

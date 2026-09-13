@@ -54,27 +54,15 @@ later designs rather than being tuned away after observing the outcome.
 
 ## Experiment 008
 
-Experiment 008 is the active experiment.
+Experiment 008 is complete.
 
-Its design was fixed before result-bearing model training began. Each test world
-contains five recorded training-data changes. One change modifies supervision
-for the target behavior, while four controlled distractor changes preserve
-correct labels for protected behavior.
+Both frozen worlds produced target-localized regressions with zero protected-slice drift. The truth-isolated `selected_role_overlap` diagnostic uniquely ranked the planted root first in both worlds, and restoring the planted root fully recovered the target behavior with zero protected drift.
 
-The clean reference model has completed evaluation with **96/96 held-out
-accuracy**, including **16/16 on each of the six evaluated behavior slices**.
+Primary causal certification nevertheless **failed in both worlds** because some non-root restorations also produced target recovery above the frozen nuisance ceiling. Experiment 008 therefore supports successful localization and strong planted-root restorative influence under this controlled benchmark, but not uniquely specific causal certification.
 
-Candidate-model evaluation is now in progress.
+The frozen stopping rule was honored. Thresholds were not changed, the alternative-order control was not used as a rescue analysis, and the synthetic shape substrate is retired from further benchmark tuning.
 
-If both candidate worlds satisfy the predefined target-regression and
-protected-behavior criteria, each candidate training change will then be
-reversed independently and the model retrained.
-
-A successful causal result would require one restoration to recover the target
-behavior while the other restorations do not, without introducing meaningful
-degradation elsewhere.
-
-No Experiment 008 causal result is claimed at the current stage.
+See [`experiments/008_selective_causal_rca/RESULTS.md`](experiments/008_selective_causal_rca/RESULTS.md) for the complete result record.
 
 ## Experiment summary
 
@@ -91,7 +79,7 @@ No Experiment 008 causal result is claimed at the current stage.
 | **005 — Causally certified RCA** | Can a balanced corruption construction create a localized regression before causal certification? | **0/5 worlds qualified** | Clean behavior remained perfect, but no candidate world produced the required target-localized regression. |
 | **006 — Semantic-balanced causal RCA** | Does controlling corruption directly in semantic space repair the Exp005 construction failure? | **0/5 worlds qualified** | All five clean siblings scored 96/96, but `triangle_large` regression remained exactly 0.0 in every candidate world. |
 | **007 — Sensitivity-calibrated causal RCA** | Can calibration establish target materiality before untouched causal certification? | **Materiality achieved; locality failed** | Candidate training produced strong target regression, but protected behaviors also regressed, so certification and restoration were not run. |
-| **008 — Selective causal RCA** | Can a prospectively frozen intervention isolate target corruption from policy-correct nuisance changes and support unique counterfactual recovery? | **Active; clean baseline 96/96** | Two worlds were frozen before training. The clean baseline passed perfectly; candidate evaluation is underway. |
+| **008 - Selective causal RCA** | Can a prospectively frozen intervention isolate target corruption from policy-correct nuisance changes and support unique counterfactual recovery? | **Localization + root recovery; unique certification failed** | Both worlds passed the localized-regression and localization gates. Planted-root restoration fully recovered the target, but non-root restorations also produced material recovery, so the frozen causal-specificity criterion failed. |
 
 Detailed protocols and results live under [`experiments/`](experiments/).
 
@@ -323,17 +311,17 @@ However, the same construction also damaged protected behavior. Because the
 prospectively declared locality gate failed, certification and restoration were
 not run.
 
-### 10. Experiment 008 was defined before the result-bearing training runs
+### 10. Experiment 008 separated localization from uniquely specific causal verification
 
-Experiment 008 separates one target-specific policy-inconsistent intervention
-from four policy-correct nuisance permutations while preserving the global
-prompt multiset.
+Experiment 008 produced a target-localized candidate regression in both frozen worlds while all protected slices remained stable.
 
-Both frozen worlds passed their static construction gates before model
-training. The shared clean baseline then scored 96/96 held-out.
+The truth-isolated `selected_role_overlap` diagnostic uniquely ranked the planted root first in both worlds. Restoring that planted root then fully recovered the target in both worlds with zero protected-slice drift.
 
-This establishes benchmark readiness, not causal success. Candidate evaluation,
-counterfactual restoration, and diagnostic scoring remain result-bearing stages.
+However, some non-root restorations also produced target recovery above the prospectively frozen nuisance ceiling. World 01 additionally contained one non-root restoration with substantial protected-slice drift.
+
+The primary causal certification therefore failed in both worlds.
+
+This result strengthens the distinction between localization, restorative influence, and uniquely specific causal verification. It also motivates measuring retraining-path variability explicitly rather than treating a single fresh retraining outcome as sufficient causal evidence.
 
 ## Limitations
 
@@ -352,39 +340,24 @@ Current limitations include:
 
 These limitations are deliberate targets for later experiments rather than hidden assumptions.
 
-## Current experiment: Experiment 008
+## Experiment 008 outcome and next phase
 
-Experiment 008 is the final major test planned on the current synthetic task.
+Experiment 008 completed the final major evaluation on the synthetic shape substrate.
 
-The setup is:
+The final result was:
 
-1. Start with clean training data and a model that solves the task.
-2. Introduce five different training-data changes.
-3. One change is designed to create a specific failure.
-4. The other four should not create that failure.
-5. Train the changed model.
-6. Check whether the intended behavior gets worse while unrelated behavior
-   remains stable.
-7. If both frozen test worlds pass, reverse each possible change one at a time.
-8. Retrain and measure which reversal actually repairs the failure.
+- shared clean baseline: **96 / 96**;
+- both frozen candidate worlds passed the target-regression and protected-locality gate;
+- the planted root was uniquely ranked Top-1 by the task-aware diagnostic in **2 / 2** worlds;
+- restoring the planted root fully recovered the target in **2 / 2** worlds with zero protected-slice drift;
+- non-root recovery specificity failed in **2 / 2** worlds;
+- primary causal certification therefore **failed in 2 / 2 worlds**.
 
-The strongest result would be for exactly one restoration to repair the broken
-behavior while the other four do not.
+The prospectively defined alternative-order robustness control was not run because primary certification did not succeed. It is not used as a post-hoc rescue.
 
-The experiment was defined and committed before these training runs. This
-prevents changing the benchmark after seeing the results.
+The synthetic shape substrate is now retired as the primary benchmark. The next research phase will move to a more realistic natural-language regression setting and explicitly measure training/retraining variability using repeated, paired counterfactual runs before interpreting restoration as uniquely causal.
 
-The clean reference run is complete:
-
-- overall: **96 / 96**
-- circle_small: **16 / 16**
-- circle_large: **16 / 16**
-- triangle_small: **16 / 16**
-- triangle_large: **16 / 16**
-- square_small: **16 / 16**
-- square_large: **16 / 16**
-
-The changed-model evaluation is now in progress.
+The exact next experiment protocol has not yet been frozen.
 
 ### Technical details
 
@@ -412,5 +385,5 @@ before making that claim.
 ---
 
 **Research status:** active.
-**Current stable history:** Experiments 000 through 007.
-**Active follow-up:** Experiment 008 — changed-model evaluation.
+**Current stable history:** Experiments 000 through 008.
+**Next phase:** realistic regression validation with explicit retraining-variability controls.
