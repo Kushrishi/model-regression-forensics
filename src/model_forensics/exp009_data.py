@@ -6,6 +6,7 @@ import io
 import json
 import unicodedata
 import urllib.request
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -162,10 +163,8 @@ def build_development_partition(
     if not records:
         raise ValueError("at least one Banking77 record is required")
 
-    content_ids = [record.content_id for record in records]
-    duplicate_ids = sorted(
-        content_id for content_id in set(content_ids) if content_ids.count(content_id) > 1
-    )
+    id_counts = Counter(record.content_id for record in records)
+    duplicate_ids = sorted(content_id for content_id, count in id_counts.items() if count > 1)
     if duplicate_ids:
         raise ValueError(
             "canonical duplicate Banking77 records require an explicit pre-pilot policy; "
