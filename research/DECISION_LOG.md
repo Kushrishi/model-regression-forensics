@@ -624,3 +624,38 @@ training artifact, adapter, evaluation case, evaluation result, or scientific
 criterion is changed. World 0 is not retrained. Its formal gate status remains
 pending until the corrected checker is rerun against the already-generated
 artifacts.
+
+## 2026-09-12 - Experiment 008 primary certification outcome and substrate retirement
+
+Experiment 008 completed the prospectively frozen two-world primary evaluation without changing the declared scientific thresholds.
+
+Both candidate worlds passed the localized-regression prerequisite. The shared clean baseline scored 96/96. World 00 regressed `triangle_large` from 1.0000 to 0.0000 with zero protected drift, and World 01 regressed it from 1.0000 to 0.1875 with zero protected drift.
+
+The truth-isolated `selected_role_overlap` diagnostic uniquely ranked the planted root first in both worlds after rankings had been frozen and before automated truth scoring.
+
+Primary counterfactual restoration produced strong planted-root recovery in both worlds. World 00 root `shard_selective_05` restored target accuracy from 0.0000 to 1.0000 with zero protected drift. World 01 root `shard_selective_02` restored target accuracy from 0.1875 to 1.0000 with zero protected drift.
+
+Unique causal certification nevertheless failed in both worlds.
+
+In World 00, non-root restorations `shard_selective_01`, `shard_selective_03`, and `shard_selective_04` each produced +0.1875 target recovery, exceeding the frozen 0.05 non-root ceiling.
+
+In World 01, non-root `shard_selective_04` produced +0.8125 target recovery, matching the planted-root recovery magnitude, and also produced 0.3125 maximum protected-slice drift.
+
+Therefore:
+
+- planted-root recovery passed in both worlds;
+- planted-root protected locality passed in both worlds;
+- non-root recovery specificity failed in both worlds;
+- unique recovery failed in both worlds;
+- non-root protected locality additionally failed in World 01;
+- overall Experiment 008 primary causal certification failed.
+
+The alternative-order robustness control is not run because the frozen protocol specified it only after successful primary certification. It will not be used as a rescue analysis.
+
+No corruption dose, threshold, world seed, nuisance allocation, candidate result, or restoration result is changed in response to this outcome.
+
+The synthetic shape substrate is retired from further benchmark tuning, consistent with the prospectively declared stopping rule.
+
+A plausible but unproven explanation for the non-root recovery is training-path sensitivity: restoring policy-correct nuisance changes may alter optimization trajectories enough to affect held-out target behavior. Experiment 008 does not establish that mechanism.
+
+The next research phase should test this directly in a more realistic regression substrate using repeated, paired retraining and explicit variability controls so that intervention effects can be distinguished from ordinary retraining-path variation.

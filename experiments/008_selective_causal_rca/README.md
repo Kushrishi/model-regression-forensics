@@ -1,6 +1,6 @@
 # Experiment 008 — Selective Causal RCA
 
-Status: prospective protocol implementation — no Experiment 008 model has been trained.
+Status: complete - primary causal certification failed; see `RESULTS.md`.
 
 ## Research question
 
