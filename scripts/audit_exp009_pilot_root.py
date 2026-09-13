@@ -40,7 +40,9 @@ def _write_absent_or_identical(path: Path, payload: dict[str, object]) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Audit the Exp009 pilot symmetric root construction")
+    parser = argparse.ArgumentParser(
+        description="Audit the Exp009 pilot symmetric root construction"
+    )
     parser.add_argument(
         "--cache-path",
         type=Path,
@@ -73,7 +75,9 @@ def main() -> None:
         changed = changed_slot_ids(baseline, candidate)
         changed_set = set(changed)
         if previous_changed and not previous_changed < changed_set:
-            raise AssertionError(f"pilot dose {dose_name} is not a strict superset of the prior dose")
+            raise AssertionError(
+                f"pilot dose {dose_name} is not a strict superset of the prior dose"
+            )
         previous_changed = changed_set
 
         restored = restore_release_slots(
