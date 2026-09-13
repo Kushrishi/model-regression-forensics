@@ -6,7 +6,6 @@ import random
 import time
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
 
 from model_forensics.exp009_classifier import (
     EXP009_PILOT_MODEL_SAFETENSORS_SHA256,
@@ -81,9 +80,7 @@ def behavior_slice_metrics(
 
     target_values = [per_label_recall[target_a], per_label_recall[target_b]]
     protected = {
-        label: recall
-        for label, recall in per_label_recall.items()
-        if label not in target_labels
+        label: recall for label, recall in per_label_recall.items() if label not in target_labels
     }
     if not protected:
         raise ValueError("protected intent set must be non-empty")
@@ -98,9 +95,7 @@ def behavior_slice_metrics(
         "protected_macro_recall": sum(protected.values()) / len(protected),
         "protected_worst_intent_recall": min(protected.values()),
         "protected_worst_intents": sorted(
-            label
-            for label, recall in protected.items()
-            if recall == min(protected.values())
+            label for label, recall in protected.items() if recall == min(protected.values())
         ),
     }
 
