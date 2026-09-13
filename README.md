@@ -35,7 +35,7 @@ simply because it receives a high ranking.
 
 ## Current status
 
-Experiments **000 through 007 are complete**.
+Experiments **000 through 008 are complete**.
 
 The experimental series has progressively exposed weaknesses in both the
 debugging method and the benchmark used to evaluate it.
