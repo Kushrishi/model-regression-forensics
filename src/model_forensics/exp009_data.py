@@ -20,10 +20,13 @@ BANKING77_TRAIN_URL = (
 BANKING77_TRAIN_SHA256 = "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b"
 BANKING77_EXPECTED_TRAIN_EXAMPLES = 10_003
 BANKING77_EXPECTED_INTENTS = 77
+BANKING77_EXPECTED_UNIQUE_RECORDS = 9_999
+BANKING77_EXPECTED_DUPLICATE_GROUPS = 4
+BANKING77_EXPECTED_DUPLICATE_OCCURRENCES_BEYOND_FIRST = 4
 
 DEVELOPMENT_EVAL_FRACTION_NUMERATOR = 1
 DEVELOPMENT_EVAL_FRACTION_DENOMINATOR = 5
-PARTITION_ALGORITHM = "sha256-canonical-label-text-nfc-v1"
+PARTITION_ALGORITHM = "sha256-canonical-label-text-nfc-deduplicated-v2"
 
 
 @dataclass(frozen=True)
@@ -41,6 +44,10 @@ class DevelopmentPartition:
 
     development_train: tuple[Banking77Record, ...]
     development_eval: tuple[Banking77Record, ...]
+    source_records: int
+    unique_records: int
+    duplicate_groups: int
+    duplicate_occurrences_beyond_first: int
 
 
 def sha256_bytes(payload: bytes) -> str:
@@ -95,14 +102,17 @@ def parse_banking77_train_csv(payload: bytes) -> tuple[Banking77Record, ...]:
         label = row.get("category")
         if text is None or label is None:
             raise ValueError(f"missing Banking77 field at CSV row {row_number}")
-        if not _canonical_component(text) or not _canonical_component(label):
+
+        canonical_text = _canonical_component(text)
+        canonical_label = _canonical_component(label)
+        if not canonical_text or not canonical_label:
             raise ValueError(f"blank Banking77 field at CSV row {row_number}")
 
         records.append(
             Banking77Record(
-                text=text,
-                label=_canonical_component(label),
-                content_id=content_id_for_record(label=label, text=text),
+                text=canonical_text,
+                label=canonical_label,
+                content_id=content_id_for_record(label=canonical_label, text=canonical_text),
             )
         )
 
@@ -143,6 +153,46 @@ def load_banking77_train(cache_path: str | Path) -> tuple[Banking77Record, ...]:
     return parse_banking77_train_csv(payload)
 
 
+def _canonicalize_and_validate_record(record: Banking77Record) -> Banking77Record:
+    canonical_text = _canonical_component(record.text)
+    canonical_label = _canonical_component(record.label)
+    expected_content_id = content_id_for_record(label=canonical_label, text=canonical_text)
+    if record.content_id != expected_content_id:
+        raise ValueError(
+            "record content_id does not match canonical label/text: "
+            f"observed={record.content_id} expected={expected_content_id}"
+        )
+    return Banking77Record(
+        text=canonical_text,
+        label=canonical_label,
+        content_id=expected_content_id,
+    )
+
+
+def deduplicate_canonical_records(
+    records: tuple[Banking77Record, ...],
+) -> tuple[tuple[Banking77Record, ...], int, int]:
+    """Collapse exact canonical duplicates without using source-row position."""
+
+    if not records:
+        raise ValueError("at least one Banking77 record is required")
+
+    normalized = tuple(_canonicalize_and_validate_record(record) for record in records)
+    id_counts = Counter(record.content_id for record in normalized)
+    duplicate_groups = sum(count > 1 for count in id_counts.values())
+    duplicate_occurrences_beyond_first = sum(count - 1 for count in id_counts.values())
+
+    unique_by_id: dict[str, Banking77Record] = {}
+    for record in normalized:
+        existing = unique_by_id.get(record.content_id)
+        if existing is not None and existing != record:
+            raise ValueError(f"SHA-256 content identity collision for {record.content_id}")
+        unique_by_id[record.content_id] = record
+
+    unique_records = tuple(unique_by_id[content_id] for content_id in sorted(unique_by_id))
+    return unique_records, duplicate_groups, duplicate_occurrences_beyond_first
+
+
 def _eval_count(intent_count: int) -> int:
     """Return nearest-integer 20% allocation without floating-point rounding."""
 
@@ -158,21 +208,12 @@ def _eval_count(intent_count: int) -> int:
 def build_development_partition(
     records: tuple[Banking77Record, ...],
 ) -> DevelopmentPartition:
-    """Create the stable per-intent 80/20 development partition."""
+    """Deduplicate, then create the stable per-intent 80/20 development partition."""
 
-    if not records:
-        raise ValueError("at least one Banking77 record is required")
-
-    id_counts = Counter(record.content_id for record in records)
-    duplicate_ids = sorted(content_id for content_id, count in id_counts.items() if count > 1)
-    if duplicate_ids:
-        raise ValueError(
-            "canonical duplicate Banking77 records require an explicit pre-pilot policy; "
-            f"duplicate_content_ids={duplicate_ids[:5]} total={len(duplicate_ids)}"
-        )
+    unique_records, duplicate_groups, duplicate_occurrences = deduplicate_canonical_records(records)
 
     by_label: dict[str, list[Banking77Record]] = {}
-    for record in records:
+    for record in unique_records:
         by_label.setdefault(record.label, []).append(record)
 
     development_train: list[Banking77Record] = []
@@ -191,13 +232,36 @@ def build_development_partition(
     eval_ids = {record.content_id for record in development_eval}
     if train_ids & eval_ids:
         raise AssertionError("development train/eval partitions overlap")
-    if len(train_ids | eval_ids) != len(records):
-        raise AssertionError("development partition does not cover every source record")
+    if len(train_ids | eval_ids) != len(unique_records):
+        raise AssertionError("development partition does not cover every unique source record")
 
     return DevelopmentPartition(
         development_train=tuple(development_train),
         development_eval=tuple(development_eval),
+        source_records=len(records),
+        unique_records=len(unique_records),
+        duplicate_groups=duplicate_groups,
+        duplicate_occurrences_beyond_first=duplicate_occurrences,
     )
+
+
+def validate_banking77_duplicate_profile(partition: DevelopmentPartition) -> None:
+    """Require the pinned source to retain its pre-pilot duplicate profile."""
+
+    expected = {
+        "source_records": BANKING77_EXPECTED_TRAIN_EXAMPLES,
+        "unique_records": BANKING77_EXPECTED_UNIQUE_RECORDS,
+        "duplicate_groups": BANKING77_EXPECTED_DUPLICATE_GROUPS,
+        "duplicate_occurrences_beyond_first": BANKING77_EXPECTED_DUPLICATE_OCCURRENCES_BEYOND_FIRST,
+    }
+    observed = {
+        "source_records": partition.source_records,
+        "unique_records": partition.unique_records,
+        "duplicate_groups": partition.duplicate_groups,
+        "duplicate_occurrences_beyond_first": partition.duplicate_occurrences_beyond_first,
+    }
+    if observed != expected:
+        raise ValueError(f"unexpected Banking77 canonical duplicate profile: {observed}")
 
 
 def partition_summary(partition: DevelopmentPartition) -> dict[str, object]:
@@ -223,9 +287,13 @@ def partition_summary(partition: DevelopmentPartition) -> dict[str, object]:
             "train_sha256": BANKING77_TRAIN_SHA256,
         },
         "partition_algorithm": PARTITION_ALGORITHM,
+        "duplicate_policy": "collapse exact canonical label/text duplicates before partitioning",
         "development_eval_fraction": "1/5 per intent, nearest integer",
         "counts": {
-            "source_train": len(partition.development_train) + len(partition.development_eval),
+            "source_train_raw": partition.source_records,
+            "source_train_unique": partition.unique_records,
+            "canonical_duplicate_groups": partition.duplicate_groups,
+            "canonical_duplicates_removed": partition.duplicate_occurrences_beyond_first,
             "development_train": len(partition.development_train),
             "development_eval": len(partition.development_eval),
             "intents": len(per_label),
