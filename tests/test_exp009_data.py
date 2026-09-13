@@ -14,6 +14,7 @@ from model_forensics.exp009_data import (
     build_development_partition,
     canonical_record_bytes,
     content_id_for_record,
+    deduplicate_canonical_records,
     parse_banking77_train_csv,
     partition_summary,
     sha256_bytes,
@@ -34,9 +35,7 @@ def test_banking77_source_is_pinned_to_train_only() -> None:
     assert BANKING77_TRAIN_SHA256 == (
         "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b"
     )
-    assert BANKING77_TRAIN_URL.endswith(
-        f"/{BANKING77_SOURCE_REVISION}/{BANKING77_TRAIN_PATH}"
-    )
+    assert BANKING77_TRAIN_URL.endswith(f"/{BANKING77_SOURCE_REVISION}/{BANKING77_TRAIN_PATH}")
     assert "test.csv" not in BANKING77_TRAIN_URL
 
 
@@ -47,7 +46,7 @@ def test_canonical_record_identity_normalizes_outer_space_and_unicode() -> None:
 
 
 def test_parse_train_csv_checks_sha_shape_and_counts(monkeypatch: pytest.MonkeyPatch) -> None:
-    payload = b"text,category\nhello,intent_a\nworld,intent_b\n"
+    payload = b"text,category\n hello ,intent_a\nworld,intent_b\n"
     monkeypatch.setattr(exp009_data, "BANKING77_TRAIN_SHA256", sha256_bytes(payload))
     monkeypatch.setattr(exp009_data, "BANKING77_EXPECTED_TRAIN_EXAMPLES", 2)
     monkeypatch.setattr(exp009_data, "BANKING77_EXPECTED_INTENTS", 2)
@@ -84,13 +83,49 @@ def test_partition_is_stratified_hash_ordered_and_input_order_independent() -> N
     assert eval_counts == {"intent_a": 2, "intent_b": 2}
     assert len(forward.development_train) == 16
     assert len(forward.development_eval) == 4
+    assert forward.source_records == 20
+    assert forward.unique_records == 20
+    assert forward.duplicate_groups == 0
+    assert forward.duplicate_occurrences_beyond_first == 0
 
 
-def test_partition_refuses_canonical_duplicate_records() -> None:
-    duplicate = _record("intent_a", "same example")
+def test_exact_canonical_duplicates_are_collapsed_before_partitioning() -> None:
+    duplicate_a = _record("intent_a", " same example ")
+    duplicate_b = _record("intent_a", "same example")
+    other_records = tuple(_record("intent_a", f"other-{index}") for index in range(4))
 
-    with pytest.raises(ValueError, match="canonical duplicate Banking77 records"):
-        build_development_partition((duplicate, duplicate))
+    unique, duplicate_groups, duplicate_occurrences = deduplicate_canonical_records(
+        (duplicate_a, *other_records, duplicate_b)
+    )
+    partition = build_development_partition((duplicate_a, *other_records, duplicate_b))
+
+    assert len(unique) == 5
+    assert duplicate_groups == 1
+    assert duplicate_occurrences == 1
+    assert partition.source_records == 6
+    assert partition.unique_records == 5
+    assert partition.duplicate_groups == 1
+    assert partition.duplicate_occurrences_beyond_first == 1
+
+    partition_ids = {
+        record.content_id
+        for record in (*partition.development_train, *partition.development_eval)
+    }
+    assert len(partition_ids) == 5
+    assert duplicate_a.content_id in partition_ids
+
+
+def test_deduplication_is_input_order_independent() -> None:
+    records = (
+        _record("intent_a", " same example "),
+        _record("intent_a", "other"),
+        _record("intent_a", "same example"),
+    )
+
+    forward = deduplicate_canonical_records(records)
+    reverse = deduplicate_canonical_records(tuple(reversed(records)))
+
+    assert forward == reverse
 
 
 def test_partition_summary_contains_no_training_text() -> None:
@@ -104,5 +139,6 @@ def test_partition_summary_contains_no_training_text() -> None:
     payload = json.dumps(partition_summary(partition), sort_keys=True)
 
     assert "PRIVATE-TEXT" not in payload
-    assert '"source_train": 10' in payload
+    assert '"source_train_raw": 10' in payload
+    assert '"source_train_unique": 10' in payload
     assert '"development_eval": 2' in payload
