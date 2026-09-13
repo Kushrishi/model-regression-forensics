@@ -14,7 +14,6 @@ from typing import Any
 
 from model_forensics.exp009_data import DevelopmentPartition
 from model_forensics.exp009_trajectory import (
-    Exp009TrainingSlot,
     build_stable_training_slots,
     derive_trajectory_seeds,
     epoch_slot_order,
@@ -86,7 +85,9 @@ def development_partition_manifest_text(partition: DevelopmentPartition) -> str:
 
 
 def development_partition_sha256(partition: DevelopmentPartition) -> str:
-    return hashlib.sha256(development_partition_manifest_text(partition).encode("utf-8")).hexdigest()
+    return hashlib.sha256(
+        development_partition_manifest_text(partition).encode("utf-8")
+    ).hexdigest()
 
 
 def validate_frozen_development_partition(partition: DevelopmentPartition) -> str:
@@ -374,7 +375,10 @@ def _evaluate_model(
             logits = model(**inputs).logits
             predictions.extend(logits.argmax(dim=-1).cpu().tolist())
 
-    correct = sum(predicted == truth for predicted, truth in zip(predictions, true_label_ids))
+    correct = sum(
+        predicted == truth
+        for predicted, truth in zip(predictions, true_label_ids, strict=True)
+    )
     per_label_recall: dict[str, float] = {}
     for label_id, label in enumerate(labels):
         member_indices = [index for index, truth in enumerate(true_label_ids) if truth == label_id]
@@ -510,7 +514,7 @@ def train_clean_classifier_pilot(
             "true_label": record.label,
             "predicted_label": labels[prediction],
         }
-        for record, prediction in zip(eval_records, predictions)
+        for record, prediction in zip(eval_records, predictions, strict=True)
     ]
     predictions_path = output / "development_eval_predictions.jsonl"
     predictions_path.write_text(
