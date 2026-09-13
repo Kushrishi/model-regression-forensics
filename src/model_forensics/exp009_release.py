@@ -246,8 +246,7 @@ def release_diff_manifest(
     baseline_by_id, candidate_by_id = _aligned_release_maps(baseline, candidate)
     changed = changed_slot_ids(baseline, candidate)
     transitions = Counter(
-        f"{baseline_by_id[slot_id].label}->{candidate_by_id[slot_id].label}"
-        for slot_id in changed
+        f"{baseline_by_id[slot_id].label}->{candidate_by_id[slot_id].label}" for slot_id in changed
     )
     changed_ids_sha256 = hashlib.sha256("\n".join(changed).encode("utf-8")).hexdigest()
     return {
