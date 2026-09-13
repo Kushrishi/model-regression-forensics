@@ -152,7 +152,9 @@ def main() -> None:
             == summary["model"]["initial_model_state_sha256"]
         )
         if not paired_initial_state_match:
-            raise RuntimeError("candidate initial model state does not match paired clean trajectory")
+            raise RuntimeError(
+                "candidate initial model state does not match paired clean trajectory"
+            )
 
     metrics = summary["development_eval_metrics"]
     slices = summary["behavior_slice_metrics"]
