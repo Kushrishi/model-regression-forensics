@@ -11,6 +11,7 @@ from model_forensics.exp009_data import (
     load_banking77_train,
     partition_summary,
     sha256_bytes,
+    validate_banking77_duplicate_profile,
 )
 
 
@@ -40,6 +41,7 @@ def main() -> None:
 
     records = load_banking77_train(args.cache_path)
     partition = build_development_partition(records)
+    validate_banking77_duplicate_profile(partition)
     summary = partition_summary(partition)
 
     summary_text = json.dumps(summary, indent=2, sort_keys=True) + "\n"
@@ -67,7 +69,10 @@ def main() -> None:
     print("===== EXP009 BANKING77 SOURCE AUDIT =====")
     print(f"source_revision={BANKING77_SOURCE_REVISION}")
     print(f"source_train_sha256={BANKING77_TRAIN_SHA256}")
-    print(f"source_records={counts['source_train']}")
+    print(f"source_records_raw={counts['source_train_raw']}")
+    print(f"source_records_unique={counts['source_train_unique']}")
+    print(f"canonical_duplicate_groups={counts['canonical_duplicate_groups']}")
+    print(f"canonical_duplicates_removed={counts['canonical_duplicates_removed']}")
     print(f"intents={counts['intents']}")
     print(f"development_train={counts['development_train']}")
     print(f"development_eval={counts['development_eval']}")
