@@ -36,7 +36,9 @@ def _config_from_args(args: argparse.Namespace) -> Exp009ClassifierPilotConfig:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run Exp009 clean Banking77 classifier development")
+    parser = argparse.ArgumentParser(
+        description="Run Exp009 clean Banking77 classifier development"
+    )
     parser.add_argument("--mode", choices=("preflight", "train"), default="preflight")
     parser.add_argument("--trajectory-id", type=int, default=0)
     parser.add_argument(
