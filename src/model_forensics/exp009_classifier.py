@@ -376,8 +376,7 @@ def _evaluate_model(
             predictions.extend(logits.argmax(dim=-1).cpu().tolist())
 
     correct = sum(
-        predicted == truth
-        for predicted, truth in zip(predictions, true_label_ids, strict=True)
+        predicted == truth for predicted, truth in zip(predictions, true_label_ids, strict=True)
     )
     per_label_recall: dict[str, float] = {}
     for label_id, label in enumerate(labels):
