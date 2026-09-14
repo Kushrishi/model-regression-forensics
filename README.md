@@ -35,7 +35,19 @@ simply because it receives a high ranking.
 
 ## Current status
 
-Experiments **000 through 008 are complete**.
+Experiments **000 through 008 are complete**. **Experiment 009 is active development research.**
+
+Experiment 009 moves the project from the retired synthetic-shape substrate to
+Banking77 with a pinned DistilBERT classifier and repeated paired stochastic
+trajectories. Clean-model selection, the development data substrate, the pilot
+target pair, and the pilot dose-selection rule were fixed before the relevant
+corrupted-model outcomes were observed.
+
+The provisionally selected `1/4` symmetric label-mapping fault has passed the
+predeclared development screen on trajectories 0 and 1. Trajectory 2 remains
+pending. These are pilot results, not confirmatory causal-certification
+evidence. The official Banking77 test split remains untouched and the
+confirmatory protocol is not yet frozen.
 
 The experimental series has progressively exposed weaknesses in both the
 debugging method and the benchmark used to evaluate it.
@@ -80,6 +92,7 @@ See [`experiments/008_selective_causal_rca/RESULTS.md`](experiments/008_selectiv
 | **006 — Semantic-balanced causal RCA** | Does controlling corruption directly in semantic space repair the Exp005 construction failure? | **0/5 worlds qualified** | All five clean siblings scored 96/96, but `triangle_large` regression remained exactly 0.0 in every candidate world. |
 | **007 — Sensitivity-calibrated causal RCA** | Can calibration establish target materiality before untouched causal certification? | **Materiality achieved; locality failed** | Candidate training produced strong target regression, but protected behaviors also regressed, so certification and restoration were not run. |
 | **008 - Selective causal RCA** | Can a prospectively frozen intervention isolate target corruption from policy-correct nuisance changes and support unique counterfactual recovery? | **Localization + root recovery; unique certification failed** | Both worlds passed the localized-regression and localization gates. Planted-root restoration fully recovered the target, but non-root restorations also produced material recovery, so the frozen causal-specificity criterion failed. |
+| **009 — Stochastic counterfactual certification** | Can a versioned training-data regression be localized and causally certified against nuisance restorations and ordinary retraining variability on a natural-language task? | **Active development** | Banking77/DistilBERT substrate and clean model are frozen for development. The `1/4` pilot corruption passed the predeclared screen on trajectories 0 and 1; trajectory 2 is pending. Confirmatory certification has not been run. |
 
 Detailed protocols and results live under [`experiments/`](experiments/).
 
@@ -156,7 +169,13 @@ HuggingFaceTB/SmolLM2-360M-Instruct
 revision: a10cc1512eabd3dde888204e902eca88bddb4951
 ```
 
-The findings are conditional on this setup unless explicitly replicated elsewhere.
+Those findings are conditional on that setup unless explicitly replicated elsewhere.
+
+Experiment 009 uses a separate natural-language classification substrate:
+Banking77 with pinned `distilbert-base-uncased`, deterministic stable-slot
+training schedules, repeated paired stochastic trajectories, and versioned
+training-data interventions. Its development and confirmatory evidence are
+kept separate.
 
 ## Repository structure
 
@@ -329,9 +348,9 @@ The project is still early-stage research.
 
 Current limitations include:
 
-- synthetic tasks rather than production regressions;
-- one primary small language model in the current diagnostic series;
-- limited seed/model-family replication so far;
+- controlled benchmarks rather than production regressions;
+- limited model-family replication so far;
+- Exp009 stochastic replication is still in development;
 - handcrafted candidate-change structures;
 - no established novelty claim;
 - no broad comparison yet against modern data-attribution or influence-estimation baselines;
@@ -340,24 +359,35 @@ Current limitations include:
 
 These limitations are deliberate targets for later experiments rather than hidden assumptions.
 
-## Experiment 008 outcome and next phase
+## Experiment 009 — active development phase
 
-Experiment 008 completed the final major evaluation on the synthetic shape substrate.
+Experiment 008 completed the final major evaluation on the synthetic shape
+substrate and showed why a single successful root restoration is not sufficient
+evidence of uniquely specific causality: some non-root restorations also
+produced material recovery.
 
-The final result was:
+Experiment 009 is the active response to that result. It uses Banking77 and a
+pinned DistilBERT classifier, preserves stable training slots across model
+versions, and explicitly repeats paired training trajectories so that root
+restoration can eventually be compared against nuisance restorations and
+ordinary retraining variability.
 
-- shared clean baseline: **96 / 96**;
-- both frozen candidate worlds passed the target-regression and protected-locality gate;
-- the planted root was uniquely ranked Top-1 by the task-aware diagnostic in **2 / 2** worlds;
-- restoring the planted root fully recovered the target in **2 / 2** worlds with zero protected-slice drift;
-- non-root recovery specificity failed in **2 / 2** worlds;
-- primary causal certification therefore **failed in 2 / 2 worlds**.
+Current development status:
 
-The prospectively defined alternative-order robustness control was not run because primary certification did not succeed. It is not used as a post-hoc rescue.
+- frozen Banking77 development substrate: **8,001 train / 1,998 eval** after exact-duplicate collapse;
+- official Banking77 test split: **untouched**;
+- clean classifier configuration selected using clean-only development runs;
+- pilot target pair selected before corrupted-model outcomes;
+- `1/8` corruption produced a localized but sub-threshold target regression;
+- `1/4` corruption passed the predeclared development screen on trajectories **0 and 1**;
+- trajectory **2** replication is the next required run;
+- confirmatory protocol: **not yet frozen**;
+- confirmatory causal-certification result: **none yet**.
 
-The synthetic shape substrate is now retired as the primary benchmark. The next research phase will move to a more realistic natural-language regression setting and explicitly measure training/retraining variability using repeated, paired counterfactual runs before interpreting restoration as uniquely causal.
-
-The exact next experiment protocol has not yet been frozen.
+The pilot results establish neither final causal specificity nor a confirmatory
+Exp009 success. They determine whether the regression substrate is stable
+enough to proceed to matched nuisance changes and full counterfactual
+certification.
 
 ### Technical details
 
@@ -385,5 +415,6 @@ before making that claim.
 ---
 
 **Research status:** active.
-**Current stable history:** Experiments 000 through 008.
-**Next phase:** realistic regression validation with explicit retraining-variability controls.
+**Completed history:** Experiments 000 through 008.
+**Active experiment:** Experiment 009 — stochastic counterfactual certification.
+**Current phase:** development-pilot replication on Banking77; confirmatory protocol not yet frozen.
