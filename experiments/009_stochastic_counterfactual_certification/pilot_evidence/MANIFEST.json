@@ -1,0 +1,88 @@
+{
+  "additional_tracked_records": [
+    "experiments/009_stochastic_counterfactual_certification/pilot_evidence/nuisance_selection_failure.json",
+    "experiments/009_stochastic_counterfactual_certification/PILOT_NUISANCE_SELECTION_FAILURE.md"
+  ],
+  "banking77_train_sha256": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+  "contains_banking77_source_csv": false,
+  "contains_model_checkpoints": false,
+  "contains_raw_banking77_text": false,
+  "development_partition_sha256": "61ecbdd9224cf2bbeafcf5ceb9164cfc3fc74eb449129136198646385aaa8e88",
+  "experiment": "exp009-stochastic-counterfactual-certification",
+  "files": [
+    {
+      "bytes": 7702,
+      "category": "corruption_pilot",
+      "sha256": "2117ee64702d90454f40e4095ec2b8a7378a6fcd3403bdf186b4f2381c77e7f3",
+      "source_path": "artifacts/exp009/release_pilot/runs/candidate_t0000_dose_1_4_e7/train_summary.json",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/candidate/candidate_t0000_dose_1_4_e7/train_summary.json"
+    },
+    {
+      "bytes": 7703,
+      "category": "corruption_pilot",
+      "sha256": "75edcc887ac6924d1981e413ab80f3443893a225e73076f16bd145bb7c2902e5",
+      "source_path": "artifacts/exp009/release_pilot/runs/candidate_t0000_dose_1_8_e7/train_summary.json",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/candidate/candidate_t0000_dose_1_8_e7/train_summary.json"
+    },
+    {
+      "bytes": 7601,
+      "category": "corruption_pilot",
+      "sha256": "18dcd545b0de4b6d3f723b73a9d6ac6de2eff9c86161bc8ead05a2fbd6c46339",
+      "source_path": "artifacts/exp009/release_pilot/runs/candidate_t0001_dose_1_4_e7/train_summary.json",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/candidate/candidate_t0001_dose_1_4_e7/train_summary.json"
+    },
+    {
+      "bytes": 7610,
+      "category": "corruption_pilot",
+      "sha256": "6a364d5cd013a34591c0388e217ac468dbd4c79d4c744ce528c9d51b7743b4ee",
+      "source_path": "artifacts/exp009/release_pilot/runs/candidate_t0002_dose_1_4_e7/train_summary.json",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/candidate/candidate_t0002_dose_1_4_e7/train_summary.json"
+    },
+    {
+      "bytes": 332120,
+      "category": "clean_pilot",
+      "sha256": "ffe9a418790335997290e496303dafa291fd2224a54746570e889e10f1bc0e23",
+      "source_path": "artifacts/exp009/classifier_pilot/runs/clean_t0000_e7_bs32_lr2e5/development_eval_predictions.jsonl",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean/clean_t0000_e7_bs32_lr2e5/development_eval_predictions.jsonl"
+    },
+    {
+      "bytes": 6474,
+      "category": "clean_pilot",
+      "sha256": "fbb59b4f4664f6540e9efda5b4e34fbe47eccfb7259e4eaa9566951ed59dd1c3",
+      "source_path": "artifacts/exp009/classifier_pilot/runs/clean_t0000_e7_bs32_lr2e5/train_summary.json",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean/clean_t0000_e7_bs32_lr2e5/train_summary.json"
+    },
+    {
+      "bytes": 332132,
+      "category": "clean_pilot",
+      "sha256": "c79a6fff70bed366549b2a6f64f785deadc3641e3d223cf26da8627e5a8a7f55",
+      "source_path": "artifacts/exp009/classifier_pilot/runs/clean_t0001_e7_bs32_lr2e5/development_eval_predictions.jsonl",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean/clean_t0001_e7_bs32_lr2e5/development_eval_predictions.jsonl"
+    },
+    {
+      "bytes": 6416,
+      "category": "clean_pilot",
+      "sha256": "8ef2b15a4f6e76fe305c538c23c20362eb20fcf8df413b512586b02d384b6032",
+      "source_path": "artifacts/exp009/classifier_pilot/runs/clean_t0001_e7_bs32_lr2e5/train_summary.json",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean/clean_t0001_e7_bs32_lr2e5/train_summary.json"
+    },
+    {
+      "bytes": 332072,
+      "category": "clean_pilot",
+      "sha256": "6ae428b5e4b474492357a2994eee9bd44e40b38164bbccdf3e688fb0f1db124c",
+      "source_path": "artifacts/exp009/classifier_pilot/runs/clean_t0002_e7_bs32_lr2e5/development_eval_predictions.jsonl",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean/clean_t0002_e7_bs32_lr2e5/development_eval_predictions.jsonl"
+    },
+    {
+      "bytes": 6428,
+      "category": "clean_pilot",
+      "sha256": "477d85d30c1169f425e2b771c6f84d78864753e36d2595320b70a5bd4863cff5",
+      "source_path": "artifacts/exp009/classifier_pilot/runs/clean_t0002_e7_bs32_lr2e5/train_summary.json",
+      "tracked_path": "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean/clean_t0002_e7_bs32_lr2e5/train_summary.json"
+    }
+  ],
+  "nuisance_rule_status": "FROZEN_PILOT_RULE_INFEASIBLE",
+  "official_test_split_loaded": false,
+  "purpose": "Windows-to-macOS portable development handoff",
+  "source_code_head_before_evidence_commit": "3048374bae748ce20dcc3c567e5b676deedd53e6"
+}
