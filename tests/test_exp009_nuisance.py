@@ -105,9 +105,7 @@ def test_nuisance_pair_selection_is_clean_only_ranked_and_disjoint() -> None:
         ("alpha_transfer", "beta_transfer"): 1,
         ("beta_transfer", "alpha_transfer"): 1,
     }
-    predictions = {
-        trajectory: _prediction_rows(partition, pair_errors) for trajectory in range(3)
-    }
+    predictions = {trajectory: _prediction_rows(partition, pair_errors) for trajectory in range(3)}
 
     ranked = rank_nuisance_pairs(
         partition,
@@ -126,9 +124,7 @@ def test_nuisance_pair_selection_is_clean_only_ranked_and_disjoint() -> None:
 
 def test_balanced_cross_intent_refresh_is_deterministic_and_label_correct() -> None:
     records = tuple(
-        _record(label, index)
-        for label in ("alpha_card", "beta_card")
-        for index in range(70)
+        _record(label, index) for label in ("alpha_card", "beta_card") for index in range(70)
     )
     baseline = build_clean_release_slots(records)
 
@@ -189,9 +185,12 @@ def test_disjoint_nuisance_changes_compose_and_overlap_is_rejected() -> None:
 
     combined = combine_disjoint_release_changes(baseline, candidate_one, candidate_two)
     assert len(changed_slot_ids(baseline, combined)) == 12
-    assert duplicate_model_content_profile(combined)[
-        "duplicate_model_content_occurrences_beyond_first"
-    ] == 12
+    assert (
+        duplicate_model_content_profile(combined)[
+            "duplicate_model_content_occurrences_beyond_first"
+        ]
+        == 12
+    )
 
     with pytest.raises(ValueError, match="overlap"):
         combine_disjoint_release_changes(baseline, candidate_one, candidate_one)

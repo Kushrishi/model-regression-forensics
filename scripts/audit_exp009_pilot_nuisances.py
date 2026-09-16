@@ -202,9 +202,7 @@ def main() -> None:
         nuisance_payloads.append(payload)
         nuisance_releases.append(candidate)
 
-    selected_labels = [
-        label for pair in selected for label in (pair.label_a, pair.label_b)
-    ]
+    selected_labels = [label for pair in selected for label in (pair.label_a, pair.label_b)]
     if len(selected_labels) != len(set(selected_labels)):
         raise AssertionError("selected nuisance intent pairs are not disjoint")
 
