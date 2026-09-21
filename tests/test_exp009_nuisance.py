@@ -146,8 +146,7 @@ def test_nuisance_pair_selection_v2_allows_one_way_confusion() -> None:
         ("alpha_transfer", "beta_transfer"): 1,
     }
     predictions = {
-        trajectory: _prediction_rows(partition, one_way_pair_errors)
-        for trajectory in range(3)
+        trajectory: _prediction_rows(partition, one_way_pair_errors) for trajectory in range(3)
     }
 
     v1_ranked = rank_nuisance_pairs(
@@ -166,19 +165,13 @@ def test_nuisance_pair_selection_v2_allows_one_way_confusion() -> None:
     )
     selected = select_disjoint_nuisance_pairs(v2_ranked, count=4)
 
-    assert [
-        (pair.label_a, pair.label_b)
-        for pair in selected
-    ] == [
+    assert [(pair.label_a, pair.label_b) for pair in selected] == [
         ("alpha_card", "beta_card"),
         ("alpha_cash", "beta_cash"),
         ("alpha_fee", "beta_fee"),
         ("alpha_transfer", "beta_transfer"),
     ]
-    assert all(
-        (pair.a_to_b_count > 0) != (pair.b_to_a_count > 0)
-        for pair in selected
-    )
+    assert all((pair.a_to_b_count > 0) != (pair.b_to_a_count > 0) for pair in selected)
 
 
 def test_balanced_cross_intent_refresh_is_deterministic_and_label_correct() -> None:
