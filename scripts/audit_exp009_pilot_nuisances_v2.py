@@ -95,7 +95,9 @@ def main() -> None:
     parser.add_argument(
         "--clean-runs-root",
         type=Path,
-        default=Path("artifacts/exp009/classifier_pilot/runs"),
+        default=Path(
+            "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean"
+        ),
     )
     parser.add_argument(
         "--output-root",
