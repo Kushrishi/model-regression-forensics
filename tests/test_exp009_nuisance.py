@@ -15,6 +15,7 @@ from model_forensics.exp009_nuisance import (
     duplicate_model_content_profile,
     nuisance_refresh_audit,
     rank_nuisance_pairs,
+    rank_nuisance_pairs_v2,
     select_disjoint_nuisance_pairs,
 )
 from model_forensics.exp009_release import (
@@ -120,6 +121,64 @@ def test_nuisance_pair_selection_is_clean_only_ranked_and_disjoint() -> None:
     selected_labels = [label for pair in selected for label in (pair.label_a, pair.label_b)]
     assert len(selected_labels) == len(set(selected_labels))
     assert not {"root_a", "root_b"} & set(selected_labels)
+
+
+def test_nuisance_pair_selection_v2_allows_one_way_confusion() -> None:
+    labels = (
+        "root_a",
+        "root_b",
+        "alpha_card",
+        "beta_card",
+        "alpha_cash",
+        "beta_cash",
+        "alpha_fee",
+        "beta_fee",
+        "alpha_transfer",
+        "beta_transfer",
+    )
+    partition = _partition(labels)
+    recalls = {trajectory: {label: 0.95 for label in labels} for trajectory in range(3)}
+
+    one_way_pair_errors = {
+        ("alpha_card", "beta_card"): 4,
+        ("alpha_cash", "beta_cash"): 3,
+        ("alpha_fee", "beta_fee"): 2,
+        ("alpha_transfer", "beta_transfer"): 1,
+    }
+    predictions = {
+        trajectory: _prediction_rows(partition, one_way_pair_errors)
+        for trajectory in range(3)
+    }
+
+    v1_ranked = rank_nuisance_pairs(
+        partition,
+        per_label_recall_by_trajectory=recalls,
+        prediction_rows_by_trajectory=predictions,
+        excluded_labels=frozenset({"root_a", "root_b"}),
+    )
+    assert v1_ranked == ()
+
+    v2_ranked = rank_nuisance_pairs_v2(
+        partition,
+        per_label_recall_by_trajectory=recalls,
+        prediction_rows_by_trajectory=predictions,
+        excluded_labels=frozenset({"root_a", "root_b"}),
+    )
+    selected = select_disjoint_nuisance_pairs(v2_ranked, count=4)
+
+    assert [
+        (pair.label_a, pair.label_b)
+        for pair in selected
+    ] == [
+        ("alpha_card", "beta_card"),
+        ("alpha_cash", "beta_cash"),
+        ("alpha_fee", "beta_fee"),
+        ("alpha_transfer", "beta_transfer"),
+    ]
+    assert all(
+        (pair.a_to_b_count > 0) != (pair.b_to_a_count > 0)
+        for pair in selected
+    )
 
 
 def test_balanced_cross_intent_refresh_is_deterministic_and_label_correct() -> None:
