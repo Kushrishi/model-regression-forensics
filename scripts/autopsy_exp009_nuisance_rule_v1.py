@@ -149,7 +149,10 @@ def main() -> None:
 
     def train_gate(pair: tuple[str, str]) -> bool:
         a, b = pair
-        return train_counts[a] >= MINIMUM_TRAIN_EXAMPLES and train_counts[b] >= MINIMUM_TRAIN_EXAMPLES
+        return (
+            train_counts[a] >= MINIMUM_TRAIN_EXAMPLES
+            and train_counts[b] >= MINIMUM_TRAIN_EXAMPLES
+        )
 
     def eval_gate(pair: tuple[str, str]) -> bool:
         a, b = pair
