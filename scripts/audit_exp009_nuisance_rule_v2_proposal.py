@@ -105,8 +105,7 @@ def main() -> None:
         "--evidence-root",
         type=Path,
         default=Path(
-            "experiments/009_stochastic_counterfactual_certification/"
-            "pilot_evidence/clean"
+            "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean"
         ),
     )
     args = parser.parse_args()
@@ -170,8 +169,7 @@ def main() -> None:
             continue
 
         minimum_clean_recall = min(
-            min(recalls[label_a], recalls[label_b])
-            for recalls in recalls_by_trajectory.values()
+            min(recalls[label_a], recalls[label_b]) for recalls in recalls_by_trajectory.values()
         )
         if minimum_clean_recall < MINIMUM_CLEAN_RECALL:
             continue
@@ -188,10 +186,7 @@ def main() -> None:
         if true_counts[label_a] <= 0 or true_counts[label_b] <= 0:
             raise AssertionError("eligible label missing pooled clean truth count")
 
-        mean_rate = 0.5 * (
-            a_to_b / true_counts[label_a]
-            + b_to_a / true_counts[label_b]
-        )
+        mean_rate = 0.5 * (a_to_b / true_counts[label_a] + b_to_a / true_counts[label_b])
 
         eligible.append(
             ProposedPair(
