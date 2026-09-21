@@ -162,6 +162,109 @@ def rank_nuisance_pairs(
     )
 
 
+def rank_nuisance_pairs_v2(
+    partition: DevelopmentPartition,
+    *,
+    per_label_recall_by_trajectory: dict[int, dict[str, float]],
+    prediction_rows_by_trajectory: dict[int, tuple[dict[str, str], ...]],
+    excluded_labels: frozenset[str],
+    minimum_clean_recall: float = 0.90,
+    minimum_eval_examples: int = 20,
+    minimum_train_examples: int = 66,
+) -> tuple[NuisancePairScore, ...]:
+    """Rank v2 nuisance pairs using clean evidence with one-way confusion allowed."""
+
+    if not per_label_recall_by_trajectory:
+        raise ValueError("at least one clean trajectory is required")
+    if set(per_label_recall_by_trajectory) != set(prediction_rows_by_trajectory):
+        raise ValueError("clean metric and prediction trajectory IDs must match")
+
+    train_counts = Counter(record.label for record in partition.development_train)
+    eval_counts = Counter(record.label for record in partition.development_eval)
+    labels = sorted(train_counts)
+
+    for trajectory_id, recalls in per_label_recall_by_trajectory.items():
+        missing = set(labels) - set(recalls)
+        if missing:
+            raise ValueError(
+                f"trajectory {trajectory_id} is missing per-label recall for {sorted(missing)!r}"
+            )
+
+    true_counts: Counter[str] = Counter()
+    confusion_counts: Counter[tuple[str, str]] = Counter()
+    for rows in prediction_rows_by_trajectory.values():
+        for row in rows:
+            truth = row["true_label"]
+            prediction = row["predicted_label"]
+            true_counts[truth] += 1
+            if truth != prediction:
+                confusion_counts[(truth, prediction)] += 1
+
+    eligible: list[NuisancePairScore] = []
+    candidate_labels = [label for label in labels if label not in excluded_labels]
+    for label_a, label_b in combinations(candidate_labels, 2):
+        if train_counts[label_a] < minimum_train_examples:
+            continue
+        if train_counts[label_b] < minimum_train_examples:
+            continue
+        if eval_counts[label_a] < minimum_eval_examples:
+            continue
+        if eval_counts[label_b] < minimum_eval_examples:
+            continue
+
+        min_recall = min(
+            min(recalls[label_a], recalls[label_b])
+            for recalls in per_label_recall_by_trajectory.values()
+        )
+        if min_recall < minimum_clean_recall:
+            continue
+
+        lexical_jaccard = _lexical_jaccard(label_a, label_b)
+        if lexical_jaccard <= 0.0:
+            continue
+
+        a_to_b = confusion_counts[(label_a, label_b)]
+        b_to_a = confusion_counts[(label_b, label_a)]
+        if a_to_b <= 0 and b_to_a <= 0:
+            continue
+
+        if true_counts[label_a] <= 0 or true_counts[label_b] <= 0:
+            raise ValueError("eligible nuisance label has no pooled clean predictions")
+
+        mean_symmetric_rate = 0.5 * (
+            a_to_b / true_counts[label_a] + b_to_a / true_counts[label_b]
+        )
+        eligible.append(
+            NuisancePairScore(
+                label_a=label_a,
+                label_b=label_b,
+                mean_bidirectional_confusion_rate=mean_symmetric_rate,
+                mutual_confusion_count=a_to_b + b_to_a,
+                lexical_jaccard=lexical_jaccard,
+                minimum_clean_recall=min_recall,
+                train_count_a=train_counts[label_a],
+                train_count_b=train_counts[label_b],
+                eval_count_a=eval_counts[label_a],
+                eval_count_b=eval_counts[label_b],
+                a_to_b_count=a_to_b,
+                b_to_a_count=b_to_a,
+            )
+        )
+
+    return tuple(
+        sorted(
+            eligible,
+            key=lambda score: (
+                -score.mean_bidirectional_confusion_rate,
+                -score.mutual_confusion_count,
+                -score.lexical_jaccard,
+                score.label_a,
+                score.label_b,
+            ),
+        )
+    )
+
+
 def select_disjoint_nuisance_pairs(
     ranked_pairs: tuple[NuisancePairScore, ...],
     *,
