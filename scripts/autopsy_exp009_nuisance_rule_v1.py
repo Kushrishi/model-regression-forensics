@@ -89,8 +89,7 @@ def main() -> None:
         "--evidence-root",
         type=Path,
         default=Path(
-            "experiments/009_stochastic_counterfactual_certification/"
-            "pilot_evidence/clean"
+            "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean"
         ),
     )
     args = parser.parse_args()
@@ -117,9 +116,7 @@ def main() -> None:
                 f"trajectory {trajectory_id}: official-test embargo metadata is not intact"
             )
         if summary.get("development_partition_sha256") != partition_sha256:
-            raise AssertionError(
-                f"trajectory {trajectory_id}: development partition hash mismatch"
-            )
+            raise AssertionError(f"trajectory {trajectory_id}: development partition hash mismatch")
 
         metrics = summary.get("development_eval_metrics")
         if not isinstance(metrics, dict):
@@ -152,24 +149,15 @@ def main() -> None:
 
     def train_gate(pair: tuple[str, str]) -> bool:
         a, b = pair
-        return (
-            train_counts[a] >= MINIMUM_TRAIN_EXAMPLES
-            and train_counts[b] >= MINIMUM_TRAIN_EXAMPLES
-        )
+        return train_counts[a] >= MINIMUM_TRAIN_EXAMPLES and train_counts[b] >= MINIMUM_TRAIN_EXAMPLES
 
     def eval_gate(pair: tuple[str, str]) -> bool:
         a, b = pair
-        return (
-            eval_counts[a] >= MINIMUM_EVAL_EXAMPLES
-            and eval_counts[b] >= MINIMUM_EVAL_EXAMPLES
-        )
+        return eval_counts[a] >= MINIMUM_EVAL_EXAMPLES and eval_counts[b] >= MINIMUM_EVAL_EXAMPLES
 
     def recall_gate(pair: tuple[str, str]) -> bool:
         a, b = pair
-        minimum = min(
-            min(recalls[a], recalls[b])
-            for recalls in recall_by_trajectory.values()
-        )
+        minimum = min(min(recalls[a], recalls[b]) for recalls in recall_by_trajectory.values())
         return minimum >= MINIMUM_CLEAN_RECALL
 
     def lexical_gate(pair: tuple[str, str]) -> bool:
@@ -177,17 +165,11 @@ def main() -> None:
 
     def any_confusion_gate(pair: tuple[str, str]) -> bool:
         a, b = pair
-        return (
-            confusion_counts[(a, b)] > 0
-            or confusion_counts[(b, a)] > 0
-        )
+        return confusion_counts[(a, b)] > 0 or confusion_counts[(b, a)] > 0
 
     def bidirectional_confusion_gate(pair: tuple[str, str]) -> bool:
         a, b = pair
-        return (
-            confusion_counts[(a, b)] > 0
-            and confusion_counts[(b, a)] > 0
-        )
+        return confusion_counts[(a, b)] > 0 and confusion_counts[(b, a)] > 0
 
     gates = [
         ("train>=66_both", train_gate),
@@ -199,8 +181,7 @@ def main() -> None:
     ]
 
     individual: dict[str, list[tuple[str, str]]] = {
-        name: [pair for pair in all_pairs if gate(pair)]
-        for name, gate in gates
+        name: [pair for pair in all_pairs if gate(pair)] for name, gate in gates
     }
 
     frozen_cumulative_order = [
@@ -224,9 +205,7 @@ def main() -> None:
     ]
 
     recall_qualified = cumulative["min_clean_recall>=0.90_both"]
-    recall_plus_any_confusion = [
-        pair for pair in recall_qualified if any_confusion_gate(pair)
-    ]
+    recall_plus_any_confusion = [pair for pair in recall_qualified if any_confusion_gate(pair)]
     recall_plus_bidirectional = [
         pair for pair in recall_qualified if bidirectional_confusion_gate(pair)
     ]
