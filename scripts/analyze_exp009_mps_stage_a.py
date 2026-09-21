@@ -92,10 +92,10 @@ def main() -> None:
     mean_protected = sum(row["g_protected"] for row in results) / len(results)
 
     mean_target_pass = mean_target >= MEAN_TARGET_FLOOR
-    target_checks = [
-        row["g_target"] >= PER_TRAJECTORY_TARGET_FLOOR for row in results
-    ]
-    each_target_pass = all(target_checks)
+    each_target_pass = True
+    for row in results:
+        if row["g_target"] < PER_TRAJECTORY_TARGET_FLOOR:
+            each_target_pass = False
     mean_protected_pass = mean_protected <= MEAN_PROTECTED_CEILING
     each_protected_pass = all(
         row["g_protected"] <= PER_TRAJECTORY_PROTECTED_CEILING for row in results
