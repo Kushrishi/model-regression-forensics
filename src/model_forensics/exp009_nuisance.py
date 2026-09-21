@@ -231,9 +231,7 @@ def rank_nuisance_pairs_v2(
         if true_counts[label_a] <= 0 or true_counts[label_b] <= 0:
             raise ValueError("eligible nuisance label has no pooled clean predictions")
 
-        mean_symmetric_rate = 0.5 * (
-            a_to_b / true_counts[label_a] + b_to_a / true_counts[label_b]
-        )
+        mean_symmetric_rate = 0.5 * (a_to_b / true_counts[label_a] + b_to_a / true_counts[label_b])
         eligible.append(
             NuisancePairScore(
                 label_a=label_a,
