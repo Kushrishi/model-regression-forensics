@@ -41,10 +41,9 @@ def main() -> None:
             if summary["runtime"]["device"] != "mps":
                 raise AssertionError(f"{state} t{trajectory_id}: non-MPS runtime")
 
-        if (
-            baseline["development_partition_sha256"]
-            != composite["development_partition_sha256"]
-        ):
+        baseline_partition = baseline["development_partition_sha256"]
+        composite_partition = composite["development_partition_sha256"]
+        if baseline_partition != composite_partition:
             raise AssertionError(f"t{trajectory_id}: development partition mismatch")
 
         if baseline["slot_schedule_sha256"] != composite["slot_schedule_sha256"]:
@@ -65,30 +64,27 @@ def main() -> None:
         baseline_slices = baseline["behavior_slice_metrics"]
         composite_slices = composite["behavior_slice_metrics"]
 
-        g_target = (
-            baseline_slices["target_macro_recall"]
-            - composite_slices["target_macro_recall"]
-        )
-        g_protected = (
-            baseline_slices["protected_macro_recall"]
-            - composite_slices["protected_macro_recall"]
-        )
+        baseline_target = baseline_slices["target_macro_recall"]
+        composite_target = composite_slices["target_macro_recall"]
+        baseline_protected = baseline_slices["protected_macro_recall"]
+        composite_protected = composite_slices["protected_macro_recall"]
+        baseline_worst = baseline_slices["protected_worst_intent_recall"]
+        composite_worst = composite_slices["protected_worst_intent_recall"]
+
+        g_target = baseline_target - composite_target
+        g_protected = baseline_protected - composite_protected
 
         results.append(
             {
                 "trajectory_id": trajectory_id,
-                "baseline_target": baseline_slices["target_macro_recall"],
-                "composite_target": composite_slices["target_macro_recall"],
+                "baseline_target": baseline_target,
+                "composite_target": composite_target,
                 "g_target": g_target,
-                "baseline_protected": baseline_slices["protected_macro_recall"],
-                "composite_protected": composite_slices["protected_macro_recall"],
+                "baseline_protected": baseline_protected,
+                "composite_protected": composite_protected,
                 "g_protected": g_protected,
-                "baseline_worst_protected": baseline_slices[
-                    "protected_worst_intent_recall"
-                ],
-                "composite_worst_protected": composite_slices[
-                    "protected_worst_intent_recall"
-                ],
+                "baseline_worst_protected": baseline_worst,
+                "composite_worst_protected": composite_worst,
             }
         )
 
@@ -96,19 +92,21 @@ def main() -> None:
     mean_protected = sum(row["g_protected"] for row in results) / len(results)
 
     mean_target_pass = mean_target >= MEAN_TARGET_FLOOR
-    each_target_pass = all(
+    target_checks = [
         row["g_target"] >= PER_TRAJECTORY_TARGET_FLOOR for row in results
-    )
+    ]
+    each_target_pass = all(target_checks)
     mean_protected_pass = mean_protected <= MEAN_PROTECTED_CEILING
     each_protected_pass = all(
         row["g_protected"] <= PER_TRAJECTORY_PROTECTED_CEILING for row in results
     )
-    gate_pass = (
-        mean_target_pass
-        and each_target_pass
-        and mean_protected_pass
-        and each_protected_pass
+    gate_checks = (
+        mean_target_pass,
+        each_target_pass,
+        mean_protected_pass,
+        each_protected_pass,
     )
+    gate_pass = all(gate_checks)
 
     print("===== EXP009 MPS COMPOSITE STAGE-A ANALYSIS =====")
     for row in results:
@@ -130,10 +128,8 @@ def main() -> None:
     print(f"mean_target_gate={'PASS' if mean_target_pass else 'FAIL'}")
     print(f"per_trajectory_target_gate={'PASS' if each_target_pass else 'FAIL'}")
     print(f"mean_protected_gate={'PASS' if mean_protected_pass else 'FAIL'}")
-    print(
-        "per_trajectory_protected_gate="
-        f"{'PASS' if each_protected_pass else 'FAIL'}"
-    )
+    protected_status = "PASS" if each_protected_pass else "FAIL"
+    print(f"per_trajectory_protected_gate={protected_status}")
     print(f"STAGE_A_GATE={'PASS' if gate_pass else 'FAIL'}")
     print("model_training_performed_by_analysis=NO")
     print("official_test_split_loaded=NO")
