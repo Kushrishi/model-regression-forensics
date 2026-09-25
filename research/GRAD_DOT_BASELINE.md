@@ -148,8 +148,9 @@ Before any Banking77 Grad-Dot ranking:
 1. pin `captum==0.9.0` for the feasibility test;
 2. instantiate `TracInCP` with exactly one checkpoint and
    `layers=["classifier"]`;
-3. use ordinary summed cross-entropy as `loss_fn`;
-4. use the frozen negative pairwise-margin loss as `test_loss_fn`;
+3. expose ordinary cross-entropy as an unreduced per-example `loss_fn`;
+4. expose the frozen negative pairwise margin as an unreduced per-example
+   `test_loss_fn`;
 5. verify Captum's influence matrix against an explicit manual gradient-dot
    calculation over `classifier.weight` and `classifier.bias` on a tiny
    classifier;
@@ -206,3 +207,18 @@ helper. The validator was changed to standard `TracInCP` restricted to the
 This correction is infrastructure validation only and does not alter the frozen
 target objective, suspiciousness sign, candidate aggregation, or trajectory
 aggregation.
+
+
+### Captum loss-reduction note
+
+The first standard-`TracInCP` validation attempt used summed losses while
+`sample_wise_grads_per_batch=False`. Captum 0.9.0 correctly rejected that
+combination because this execution mode requires a vector of unreduced
+per-example losses.
+
+The validation harness now supplies `reduction="none"` for both training CE
+and the pairwise target loss. The manual reference still computes the same
+per-example gradients one example at a time.
+
+This is an API-conformance correction only; the Grad-Dot score definition is
+unchanged.
