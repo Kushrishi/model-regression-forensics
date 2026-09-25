@@ -28,6 +28,14 @@ It may **not** use:
 - the official Banking77 test split;
 - any result from the future confirmatory stage.
 
+Candidate identities passed to localization code must come from the opaque
+diagnostic manifest produced by `exp009_candidates.py`. Semantic roles such as
+"root" or "nuisance" belong only in the separate truth manifest and must not be
+loaded by the localization baseline.
+
+The diagnostic manifest may expose neutral stable slot IDs, counts, and hashes.
+It must not expose semantic role names or restoration outcomes.
+
 The target behavior itself is not hidden. In the current development benchmark,
 the frozen behavior slice is the intent pair:
 
