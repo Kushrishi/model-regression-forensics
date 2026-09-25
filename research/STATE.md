@@ -1,7 +1,7 @@
 # Current research state
 
-**Updated:** 2026-09-25
-**Active program:** Experiment 009 — stochastic counterfactual certification
+**Updated:** 2026-09-25  
+**Active program:** Experiment 009 — stochastic counterfactual certification  
 **Evidence class:** development only
 
 This file is the canonical short-form statement of the project's current
@@ -48,6 +48,29 @@ interventions and ordinary retraining variability?
 - The DistilBERT TRAK infrastructure smoke passed, but TRAK's standard multiclass
   objective is not treated as equivalent to the frozen pairwise target.
 
+## Stage-A hosted result
+
+Workflow run `36139384603` completed all six authorized Stage-A training
+siblings at source revision
+`cb508c845157a3212a05cc5592d0e384e220877f`.
+
+The frozen behavioral gate passed:
+
+- mean target regression: **0.129289** (required >= 0.10);
+- minimum per-trajectory target regression: **0.091912** (required >= 0.05);
+- mean protected regression: **0.002711** (required <= 0.02);
+- maximum per-trajectory protected regression: **0.003602**
+  (required <= 0.03).
+
+The truth-isolated last-layer Grad-Dot baseline ranked
+`candidate_243b5f64c58c` first in all three trajectories. The aggregate ranking
+was written before benchmark truth was loaded. Subsequent truth scoring
+identified that candidate as the planted root, giving root rank 1 and top-1
+correct = true.
+
+This is development evidence. See
+`experiments/009_stochastic_counterfactual_certification/STAGE_A_RESULT.md`.
+
 ## Important limitation of nuisance v2
 
 The root changes labels without changing text. The nuisance-v2 updates change
@@ -57,48 +80,31 @@ Therefore the current v2 construction is adequate for a **development
 root-vs-nuisance restoration-effect pilot**, but not for a strong claim that a
 blind debugger localized the root among structurally matched candidate changes.
 
-## Frozen next experimental design
+The Stage-A Grad-Dot result must be interpreted within that boundary.
 
-The MPS development pilot specifies:
+## Current decision boundary
 
-- three matched stochastic trajectories;
-- baseline and composite states in Stage A;
-- a frozen localized-regression gate;
-- root restoration plus four nuisance restorations in Stage B if Stage A passes;
-- a maximum of 21 result-bearing training runs;
-- no adaptive nuisance substitution after outcomes are observed.
+The frozen Stage-A prerequisite for restoration training has passed, but Stage B
+has not yet been authorized.
 
-No Stage-A result has been generated yet.
+Before result-bearing restoration training:
 
-## Current bottleneck
+1. preserve the completed Stage-A result without reinterpretation;
+2. review the Stage-B pairing/execution architecture;
+3. freeze the restoration-effect statistics and evidence package;
+4. create an explicit Stage-B authorization request;
+5. keep the official Banking77 test split untouched.
 
-The literature audit narrows MRF to a **release-change
-counterfactual-certification** problem rather than a new training-data
-attribution method.
-
-The last-layer Grad-Dot definition now passes an external Captum 0.9.0
-cross-check on a non-result-bearing toy model.
-
-The hosted Stage-A execution arrangement and evidence package are frozen in
-`HOSTED_STAGE_A_EXECUTION_AMENDMENT.md`.
-
-Before Stage-A result-bearing training:
-
-1. merge and validate the hosted Stage-A infrastructure;
-2. add one explicit Stage-A run-authorization request on `main`;
-3. keep the official test split untouched.
-
-The authorized Stage A may train only the three baseline and three composite
-siblings. Stage B remains blocked until the frozen Stage-A regression gate and
-development localization analysis are complete.
-
-TRAK remains a secondary feasibility track until its target mapping is
-theoretically aligned with the frozen pairwise behavior scalar.
+The current frozen pilot plan specifies root plus four nuisance restorations on
+trajectories 0, 1, and 2. Any execution amendment made before Stage-B outcomes
+must be recorded prospectively rather than silently changing the historical
+plan.
 
 ## Not established
 
 The project does not currently establish:
 
+- causal specificity for Exp009;
 - confirmatory causal certification;
 - general training-data root-cause identification;
 - superiority to modern attribution or influence methods;

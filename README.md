@@ -39,8 +39,11 @@ Current development evidence:
 - those nuisance changes are suitable for an intervention-effect pilot but are
   **not structurally matched well enough for a strong blinded-localization
   claim**;
-- a three-trajectory MPS development certification pilot is specified but has
-  not yet produced result-bearing restoration evidence;
+- the hosted Stage-A composite-regression gate passed across all three frozen
+  trajectories;
+- the target-faithful last-layer Grad-Dot baseline ranked the planted root first
+  in all three trajectories under truth-isolated scoring;
+- Stage-B root/nuisance restoration evidence has not yet been generated;
 - the official Banking77 test split remains untouched.
 
 See [research/STATE.md](research/STATE.md) for the canonical short-form state and

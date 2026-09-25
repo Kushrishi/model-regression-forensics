@@ -1,6 +1,6 @@
 # Claims ledger
 
-**Updated:** 2026-09-24
+**Updated:** 2026-09-25
 
 This ledger defines the strongest wording currently supported by the project.
 
@@ -9,9 +9,12 @@ This ledger defines the strongest wording currently supported by the project.
 | Localization and causal verification are distinct in the controlled benchmarks studied. | **Supported** | Several experiments show that correct ranking does not by itself establish unique causal responsibility. |
 | Restoring a planted root can recover target behavior while non-root restorations also cause recovery. | **Supported** | Demonstrated in Experiment 008; this is why restorative influence is not treated as unique causal certification. |
 | The Exp009 1/4 planted fault creates a reproducible localized development regression across three paired trajectories. | **Development evidence** | Passed the frozen development replication rule; not confirmatory evidence. |
+| The frozen Exp009 nuisance-v2 composite passes the hosted Stage-A localized-regression gate. | **Development evidence** | All four prospectively declared Stage-A gate components passed across trajectories 0, 1, and 2 in workflow run 36139384603. |
+| The target-faithful last-layer Grad-Dot baseline localized the planted Exp009 root at rank 1 in the hosted Stage-A development benchmark. | **Development evidence** | The opaque root candidate ranked first in all three trajectories and in the aggregate; truth was loaded only after the aggregate ranking existed. Structural mismatch between root and nuisance diffs prevents a strong structurally matched blinded-localization claim. |
 | Nuisance rule v1 is viable. | **Not supported** | The frozen rule produced zero eligible pairs and was stopped before nuisance training. |
 | Nuisance rule v2 supports a strong blinded-localization benchmark. | **Not supported** | Root and nuisance diffs are structurally distinguishable. |
-| Nuisance rule v2 can support a development comparison of restoration effects. | **Untested** | Protocol is frozen; result-bearing nuisance/restoration training has not yet been completed. |
+| Nuisance rule v2 can support a development comparison of restoration effects. | **Untested** | Stage A passed, but result-bearing Stage-B root/nuisance restoration training has not yet been completed. |
+| Exp009 establishes causal specificity for the localized root. | **Untested** | No Stage-B restoration-specificity result exists yet. |
 | Explicit treatment of retraining stochasticity is itself novel. | **Not supported** | Adjacent literature already studies stochastic/distributional training-data attribution. |
 | MRF provides a distinct useful framework for post-hoc causal certification over versioned release changes. | **Research hypothesis** | Requires refreshed related work, competitive baselines, and confirmatory evidence. |
 | MRF outperforms modern data-attribution methods. | **Untested** | No broad baseline comparison supports this claim. |

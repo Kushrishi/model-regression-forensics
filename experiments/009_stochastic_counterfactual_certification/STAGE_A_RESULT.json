@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "experiment": "exp009_mps_certification_pilot_v2_stage_a",
+  "evidence_class": "development",
+  "date": "2026-09-25",
+  "source_git_sha": "cb508c845157a3212a05cc5592d0e384e220877f",
+  "workflow_run_id": 36139384603,
+  "analysis_artifact": {
+    "name": "exp009-stage-a-analysis",
+    "artifact_id": 10870312800,
+    "digest": "sha256:ca6b14691f9b3df6e950ed8274d76e9912e8d02f3886a4eded24ae9b16ea59af"
+  },
+  "official_test_split_loaded": false,
+  "thresholds": {
+    "mean_target_floor": 0.1,
+    "per_trajectory_target_floor": 0.05,
+    "mean_protected_ceiling": 0.02,
+    "per_trajectory_protected_ceiling": 0.03
+  },
+  "trajectories": [
+    {
+      "trajectory_id": 0,
+      "baseline_target": 0.9705882352941176,
+      "composite_target": 0.7922794117647058,
+      "g_target": 0.1783088235294118,
+      "baseline_protected": 0.8814190318496661,
+      "composite_protected": 0.8778167361260865,
+      "g_protected": 0.0036022957235796182
+    },
+    {
+      "trajectory_id": 1,
+      "baseline_target": 0.9705882352941176,
+      "composite_target": 0.8786764705882353,
+      "g_target": 0.09191176470588236,
+      "baseline_protected": 0.8847786130311781,
+      "composite_protected": 0.8815038057314064,
+      "g_protected": 0.003274807299771698
+    },
+    {
+      "trajectory_id": 2,
+      "baseline_target": 0.9705882352941176,
+      "composite_target": 0.8529411764705883,
+      "g_target": 0.11764705882352933,
+      "baseline_protected": 0.879860942978492,
+      "composite_protected": 0.8786038194935875,
+      "g_protected": 0.0012571234849045876
+    }
+  ],
+  "aggregate": {
+    "mean_g_target": 0.1292892156862745,
+    "mean_g_protected": 0.0027114088360853015,
+    "gate_components": {
+      "mean_target": true,
+      "each_target": true,
+      "mean_protected": true,
+      "each_protected": true
+    },
+    "stage_a_gate_pass": true
+  },
+  "localization": {
+    "method": "last_layer_grad_dot",
+    "truth_manifest_loaded_during_ranking": false,
+    "aggregate_written_before_truth": true,
+    "mean_score_ranking": [
+      "candidate_243b5f64c58c",
+      "candidate_438ace7a3c4c",
+      "candidate_048aa2e31cdf",
+      "candidate_b2ac5506d40e",
+      "candidate_7eebe55b682f"
+    ],
+    "mean_candidate_scores": {
+      "candidate_243b5f64c58c": 145.18567816416422,
+      "candidate_438ace7a3c4c": 0.6370054770377465,
+      "candidate_048aa2e31cdf": 0.46703062212327495,
+      "candidate_b2ac5506d40e": 0.0592552899858371,
+      "candidate_7eebe55b682f": -0.003911413376651278
+    },
+    "root_candidate_id": "candidate_243b5f64c58c",
+    "root_rank": 1,
+    "top1_correct": true,
+    "truth_loaded_after_ranking": true,
+    "root_rank_per_trajectory": {
+      "0": 1,
+      "1": 1,
+      "2": 1
+    }
+  },
+  "claim_boundary": {
+    "causal_specificity_established": false,
+    "structurally_matched_blind_localization_established": false,
+    "confirmatory_result": false
+  }
+}
