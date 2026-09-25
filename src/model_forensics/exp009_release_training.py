@@ -40,9 +40,9 @@ from model_forensics.exp009_trajectory import (
 )
 
 
-
 def _source_git_sha() -> str:
     return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+
 
 def validate_release_alignment(
     partition: DevelopmentPartition,

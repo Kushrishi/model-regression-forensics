@@ -90,8 +90,8 @@ def _logits_and_classifier_inputs(model, encoded, *, batch_size: int, device: st
         stop = min(start + batch_size, example_count)
         captured = []
 
-        def _capture(_module, inputs):
-            captured.append(inputs[0].detach())
+        def _capture(_module, inputs, _captured=captured):
+            _captured.append(inputs[0].detach())
 
         handle = model.classifier.register_forward_pre_hook(_capture)
         try:

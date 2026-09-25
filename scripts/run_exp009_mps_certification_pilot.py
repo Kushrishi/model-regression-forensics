@@ -24,6 +24,7 @@ from model_forensics.exp009_release_training import (
     versioned_release_preflight,
 )
 
+
 def _config() -> Exp009ClassifierPilotConfig:
     return Exp009ClassifierPilotConfig(
         epochs=7,
@@ -34,8 +35,6 @@ def _config() -> Exp009ClassifierPilotConfig:
         max_length=128,
         max_grad_norm=1.0,
     )
-
-
 
 
 def _run_id(trajectory_id: int, state: str) -> str:
