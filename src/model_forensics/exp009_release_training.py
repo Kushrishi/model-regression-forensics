@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import random
@@ -7,6 +8,7 @@ import time
 from dataclasses import asdict
 from pathlib import Path
 
+from model_forensics.exp009_attribution import target_pair_margin_summary
 from model_forensics.exp009_classifier import (
     EXP009_PILOT_MODEL_SAFETENSORS_SHA256,
     Exp009ClassifierPilotConfig,
@@ -140,6 +142,41 @@ def versioned_release_preflight(
     }
 
 
+def _collect_eval_logits(
+    model: object,
+    *,
+    encoded_eval: dict[str, object],
+    example_count: int,
+    batch_size: int,
+    device: str,
+    torch: object,
+) -> list[list[float]]:
+    """Collect development-eval logits in deterministic example order."""
+
+    model.eval()  # type: ignore[attr-defined]
+    rows: list[list[float]] = []
+    indices = list(range(example_count))
+
+    with torch.no_grad():  # type: ignore[attr-defined]
+        for batch in _batch_indices(indices, batch_size):
+            inputs = {
+                key: value[batch].to(device)  # type: ignore[index,union-attr]
+                for key, value in encoded_eval.items()
+                if key in {"input_ids", "attention_mask"}
+            }
+            logits = model(**inputs).logits.detach().cpu()  # type: ignore[operator]
+            rows.extend(
+                [float(value) for value in row]
+                for row in logits.tolist()
+            )
+
+    if len(rows) != example_count:
+        raise AssertionError(
+            f"development-eval logit count mismatch: expected={example_count} observed={len(rows)}"
+        )
+    return rows
+
+
 def train_versioned_classifier_pilot(
     partition: DevelopmentPartition,
     *,
@@ -254,6 +291,28 @@ def train_versioned_classifier_pilot(
         target_labels=target_labels,
     )
 
+    eval_logits = _collect_eval_logits(
+        model,
+        encoded_eval=encoded_eval,
+        example_count=len(eval_records),
+        batch_size=config.batch_size,
+        device=device,
+        torch=torch,
+    )
+    logit_predictions = [
+        max(range(len(row)), key=row.__getitem__)
+        for row in eval_logits
+    ]
+    if logit_predictions != predictions:
+        raise AssertionError("saved development-eval logits disagree with evaluated predictions")
+
+    target_margin = target_pair_margin_summary(
+        eval_logits,
+        [record.label for record in eval_records],
+        label_order=labels,
+        target_labels=target_labels,
+    )
+
     checkpoint_dir = output / "model"
     model.save_pretrained(checkpoint_dir, safe_serialization=True)
     tokenizer.save_pretrained(checkpoint_dir)
@@ -271,6 +330,21 @@ def train_versioned_classifier_pilot(
         "".join(json.dumps(row, sort_keys=True) + "\n" for row in prediction_rows),
         encoding="utf-8",
     )
+
+    logits_path = output / "development_eval_logits.jsonl"
+    logits_rows = [
+        {
+            "content_id": record.content_id,
+            "true_label": record.label,
+            "logits": row,
+        }
+        for record, row in zip(eval_records, eval_logits, strict=True)
+    ]
+    logits_path.write_text(
+        "".join(json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n" for row in logits_rows),
+        encoding="utf-8",
+    )
+    logits_sha256 = hashlib.sha256(logits_path.read_bytes()).hexdigest()
 
     summary: dict[str, object] = {
         "mode": "versioned_release_development_pilot",
@@ -299,6 +373,16 @@ def train_versioned_classifier_pilot(
             "development_train": len(slots),
             "development_eval": len(eval_records),
             "labels": len(labels),
+            "label_order": list(labels),
+        },
+        "attribution_target": {
+            "contract": "research/ATTRIBUTION_TARGET.md",
+            "target_labels": list(target_labels),
+            "target_example_count": target_margin.example_count,
+            "target_per_label_counts": dict(target_margin.per_label_counts),
+            "target_pair_mean_margin": target_margin.mean_margin,
+            "eval_logits_file": str(logits_path),
+            "eval_logits_sha256": logits_sha256,
         },
         "slot_schedule_sha256": slot_schedule_sha256(
             tuple(slot.slot_id for slot in slots),

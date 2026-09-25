@@ -5,6 +5,7 @@ from pathlib import Path
 
 TRAJECTORIES = (0, 1, 2)
 ROOT = Path("artifacts/exp009/mps_certification_pilot_v2/runs")
+OUTPUT = Path("artifacts/exp009/mps_certification_pilot_v2/stage_a_analysis.json")
 
 MEAN_TARGET_FLOOR = 0.10
 PER_TRAJECTORY_TARGET_FLOOR = 0.05
@@ -108,6 +109,31 @@ def main() -> None:
     )
     gate_pass = all(gate_checks)
 
+    analysis = {
+        "schema_version": 1,
+        "experiment": "exp009_mps_certification_pilot_v2_stage_a",
+        "confirmatory_result": False,
+        "official_test_split_loaded": False,
+        "thresholds": {
+            "mean_target_floor": MEAN_TARGET_FLOOR,
+            "per_trajectory_target_floor": PER_TRAJECTORY_TARGET_FLOOR,
+            "mean_protected_ceiling": MEAN_PROTECTED_CEILING,
+            "per_trajectory_protected_ceiling": PER_TRAJECTORY_PROTECTED_CEILING,
+        },
+        "trajectories": results,
+        "mean_g_target": mean_target,
+        "mean_g_protected": mean_protected,
+        "gate_components": {
+            "mean_target": mean_target_pass,
+            "each_target": each_target_pass,
+            "mean_protected": mean_protected_pass,
+            "each_protected": each_protected_pass,
+        },
+        "stage_a_gate_pass": gate_pass,
+    }
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_text(json.dumps(analysis, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
     print("===== EXP009 MPS COMPOSITE STAGE-A ANALYSIS =====")
     for row in results:
         print(
@@ -131,6 +157,7 @@ def main() -> None:
     protected_status = "PASS" if each_protected_pass else "FAIL"
     print(f"per_trajectory_protected_gate={protected_status}")
     print(f"STAGE_A_GATE={'PASS' if gate_pass else 'FAIL'}")
+    print(f"analysis_json={OUTPUT}")
     print("model_training_performed_by_analysis=NO")
     print("official_test_split_loaded=NO")
 
