@@ -62,8 +62,7 @@ def build_opaque_candidate_manifests(
                 previous = claimed_slots.get(slot_id)
                 if previous is not None:
                     raise ValueError(
-                        f"candidate changes overlap at {slot_id}: "
-                        f"{previous!r} and {role!r}"
+                        f"candidate changes overlap at {slot_id}: {previous!r} and {role!r}"
                     )
                 claimed_slots[slot_id] = role
 
