@@ -111,7 +111,6 @@ def test_behavior_slice_metrics_rejects_invalid_targets() -> None:
         behavior_slice_metrics({"a": 1.0, "b": 1.0}, target_labels=("a", "missing"))
 
 
-
 def test_collect_eval_logits_preserves_example_order() -> None:
     torch = pytest.importorskip("torch")
     from torch import nn
