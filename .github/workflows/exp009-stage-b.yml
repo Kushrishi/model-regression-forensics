@@ -1,0 +1,253 @@
+name: Exp009 Stage B
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "experiments/009_stochastic_counterfactual_certification/STAGE_B_RUN_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: exp009-stage-b
+  cancel-in-progress: false
+
+jobs:
+  train:
+    name: t${{ matrix.trajectory }} / hosted session
+    runs-on: macos-15
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        trajectory: [0, 1, 2]
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+
+      - name: Install research dependencies
+        run: uv sync --extra research --extra dev
+
+      - name: Verify Stage-B authorization
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          request_path = Path(
+              "experiments/009_stochastic_counterfactual_certification/"
+              "STAGE_B_RUN_REQUEST.json"
+          )
+          request = json.loads(request_path.read_text(encoding="utf-8"))
+          expected_states = [
+              "composite",
+              "restore_root",
+              "restore_n1",
+              "restore_n2",
+              "restore_n3",
+              "restore_n4",
+          ]
+          assert request["schema_version"] == 1
+          assert request["authorized"] is True
+          assert request["evidence_class"] == "development"
+          assert request["trajectories"] == [0, 1, 2]
+          assert request["states"] == expected_states
+          assert request["fresh_composite_per_trajectory"] is True
+          assert request["stage_b_training_runs"] == 18
+          assert request["official_test_split"] == "embargoed"
+          assert request["analysis_mode"] == "descriptive_no_threshold"
+          assert request["execution_amendment"] == (
+              "experiments/009_stochastic_counterfactual_certification/"
+              "HOSTED_STAGE_B_EXECUTION_AMENDMENT.md"
+          )
+
+          parent_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^"], text=True
+          ).strip()
+          assert request["preparation_main_commit"] == parent_sha
+
+          stage_a = json.loads(
+              Path(
+                  "experiments/009_stochastic_counterfactual_certification/"
+                  "STAGE_A_RESULT.json"
+              ).read_text(encoding="utf-8")
+          )
+          assert stage_a["aggregate"]["stage_a_gate_pass"] is True
+          assert stage_a["official_test_split_loaded"] is False
+          assert request["stage_a_result"]["workflow_run_id"] == stage_a["workflow_run_id"]
+          assert request["stage_a_result"]["source_git_sha"] == stage_a["source_git_sha"]
+          assert request["stage_a_result"]["analysis_artifact_id"] == (
+              stage_a["analysis_artifact"]["artifact_id"]
+          )
+          assert request["stage_a_result"]["analysis_artifact_digest"] == (
+              stage_a["analysis_artifact"]["digest"]
+          )
+          print("STAGE_B_AUTHORIZATION=PASS")
+          PY
+
+      - name: Verify all six frozen state preflights
+        run: |
+          for state in composite restore_root restore_n1 restore_n2 restore_n3 restore_n4; do
+            uv run python scripts/run_exp009_mps_certification_pilot.py --mode preflight --trajectory-id "${{ matrix.trajectory }}" --state "${state}"
+          done
+
+      - name: Freeze session manifest and runner provenance
+        shell: bash
+        run: |
+          session_root="artifacts/exp009/mps_certification_pilot_v2/stage_b_sessions/t${{ matrix.trajectory }}"
+          mkdir -p "${session_root}"
+          {
+            echo "runner_os=${RUNNER_OS}"
+            echo "runner_arch=${RUNNER_ARCH}"
+            echo "image_os=${ImageOS:-unknown}"
+            echo "image_version=${ImageVersion:-unknown}"
+            echo "uname=$(uname -a)"
+            echo "macos=$(sw_vers -productVersion)"
+            echo "cpu=$(sysctl -n machdep.cpu.brand_string)"
+            echo "memory_bytes=$(sysctl -n hw.memsize)"
+          } > "${session_root}/runner_provenance.txt"
+
+          case "${{ matrix.trajectory }}" in
+            0) order="composite restore_root restore_n1 restore_n2 restore_n3 restore_n4" ;;
+            1) order="composite restore_n1 restore_n2 restore_n3 restore_n4 restore_root" ;;
+            2) order="composite restore_n3 restore_n4 restore_root restore_n1 restore_n2" ;;
+            *) exit 2 ;;
+          esac
+
+          SESSION_ROOT="${session_root}" TRAJECTORY="${{ matrix.trajectory }}" STATE_ORDER="${order}" python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          request_path = Path(
+              "experiments/009_stochastic_counterfactual_certification/"
+              "STAGE_B_RUN_REQUEST.json"
+          )
+          payload = {
+              "schema_version": 1,
+              "trajectory_id": int(os.environ["TRAJECTORY"]),
+              "fresh_composite_anchor": True,
+              "state_order": os.environ["STATE_ORDER"].split(),
+              "primary_analysis_requires_complete_session": True,
+              "source_git_sha": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True
+              ).strip(),
+              "stage_b_run_request_sha256": hashlib.sha256(
+                  request_path.read_bytes()
+              ).hexdigest(),
+          }
+          path = Path(os.environ["SESSION_ROOT"]) / "session_manifest.json"
+          path.write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Train frozen six-state trajectory session
+        shell: bash
+        run: |
+          set -euo pipefail
+          trajectory="${{ matrix.trajectory }}"
+          session_root="artifacts/exp009/mps_certification_pilot_v2/stage_b_sessions/t${trajectory}"
+
+          case "${trajectory}" in
+            0) states=(composite restore_root restore_n1 restore_n2 restore_n3 restore_n4) ;;
+            1) states=(composite restore_n1 restore_n2 restore_n3 restore_n4 restore_root) ;;
+            2) states=(composite restore_n3 restore_n4 restore_root restore_n1 restore_n2) ;;
+            *) exit 2 ;;
+          esac
+
+          for state in "${states[@]}"; do
+            uv run python scripts/run_exp009_mps_certification_pilot.py --mode train --trajectory-id "${trajectory}" --state "${state}" --output-root "${session_root}/runs"
+
+            run_id=$(printf "mps_v2_t%04d_%s_e7_bs32_lr2e5" "${trajectory}" "${state}")
+            run_dir="${session_root}/runs/${run_id}"
+            cp "${session_root}/runner_provenance.txt" "${run_dir}/runner_provenance.txt"
+            rm -rf "${run_dir}/model"
+            shasum -a 256 "${run_dir}/train_summary.json" "${run_dir}/development_eval_predictions.jsonl" "${run_dir}/development_eval_logits.jsonl"
+          done
+
+      - name: Remove transient checkpoints
+        if: always()
+        shell: bash
+        run: |
+          root="artifacts/exp009/mps_certification_pilot_v2/stage_b_sessions/t${{ matrix.trajectory }}"
+          if [ -d "${root}" ]; then
+            find "${root}" -type d -name model -prune -exec rm -rf {} +
+          fi
+
+      - name: Upload trajectory-session evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: exp009-stage-b-t${{ matrix.trajectory }}-session
+          path: artifacts/exp009/mps_certification_pilot_v2/stage_b_sessions/t${{ matrix.trajectory }}/
+          if-no-files-found: warn
+          retention-days: 90
+
+  analyze:
+    name: Frozen Stage-B effect analysis
+    needs: train
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+
+      - name: Install analysis dependencies
+        run: uv sync --extra dev
+
+      - name: Download complete Stage-B sessions
+        uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: exp009-stage-b-t*-session
+          path: artifacts/exp009/mps_certification_pilot_v2/stage_b_sessions
+          merge-multiple: false
+
+      - name: Normalize downloaded session directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="artifacts/exp009/mps_certification_pilot_v2/stage_b_sessions"
+          for trajectory in 0 1 2; do
+            artifact_dir="${root}/exp009-stage-b-t${trajectory}-session"
+            test -d "${artifact_dir}"
+            rm -rf "${root}/t${trajectory}"
+            mv "${artifact_dir}" "${root}/t${trajectory}"
+          done
+
+      - name: Analyze frozen paired restoration effects
+        run: |
+          uv run python scripts/analyze_exp009_mps_stage_b.py
+          cat artifacts/exp009/mps_certification_pilot_v2/stage_b_analysis.json
+
+      - name: Upload Stage-B analysis
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: exp009-stage-b-analysis
+          path: artifacts/exp009/mps_certification_pilot_v2/stage_b_analysis.json
+          if-no-files-found: error
+          retention-days: 90

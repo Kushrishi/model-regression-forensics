@@ -84,21 +84,33 @@ The Stage-A Grad-Dot result must be interpreted within that boundary.
 
 ## Current decision boundary
 
-The frozen Stage-A prerequisite for restoration training has passed, but Stage B
-has not yet been authorized.
+The frozen Stage-A prerequisite has passed. The hosted Stage-B execution design
+has now been reviewed and prospectively frozen in
+`HOSTED_STAGE_B_EXECUTION_AMENDMENT.md`, but result-bearing Stage-B training is
+still **not authorized**.
 
-Before result-bearing restoration training:
+The hosted amendment preserves the scientific pilot while strengthening the
+paired execution boundary:
 
-1. preserve the completed Stage-A result without reinterpretation;
-2. review the Stage-B pairing/execution architecture;
-3. freeze the restoration-effect statistics and evidence package;
-4. create an explicit Stage-B authorization request;
-5. keep the official Banking77 test split untouched.
+- trajectories remain 0, 1, and 2;
+- each trajectory receives a fresh composite plus all five restorations;
+- all six siblings run sequentially in one `macos-15` runner session;
+- restoration order is frozen and rotated prospectively across trajectories;
+- Stage B contains 18 result-bearing runs, for 24 hosted runs cumulatively
+  including Stage A;
+- restoration effects are measured against the fresh same-session composite;
+- the historical Stage-A gate is not reapplied;
+- all four nuisance contrasts are retained;
+- no Stage-B significance test, multiplicity-adjusted claim, or certification
+  threshold is introduced.
 
-The current frozen pilot plan specifies root plus four nuisance restorations on
-trajectories 0, 1, and 2. Any execution amendment made before Stage-B outcomes
-must be recorded prospectively rather than silently changing the historical
-plan.
+The preparation workflow also requires release identity, changed-slot identity,
+initial-model-state, slot-schedule, source-revision, and runner-provenance
+consistency before the primary analysis is accepted.
+
+Stage B becomes authorized only through a separate run-request file merged to
+`main` after standard CI and Research CI validate the implementation. The
+official Banking77 test split remains untouched.
 
 ## Not established
 
