@@ -67,15 +67,22 @@ This pilot has not yet produced restoration results.
 Do **not** start the 21-run development pilot solely because the implementation
 exists.
 
+The 2025-2026 literature audit narrows MRF to a **release-change
+counterfactual-certification** problem rather than a new training-data
+attribution method.
+
 Before result-bearing training:
 
-1. refresh the 2025-2026 related-work matrix;
-2. define the exact residual research gap against modern attribution/debugging
-   work;
-3. select reviewer-expected baselines prospectively;
-4. decide whether the admitted structural leakage makes nuisance v2 useful
-   enough to run or whether a cleaner development construction should replace it;
-5. ensure CI and reproducibility checks are green.
+1. complete feasibility selection for at least one modern attribution baseline;
+2. freeze the development-only change-level aggregation rule;
+3. retain nuisance v2 only as a certification-effect pilot, not a blinded
+   localization benchmark;
+4. verify the MPS execution environment and evidence packaging;
+5. keep the official test split untouched.
+
+The current literature audit does not kill the 21-run nuisance-v2 pilot, but it
+changes its purpose to estimating root-vs-nuisance effect separation and
+stochastic variability for later confirmatory design.
 
 ## Not established
 
