@@ -4,12 +4,12 @@ import copy
 
 import pytest
 
-torch = pytest.importorskip("torch")
-
 from model_forensics.exp009_graddot import (
     PairwiseMarginLoss,
     suspiciousness_from_influence,
 )
+
+torch = pytest.importorskip("torch")
 
 
 def test_pairwise_margin_loss_matches_manual_reference() -> None:
