@@ -22,10 +22,13 @@ def test_pairwise_margin_loss_matches_manual_reference() -> None:
     )
     labels = torch.tensor([0, 1], dtype=torch.long)
 
-    loss = PairwiseMarginLoss(0, 1)(logits, labels)
+    losses = PairwiseMarginLoss(0, 1)(logits, labels)
 
-    expected = -((3.0 - 1.0) + (2.5 - 0.5))
-    assert float(loss) == pytest.approx(expected)
+    expected = torch.tensor([-2.0, -2.0])
+    torch.testing.assert_close(losses, expected)
+
+    summed = PairwiseMarginLoss(0, 1, reduction="sum")(logits, labels)
+    assert float(summed) == pytest.approx(float(expected.sum()))
 
 
 def test_pairwise_margin_loss_rejects_protected_label() -> None:
@@ -103,8 +106,8 @@ def test_captum_one_checkpoint_matches_manual_last_layer_grad_dot() -> None:
         checkpoints=[checkpoint],
         checkpoints_load_func=load_checkpoint,
         layers=["classifier"],
-        loss_fn=nn.CrossEntropyLoss(reduction="sum"),
-        test_loss_fn=PairwiseMarginLoss(0, 1),
+        loss_fn=nn.CrossEntropyLoss(reduction="none"),
+        test_loss_fn=PairwiseMarginLoss(0, 1, reduction="none"),
         batch_size=4,
         sample_wise_grads_per_batch=False,
     )
@@ -118,7 +121,7 @@ def test_captum_one_checkpoint_matches_manual_last_layer_grad_dot() -> None:
     for target_index in range(len(target_x)):
         model.zero_grad(set_to_none=True)
         target_logits = model(target_x[target_index : target_index + 1])
-        target_loss = PairwiseMarginLoss(0, 1)(
+        target_loss = PairwiseMarginLoss(0, 1, reduction="sum")(
             target_logits,
             target_y[target_index : target_index + 1],
         )
