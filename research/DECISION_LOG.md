@@ -659,3 +659,31 @@ The synthetic shape substrate is retired from further benchmark tuning, consiste
 A plausible but unproven explanation for the non-root recovery is training-path sensitivity: restoring policy-correct nuisance changes may alter optimization trajectories enough to affect held-out target behavior. Experiment 008 does not establish that mechanism.
 
 The next research phase should test this directly in a more realistic regression substrate using repeated, paired retraining and explicit variability controls so that intervention effects can be distinguished from ordinary retraining-path variation.
+
+## 2026-09-25 — Experiment 009 hosted Stage A passes
+
+The authorized Exp009 hosted Stage-A development run completed all six frozen
+baseline/composite siblings on GitHub-hosted Apple-Silicon MPS runners at source
+revision `cb508c845157a3212a05cc5592d0e384e220877f`.
+
+The prospectively frozen behavioral gate passed. Mean target regression was
+0.129289; trajectory target regressions were 0.178309, 0.091912, and 0.117647.
+Mean protected regression was 0.002711; trajectory protected regressions were
+0.003602, 0.003275, and 0.001257. All four declared Stage-A gate components
+passed. The official Banking77 test split was not loaded.
+
+The target-faithful last-layer Grad-Dot baseline was executed against opaque
+candidate identities. `candidate_243b5f64c58c` ranked first independently in
+all three trajectories and first in the aggregate ranking. Only after that
+aggregate ranking file existed was benchmark truth loaded; the candidate was
+then identified as the planted root, yielding root rank 1 and top-1 correct =
+true.
+
+This remains development-only evidence. The nuisance-v2 structural mismatch is
+unchanged, so the result does not establish a strong structurally matched
+blinded-localization benchmark and does not establish causal specificity.
+
+Stage B is not authorized by this decision-log entry. Its execution/pairing
+architecture and effect analysis must be reviewed and frozen prospectively
+before any restoration training.
+
