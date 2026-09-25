@@ -36,9 +36,7 @@ def class_balanced_slot_support(
     by_label: dict[str, tuple[str, ...]] = {}
     for label in labels:
         members = tuple(
-            example_id
-            for example_id in target_ids
-            if target_label_by_example[example_id] == label
+            example_id for example_id in target_ids if target_label_by_example[example_id] == label
         )
         if not members:
             raise ValueError(f"no target examples for included label {label!r}")
@@ -90,9 +88,7 @@ def version_change_suspicion_scores(
 
         missing = [slot_id for slot_id in changed_slots if slot_id not in baseline_support]
         if missing:
-            raise ValueError(
-                f"change {change_id!r} references {len(missing)} unknown stable slots"
-            )
+            raise ValueError(f"change {change_id!r} references {len(missing)} unknown stable slots")
 
         deltas = [
             float(composite_support[slot_id]) - float(baseline_support[slot_id])
