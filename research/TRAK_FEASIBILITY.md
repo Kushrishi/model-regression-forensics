@@ -49,28 +49,27 @@ separate methodological gate.
 
 ## DistilBERT runtime compatibility
 
-TRAK's stock text-classification adapter assumes \`token_type_ids\`; DistilBERT
+TRAK's stock text-classification adapter assumes token_type_ids; DistilBERT
 does not use them.
 
 A small DistilBERT-compatible smoke adapter is therefore required.
 
-The first smoke also exposed a current Transformers 5.16.1 compatibility issue:
-the padded attention-mask path contains data-dependent mask control flow that
-\`torch.func.vmap\` rejects.
+The first smoke exposed a Transformers 5.16.1 compatibility issue: dynamic
+2-D-to-4-D padding-mask construction performs data-dependent tensor control
+flow that torch.func.vmap rejects.
 
-For the TRAK smoke only:
+For TRAK attribution only:
 
 - use the supported eager attention implementation;
-- feed examples without padding and without an attention mask;
-- group future real examples by exact tokenized length;
-- preserve stable dataset positions with TRAK's explicit \`inds\` argument.
+- convert the ordinary 1-D/2-D padding mask into the equivalent additive 4-D
+  key-padding mask using tensor operations before model entry.
 
-A regression test requires logits for one unpadded/no-mask example to match the
-same example under the ordinary padded/masked DistilBERT path.
+Transformers accepts an already prepared 4-D mask and bypasses its dynamic
+mask-construction helper. A regression test requires this prepared-mask path
+to match ordinary padded/masked DistilBERT logits.
 
-This is an attribution-runtime implementation detail. Stage-A classifier
-training remains unchanged.
-
+This preserves actual padded-sequence semantics. Stage-A classifier training
+remains unchanged.
 ## Head-restricted feasibility scope
 
 Full-model DistilBERT attribution is expensive for an initial compatibility
@@ -108,15 +107,21 @@ It checks:
 
 1. exact head-parameter selection;
 2. standard TRAK classification-margin implementation;
-3. padded/masked versus unpadded/no-mask logit equivalence;
-4. TRAKer initialization with CPU \`BasicProjector\`;
-5. featurization of a tiny synthetic training batch;
-6. scoring of tiny synthetic targets;
-7. finite output with the expected matrix shape.
+3. prepared 4-D mask equivalence to ordinary padded DistilBERT logits;
+4. TRAKer initialization with CPU BasicProjector;
+5. the planned development projection dimension of 512;
+6. featurization of a tiny synthetic training batch;
+7. scoring of tiny synthetic targets;
+8. finite output with the expected matrix shape.
+
+TRAK 0.3.2 has a CPU BasicProjector lifecycle edge case for a single-block
+projection after feature finalization. The planned 512-dimensional projection
+uses the multi-block path, which regenerates blocks during scoring, so the
+smoke intentionally exercises that planned path rather than the irrelevant
+single-block artifact.
 
 Synthetic smoke scores are infrastructure outputs only. They are not research
 evidence and contain no Banking77 data.
-
 ## Hosted MPS gate
 
 A GitHub-hosted Apple-Silicon job checks whether a public standard macOS runner

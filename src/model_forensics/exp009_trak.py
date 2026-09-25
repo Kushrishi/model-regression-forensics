@@ -10,8 +10,8 @@ DISTILBERT_HEAD_PARAMETER_NAMES = (
 )
 
 
-def standard_correct_class_log_odds_margin(logits: Any, labels: Any) -> Any:
-    """Return TRAK's standard multiclass correct-vs-all-other log-odds margin."""
+def correct_class_log_odds_margin(logits: Any, labels: Any) -> Any:
+    """Return the multiclass correct-class log-odds margin for each row."""
 
     import torch
 
@@ -33,8 +33,36 @@ def standard_correct_class_log_odds_margin(logits: Any, labels: Any) -> Any:
     return correct - torch.logsumexp(other_logits, dim=-1)
 
 
+def distilbert_additive_attention_mask(attention_mask: Any, *, dtype: Any) -> Any:
+    """Build a vmap-safe 4-D additive key-padding mask for DistilBERT."""
+
+    import torch
+
+    if attention_mask.ndim not in {1, 2}:
+        raise ValueError("attention_mask must have shape [seq] or [batch, seq]")
+
+    mask_2d = attention_mask.unsqueeze(0) if attention_mask.ndim == 1 else attention_mask
+    valid_keys = mask_2d.to(dtype=torch.bool)
+    batch_size, sequence_length = valid_keys.shape
+    valid_keys = valid_keys[:, None, None, :].expand(
+        batch_size,
+        1,
+        sequence_length,
+        sequence_length,
+    )
+
+    zero = torch.zeros((), dtype=dtype, device=attention_mask.device)
+    blocked = torch.full(
+        (),
+        torch.finfo(dtype).min,
+        dtype=dtype,
+        device=attention_mask.device,
+    )
+    return torch.where(valid_keys, zero, blocked)
+
+
 def distilbert_head_parameter_names(model: Any) -> tuple[str, ...]:
-    """Return the exact head-only gradient parameter names used by the smoke test."""
+    """Return the exact frozen head-only gradient parameter names."""
 
     available = dict(model.named_parameters())
     missing = [name for name in DISTILBERT_HEAD_PARAMETER_NAMES if name not in available]
@@ -55,7 +83,7 @@ def parameter_count_for_names(model: Any, names: tuple[str, ...]) -> int:
 
 
 def configure_distilbert_for_trak(model: Any) -> Any:
-    """Use a stable eager-attention backend for TRAK compatibility tests."""
+    """Force eager attention for the explicit additive-mask TRAK path."""
 
     setter = getattr(model, "set_attn_implementation", None)
     if setter is None or not callable(setter):
@@ -64,13 +92,8 @@ def configure_distilbert_for_trak(model: Any) -> Any:
     return model
 
 
-def make_distilbert_standard_trak_model_output() -> Any:
-    """Construct a DistilBERT-compatible standard-classification TRAK task.
-
-    This object is for infrastructure feasibility only. Its correct-vs-all
-    output is TRAK's standard multiclass formulation and is not the frozen
-    Exp009 pairwise target in research/ATTRIBUTION_TARGET.md.
-    """
+def make_distilbert_trak_model_output() -> Any:
+    """Construct a TRAK model-output instance lazily."""
 
     import torch
     from trak.modelout_functions import AbstractModelOutput
@@ -87,19 +110,24 @@ def make_distilbert_standard_trak_model_output() -> Any:
             weights: Any,
             buffers: Any,
             input_id: Any,
+            attention_mask: Any,
             label: Any,
         ) -> Any:
+            prepared_mask = distilbert_additive_attention_mask(
+                attention_mask,
+                dtype=next(iter(weights.values())).dtype,
+            )
             outputs = torch.func.functional_call(
                 model,
                 (weights, buffers),
                 args=(),
-                kwargs={"input_ids": input_id.unsqueeze(0)},
+                kwargs={
+                    "input_ids": input_id.unsqueeze(0),
+                    "attention_mask": prepared_mask,
+                },
             )
             logits = outputs.logits if hasattr(outputs, "logits") else outputs[0]
-            return standard_correct_class_log_odds_margin(
-                logits,
-                label.unsqueeze(0),
-            ).sum()
+            return correct_class_log_odds_margin(logits, label.unsqueeze(0)).sum()
 
         def get_out_to_loss_grad(
             self,
@@ -108,12 +136,19 @@ def make_distilbert_standard_trak_model_output() -> Any:
             buffers: Any,
             batch: Any,
         ) -> Any:
-            input_ids, labels = batch
+            input_ids, attention_mask, labels = batch
+            prepared_mask = distilbert_additive_attention_mask(
+                attention_mask,
+                dtype=next(iter(weights.values())).dtype,
+            )
             outputs = torch.func.functional_call(
                 model,
                 (weights, buffers),
                 args=(),
-                kwargs={"input_ids": input_ids},
+                kwargs={
+                    "input_ids": input_ids,
+                    "attention_mask": prepared_mask,
+                },
             )
             logits = outputs.logits if hasattr(outputs, "logits") else outputs[0]
             probabilities = self.softmax(logits / self.loss_temperature)
