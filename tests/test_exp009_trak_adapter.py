@@ -101,7 +101,7 @@ def test_tiny_distilbert_standard_trak_integration(tmp_path) -> None:
         train_set_size=4,
         save_dir=tmp_path / "trak-smoke",
         device="cpu",
-        proj_dim=16,
+        proj_dim=128,
         projector_seed=0,
         grad_wrt=names,
     )
