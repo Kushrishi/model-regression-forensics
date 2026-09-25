@@ -56,7 +56,7 @@ def test_suspiciousness_is_negative_mean_captum_influence() -> None:
 def test_captum_one_checkpoint_matches_manual_last_layer_grad_dot() -> None:
     captum = pytest.importorskip("captum")
     assert captum is not None
-    from captum.influence import TracInCPFast
+    from captum.influence import TracInCP
     from torch import nn
     from torch.utils.data import TensorDataset
 
@@ -97,16 +97,16 @@ def test_captum_one_checkpoint_matches_manual_last_layer_grad_dot() -> None:
         module.load_state_dict(state)
         return 1.0
 
-    tracin = TracInCPFast(
+    tracin = TracInCP(
         model=model,
-        final_fc_layer=model.classifier,
         train_dataset=TensorDataset(train_x, train_y),
         checkpoints=[checkpoint],
         checkpoints_load_func=load_checkpoint,
+        layers=["classifier"],
         loss_fn=nn.CrossEntropyLoss(reduction="sum"),
         test_loss_fn=PairwiseMarginLoss(0, 1),
         batch_size=4,
-        vectorize=False,
+        sample_wise_grads_per_batch=False,
     )
 
     observed = tracin.influence((target_x, target_y), k=None)
