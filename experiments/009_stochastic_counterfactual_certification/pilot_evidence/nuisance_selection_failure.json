@@ -1,0 +1,16 @@
+{
+  "development_only": true,
+  "eligible_pair_count": 0,
+  "eligible_ranked_pairs": [],
+  "greedy_disjoint_pair_count": 0,
+  "greedy_disjoint_pairs": [],
+  "interpretation": "The nuisance-selection rule frozen before nuisance-model training could not supply four intent-disjoint eligible pairs. No nuisance model was trained. The rule must be revised and re-frozen during development before nuisance training begins.",
+  "model_training_performed": false,
+  "official_test_split_loaded": false,
+  "required_disjoint_nuisance_pairs": 4,
+  "status": "FROZEN_PILOT_RULE_INFEASIBLE",
+  "target_pair": [
+    "Refund_not_showing_up",
+    "request_refund"
+  ]
+}
