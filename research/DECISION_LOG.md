@@ -687,3 +687,43 @@ Stage B is not authorized by this decision-log entry. Its execution/pairing
 architecture and effect analysis must be reviewed and frozen prospectively
 before any restoration training.
 
+## 2026-09-25 — Exp009 hosted Stage-B execution architecture frozen
+
+After the Stage-A result was permanently recorded, the hosted Stage-B pairing
+architecture was reviewed before any restoration training.
+
+The original MPS pilot plan used the three Stage-A composites as the references
+for 15 restoration runs. Hosted Stage A, however, ran on ephemeral GitHub
+Apple-Silicon runners, while Stage B necessarily executes from a later source
+revision. To keep every Stage-B causal-effect subtraction inside one execution
+boundary, the hosted plan is prospectively amended.
+
+Each trajectory now runs a fresh composite and all five restorations sequentially
+inside one `macos-15` runner session. Restoration order is frozen and rotated
+across trajectories so the root restoration is not tied to one fixed execution
+position. This produces 18 Stage-B result-bearing runs and 24 cumulative hosted
+development runs including Stage A. No fresh clean baseline is added.
+
+The primary estimands remain restoration target recovery relative to the fresh
+composite and the paired root-vs-nuisance margins. The fresh composite is a
+Stage-B reference, not a second Stage-A gate. Its difference from the historical
+Stage-A composite is recorded descriptively and may not be used to select,
+discard, or rerun a trajectory.
+
+The implementation requires within-trajectory equality of source revision,
+training configuration, seed family, slot schedule, initial model state, model
+artifact, development partition, and runner provenance. It also requires each
+named release and changed-slot identity to reproduce across trajectories.
+Interrupted jobs may retain partial portable evidence, but transient model
+checkpoints are removed and partial sessions cannot enter the primary analysis.
+
+With only three trajectories, Stage B is explicitly descriptive. It reports all
+four nuisance contrasts, ranges, sign counts, and sample standard deviations,
+but freezes no confirmatory effect-size threshold and performs no hypothesis
+test or multiplicity correction. Those choices remain future confirmatory
+decisions and must be frozen before confirmatory execution.
+
+This decision does not authorize result-bearing Stage-B training. Authorization
+requires a separate run-request commit after CI validates the workflow and
+analysis implementation.
+\n
