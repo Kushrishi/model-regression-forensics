@@ -73,12 +73,12 @@ attribution method.
 
 Before result-bearing training:
 
-1. complete feasibility selection for at least one modern attribution baseline;
-2. freeze the development-only change-level aggregation rule;
-3. retain nuisance v2 only as a certification-effect pilot, not a blinded
+1. implement and validate at least one modern attribution baseline against the
+   frozen attribution-target contract;
+2. retain nuisance v2 only as a certification-effect pilot, not a blinded
    localization benchmark;
-4. verify the MPS execution environment and evidence packaging;
-5. keep the official test split untouched.
+3. verify the MPS execution environment and evidence packaging;
+4. keep the official test split untouched.
 
 The current literature audit does not kill the 21-run nuisance-v2 pilot, but it
 changes its purpose to estimating root-vs-nuisance effect separation and

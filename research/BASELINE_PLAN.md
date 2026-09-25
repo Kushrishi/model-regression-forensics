@@ -74,20 +74,29 @@ For each candidate intervention:
 - compare candidate recovery with nuisance/restoration alternatives;
 - allow **abstention** when effects are not distinguishable.
 
-## Change-level aggregation
+## Attribution target and change-level aggregation
 
-Example-level attribution methods require a frozen mapping to release changes.
+The development attribution target and primary candidate aggregation are now
+frozen in [`ATTRIBUTION_TARGET.md`](ATTRIBUTION_TARGET.md).
 
-Candidate aggregation rules to evaluate *before confirmatory use* include:
+Primary behavior target:
 
-- signed sum of example scores over changed records;
-- absolute-score sum;
-- top-k score mass;
-- normalized mean score.
+- all development-eval examples in the frozen target pair;
+- correct-vs-other-target logit margin;
+- equal evaluation-example weight.
 
-The final rule must be selected using development evidence only and then frozen.
+Primary candidate aggregation:
 
-Do not select the aggregation rule on the official confirmatory test.
+- convert each method's native example score to the prospectively defined
+  common suspiciousness orientation;
+- sum suspiciousness over all composite-release slots changed by the candidate.
+
+Normalized mean, absolute-score mass, and top-k mass may be reported only as
+secondary diagnostics. They do not replace the primary sum because the
+counterfactual intervention restores the complete candidate change.
+
+Do not select a target subset, sign, or aggregation rule by checking which one
+ranks the hidden root highest.
 
 ## Fairness requirements
 
