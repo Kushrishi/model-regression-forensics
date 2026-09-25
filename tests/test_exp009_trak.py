@@ -92,6 +92,65 @@ def test_exp009_head_parameter_set_is_exact_and_encoder_is_excluded() -> None:
     )
 
 
+def test_distilbert_head_contract_matches_exp009_dimensions() -> None:
+    from transformers import DistilBertConfig, DistilBertForSequenceClassification
+
+    config = DistilBertConfig(
+        vocab_size=100,
+        max_position_embeddings=32,
+        dim=768,
+        hidden_dim=3072,
+        n_layers=1,
+        n_heads=12,
+        num_labels=77,
+    )
+    model = DistilBertForSequenceClassification(config)
+    names = exp009_head_parameter_names(model)
+
+    assert names == EXP009_DISTILBERT_HEAD_PARAMETERS
+    assert selected_parameter_count(model, names) == 649_805
+
+
+def test_selected_gradient_computer_supports_transformers_distilbert() -> None:
+    from transformers import DistilBertConfig, DistilBertForSequenceClassification
+
+    config = DistilBertConfig(
+        vocab_size=64,
+        max_position_embeddings=16,
+        dim=12,
+        hidden_dim=24,
+        n_layers=1,
+        n_heads=3,
+        num_labels=3,
+        dropout=0.0,
+        attention_dropout=0.0,
+    )
+    config._attn_implementation = "eager"
+    model = DistilBertForSequenceClassification(config)
+    names = exp009_head_parameter_names(model)
+    task = Exp009PairwiseTRAKModelOutput()
+    computer = SelectedParameterFunctionalGradientComputer(
+        model=model,
+        task=task,
+        grad_dim=selected_parameter_count(model, names),
+        dtype=torch.float32,
+        device="cpu",
+        grad_wrt=names,
+    )
+    batch = (
+        torch.randint(0, config.vocab_size, (2, 5)),
+        torch.ones((2, 5), dtype=torch.long),
+        torch.tensor([0, 1]),
+        torch.tensor([1, 0]),
+    )
+
+    gradients = computer.compute_per_sample_grad(batch)
+
+    assert set(gradients) == set(names)
+    assert all(value.shape[0] == 2 for value in gradients.values())
+    assert all(torch.isfinite(value).all() for value in gradients.values())
+
+
 def test_pairwise_model_output_uses_frozen_target_margin() -> None:
     model = ToyClassifier()
     with torch.no_grad():
