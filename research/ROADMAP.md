@@ -9,7 +9,7 @@ run requests remain authoritative for result-defining choices.
 
 ## M1 — Development restoration pilot
 
-**State:** in progress
+**State:** complete
 
 Goal: finish the already-authorized three-trajectory Stage-B pilot without
 changing its design.
