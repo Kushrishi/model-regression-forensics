@@ -122,8 +122,8 @@ def test_response_loss_weights_require_exact_observed_labels() -> None:
 
 
 def test_response_weighted_causal_lm_loss_uses_global_normalization() -> None:
-    import torch
-    import torch.nn.functional as F
+    torch = pytest.importorskip("torch")
+    F = pytest.importorskip("torch.nn.functional")
 
     logits = torch.tensor(
         [
