@@ -341,7 +341,10 @@ def train_versioned_classifier_pilot(
         for record, row in zip(eval_records, eval_logits, strict=True)
     ]
     logits_path.write_text(
-        "".join(json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n" for row in logits_rows),
+        "".join(
+            json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n"
+            for row in logits_rows
+        ),
         encoding="utf-8",
     )
     logits_sha256 = hashlib.sha256(logits_path.read_bytes()).hexdigest()
