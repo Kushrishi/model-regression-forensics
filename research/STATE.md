@@ -84,33 +84,27 @@ The Stage-A Grad-Dot result must be interpreted within that boundary.
 
 ## Current decision boundary
 
-The frozen Stage-A prerequisite has passed. The hosted Stage-B execution design
-has now been reviewed and prospectively frozen in
-`HOSTED_STAGE_B_EXECUTION_AMENDMENT.md`, but result-bearing Stage-B training is
-still **not authorized**.
+Stage B is **authorized for development execution** by
+`STAGE_B_RUN_REQUEST.json`, pinned to preparation revision
+`04eef31ff0433036a5bbd84450f23eaba52b1ecc` and the recorded Stage-A evidence from workflow
+`36139384603`.
 
-The hosted amendment preserves the scientific pilot while strengthening the
-paired execution boundary:
+The frozen hosted design remains unchanged:
 
-- trajectories remain 0, 1, and 2;
-- each trajectory receives a fresh composite plus all five restorations;
-- all six siblings run sequentially in one `macos-15` runner session;
-- restoration order is frozen and rotated prospectively across trajectories;
-- Stage B contains 18 result-bearing runs, for 24 hosted runs cumulatively
-  including Stage A;
-- restoration effects are measured against the fresh same-session composite;
-- the historical Stage-A gate is not reapplied;
-- all four nuisance contrasts are retained;
-- no Stage-B significance test, multiplicity-adjusted claim, or certification
-  threshold is introduced.
+- trajectories 0, 1, and 2;
+- one fresh composite plus all five restorations per trajectory;
+- six siblings run sequentially in one `macos-15` runner session;
+- prospectively rotated restoration order;
+- 18 Stage-B result-bearing runs;
+- same-session composite subtraction for every restoration effect;
+- all four nuisance contrasts retained;
+- no Stage-B significance test or causal-certification threshold;
+- official Banking77 test split remains embargoed.
 
-The preparation workflow also requires release identity, changed-slot identity,
-initial-model-state, slot-schedule, source-revision, and runner-provenance
-consistency before the primary analysis is accepted.
-
-Stage B becomes authorized only through a separate run-request file merged to
-`main` after standard CI and Research CI validate the implementation. The
-official Banking77 test split remains untouched.
+Authorization does not convert the pilot into confirmatory evidence. The next
+scientific state transition occurs only after the complete Stage-B effect
+artifact is produced and audited. Unfavorable restoration effects remain valid
+development results and may not be rerun or substituted for scientific reasons.
 
 ## Not established
 
