@@ -92,8 +92,9 @@ The repository uses several rules to reduce post-hoc reasoning:
 - generated evidence includes hashes and runtime provenance;
 - claims are bounded to what the current experiment actually tests.
 
-A refreshed literature and baseline audit is required before the next
-result-bearing Exp009 training stage.
+The refreshed literature and baseline audit informed the current development
+pilot. A new prospective audit is required before any confirmatory benchmark or
+broader attribution claim.
 
 ## Repository map
 
