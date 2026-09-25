@@ -88,9 +88,7 @@ def test_exp009_head_parameter_set_is_exact_and_encoder_is_excluded() -> None:
     assert names == EXP009_DISTILBERT_HEAD_PARAMETERS
     assert all(not name.startswith("encoder.") for name in names)
     assert selected_parameter_count(model, names) == sum(
-        parameter.numel()
-        for name, parameter in model.named_parameters()
-        if name in set(names)
+        parameter.numel() for name, parameter in model.named_parameters() if name in set(names)
     )
 
 
@@ -112,7 +110,7 @@ def test_pairwise_model_output_uses_frozen_target_margin() -> None:
         torch.tensor(1),
     )
 
-    assert float(output) == pytest.approx(3.0)
+    assert float(output.detach()) == pytest.approx(3.0)
 
 
 def test_training_sentinel_uses_standard_multiclass_margin() -> None:
@@ -134,7 +132,7 @@ def test_training_sentinel_uses_standard_multiclass_margin() -> None:
     )
 
     expected = 4.0 - float(torch.logsumexp(torch.tensor([1.0, -2.0]), dim=0))
-    assert float(output) == pytest.approx(expected)
+    assert float(output.detach()) == pytest.approx(expected)
 
 
 def test_selected_gradient_computer_returns_only_head_gradients() -> None:
