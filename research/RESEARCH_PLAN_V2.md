@@ -1,6 +1,6 @@
 # Model Regression Forensics — Research Plan v2
 
-Status: **proposed research direction**
+Status: **research architecture record; current sequencing is governed by `research/STATE.md` and `research/ROADMAP.md`**
 Date: **2026-09-20**
 Branch: `research-plan-v2`
 Starting point: `73e444cddd62a4fb0991429010aeb402b1570cc6`
@@ -252,6 +252,9 @@ MRF-Search proceeds only after MRF-Bench and MRF-Certify are scientifically stab
 ---
 
 ## 6. Experiment 009 role
+
+> **Current-state note (2026-09-25):** this section records the architecture that led into Exp009. Nuisance-v2 construction, Stage A, and Stage-B authorization have since occurred. Use `research/STATE.md` and `research/ROADMAP.md` for current execution state; do not reinterpret the historical sequencing below as an uncompleted prerequisite list.
+
 
 Experiment 009 is not the final product.
 
