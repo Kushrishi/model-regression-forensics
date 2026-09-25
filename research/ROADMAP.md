@@ -29,7 +29,7 @@ variability. It is not confirmatory causal certification.
 
 ## M2 — Development decision gate
 
-**State:** pending M1
+**State:** complete — continue to M3
 
 Goal: decide whether the observed root-vs-nuisance effect structure justifies a
 paper-grade benchmark.
@@ -53,7 +53,7 @@ No development threshold may be invented merely to force continuation.
 
 ## M3 — Structurally matched benchmark
 
-**State:** not started
+**State:** active
 
 Goal: remove the current nuisance-v2 structural leakage.
 
