@@ -1,236 +1,245 @@
-# Attribution target contract
+# Exp009 attribution target contract
 
-**Updated:** 2026-09-25  
-**Status:** frozen for Exp009 development-baseline feasibility before any modern
-attribution score is used for candidate ranking
+**Version:** 2
+**Frozen:** 2026-09-25
+**Evidence class:** development
+**Modern attribution rankings observed before freeze:** none
 
-This contract defines what a training-data attribution baseline is allowed to
-explain in Experiment 009.
+This is the single canonical attribution contract for Experiment 009.
 
-It is intentionally separate from the counterfactual-certification protocol.
+It prospectively supersedes two earlier pre-result drafts that disagreed about
+the model-output scalar, release differencing, and change aggregation. Neither
+draft had been used to produce a Banking77 attribution ranking when this version
+was frozen. Git history preserves both earlier designs.
 
-## 1. Debugger-visible inputs
+The attribution layer generates diagnostic hypotheses. It is separate from MRF's
+counterfactual certification layer.
 
-A localization baseline may use:
+## 1. Debugger-visible incident
 
-- the known-good baseline model release;
-- the regressed composite model release;
-- the frozen development evaluation set;
-- the five debugger-visible version changes and their changed-slot manifests;
-- model parameters, gradients, checkpoints, and training data when required by
-  the baseline method.
+The debugger may use:
 
-It may **not** use:
+- the known-good baseline release/model;
+- the regressed composite release/model;
+- the frozen development-evaluation partition;
+- the known affected behavior slice:
+  Refund_not_showing_up and request_refund;
+- five opaque candidate version changes and their changed-slot sets;
+- model parameters, gradients, checkpoints, and training data required by the
+  baseline method.
 
-- the hidden planted-root identity;
+The debugger may not use:
+
+- planted-root identity;
+- root/nuisance role labels;
 - restoration outcomes;
-- nuisance-vs-root labels;
 - the official Banking77 test split;
-- any result from the future confirmatory stage.
+- future confirmatory outcomes.
 
-Candidate identities passed to localization code must come from the opaque
-diagnostic manifest produced by `exp009_candidates.py`. Semantic roles such as
-"root" or "nuisance" belong only in the separate truth manifest and must not be
-loaded by the localization baseline.
+Localization code consumes only the opaque diagnostic candidate manifest.
 
-The diagnostic manifest may expose neutral stable slot IDs, counts, and hashes.
-It must not expose semantic role names or restoration outcomes.
+## 2. Why version 2 is necessary
 
-The target behavior itself is not hidden. In the current development benchmark,
-the frozen behavior slice is the intent pair:
+The frozen Stage-A incident endpoint is target macro recall across the two
+affected intents.
 
-- `Refund_not_showing_up`
-- `request_refund`
+One earlier attribution draft used only the logit margin between those two
+intents. That is too narrow because a target example can fail by being predicted
+as any of the other 75 intents.
 
-The benchmark asks which visible release change best explains degradation of
-that already-identified behavior.
+Another draft used the standard multiclass correct-class margin but subtracted
+baseline-model attribution from composite-model attribution. That difference is
+not itself a clean counterfactual estimate of a version change because both the
+trained model and, for changed slots, the model-facing record differ across
+releases.
 
-## 2. Primary behavior scalar
+Version 2 keeps the multiclass target that matches the classification incident
+and removes the unsupported attribution-difference interpretation.
 
-For an evaluation example `(x, y)` whose true label is one member of the
-target pair, let `y_other` be the other member.
+## 3. Target evaluation slice
 
-Define the correct-vs-paired-target logit margin:
+Use every development-eval example whose true label is one of the two incident
+intents.
 
-```text
-m_theta(x, y) = z_theta(x)[y] - z_theta(x)[y_other]
-```
+Within each intent every example receives equal weight. The two incident intents
+then receive equal weight. This mirrors macro-recall weighting even if their
+example counts differ.
 
-where `z_theta(x)` is the 77-way classifier logit vector.
+Do not select negative flips, select examples by observed deterioration, or tune
+example weights after attribution scores are visible.
 
-The primary target function is:
+## 4. Differentiable target scalar
 
-```text
-M(theta) = mean(m_theta(x, y) over every development-eval example
-                whose true label is in the frozen target pair)
-```
+For a target example (x, y), define
 
-Higher `M` is better.
+    f_theta(x, y)
+      = logit_y
+        - logsumexp(logit_c for every c != y)
 
-The observed development regression is summarized by:
+For each incident intent y, M_y(theta) is the mean f_theta over that intent's
+development-eval examples.
 
-```text
-G_margin = M(theta_baseline) - M(theta_composite)
-```
+The class-balanced incident scalar is
 
-A positive value means the composite release degraded the frozen target pair.
+    M(theta) = mean of M_y(theta) over the two incident intents.
 
-## 3. Why the target is unweighted
+Higher is better.
 
-Every development-eval example in the frozen target pair contributes equally.
+For incident characterization only,
 
-Do **not**:
+    G_margin = M(theta_baseline) - M(theta_composite).
 
-- keep only baseline-correct/composite-wrong negative flips;
-- weight examples by their observed clean-to-composite deterioration;
-- choose a favorable subset after seeing attribution scores;
-- tune the target function to make the planted root easier to rank.
+A positive G_margin means the regressed model has a worse differentiable margin
+on the affected slice. G_margin is descriptive and does not replace the frozen
+Stage-A macro-recall gate.
 
-Those alternatives are useful descriptive diagnostics but would let the
-observed failure pattern select the attribution objective after the fact.
+## 5. Why this target is primary
 
-The unweighted pairwise margin is fixed before attribution results.
+This scalar:
 
-## 4. Common orientation for attribution methods
+- responds when probability mass moves from the correct intent to any wrong
+  intent;
+- gives both affected intents equal weight;
+- is differentiable;
+- matches TRAK's standard multiclass classification model-output family;
+- uses no hidden root truth;
+- is frozen before candidate attribution.
 
-Every attribution baseline must ultimately produce a slot-level quantity with
-the following semantic orientation:
+It is a surrogate for target-slice classification quality, not a claim that
+margin and recall are identical.
 
-> **Positive suspiciousness means the method predicts that removing/restoring
-> this current training contribution would improve the frozen target behavior
-> scalar `M`.**
+## 6. Primary attribution model state
 
-Different methods use different native signs:
+The localization question is which current training contributions in the
+regressed composite release detract from the affected behavior.
 
-- a contribution-to-margin method may assign harmful records negative
-  contribution;
-- an influence-on-loss method may assign harmful records positive influence on
-  loss.
+Therefore the primary candidate ranking uses attribution from the composite
+model/release.
 
-Method adapters must convert the native quantity to the common suspiciousness
-orientation from the method's mathematical definition.
+The baseline model remains necessary to establish the incident, pass Stage A,
+and compute G_margin. Baseline attribution may be reported only as a secondary
+diagnostic and is not subtracted from composite attribution in the primary
+candidate score.
 
-The sign may not be chosen by checking which orientation ranks the hidden root
-higher.
+## 7. Slot-score orientation
 
-## 5. Candidate-change aggregation
+TRAK uses higher scores for training examples that support the target model
+output. Under this contract:
 
-For candidate release change `C`, let `S_C` be the debugger-visible set of
-training slots changed between the clean baseline and the composite release.
+    slot_suspiciousness = - class_balanced_target_support.
 
-The primary change-level score is:
+Larger positive suspiciousness therefore means the current composite-release
+training slot is predicted to detract more strongly from correct target-slice
+behavior.
 
-```text
-score(C) = sum(slot_suspiciousness(s) for s in S_C)
-```
+Other methods must freeze their sign mapping from their mathematical definition
+before hidden truth is inspected.
 
-The highest score is the method's first-ranked candidate.
+## 8. Stochastic-trajectory aggregation
 
-### Why sum is primary
+For each of the three composite trajectories:
 
-The intervention under evaluation restores the complete candidate change, not
-an average slot. Total predicted behavioral effect is therefore the relevant
-quantity.
+1. compute attribution to every target evaluation example;
+2. average scores within each incident intent for every stable training slot;
+3. average the two intent means to obtain class-balanced slot support.
 
-In nuisance-v2 all five candidates currently change the same number of slots,
-so sum and mean ranking differ only through score distribution. Future
-benchmarks may use unequal change sizes; in those cases a normalized mean can
-be reported as a secondary diagnostic but does not replace the predeclared
-primary sum.
+Then average slot support across all three composite trajectories. Only after
+trajectory averaging is the sign converted to suspiciousness.
 
-## 6. Replacement-change limitation
+No trajectory may be discarded because it gives an unfavorable ranking.
 
-Some version changes replace both text and label, while the current planted
-root changes labels while retaining text.
+## 9. Candidate aggregation
 
-Example-level attribution on the composite model scores the **current**
-model-facing records. It does not automatically recover the influence of
-baseline records that are absent from the composite training set.
+For opaque candidate C with changed-slot set S_C:
 
-This is another reason nuisance-v2 is only a development localization/shortcut
-diagnostic and not a publication-level structurally matched benchmark.
+    score(C) = sum(slot_suspiciousness(s) for s in S_C).
 
-Do not hide this limitation by inventing pseudo-attribution scores for absent
-records.
+Higher is more suspicious.
 
-## 7. Baseline-specific target mapping
+Sum is primary because the downstream intervention restores the whole candidate
+change. In nuisance-v2 all five candidates currently change 66 slots, so mean
+and sum have identical ordering. A normalized mean may be reported later only
+as a secondary diagnostic.
 
-### TRAK-family baseline
+## 10. Replacement-change limitation
 
-If technically feasible, use a custom model-output function corresponding to
-the pairwise target margin in Section 2.
+Some nuisance-v2 changes replace both text and label whereas the planted root
+changes labels while retaining text.
 
-Aggregate target-example attribution across the complete frozen target slice
-with equal target-example weight.
+Composite-model attribution evaluates the model-facing record currently present.
+It does not directly estimate the contribution of a baseline record that has
+been replaced and is absent from composite training.
 
-Convert per-training-slot contribution to suspiciousness by the method-defined
-sign convention and then apply the primary candidate sum.
+Do not manufacture pseudo-attribution for absent records. This limitation is
+one reason nuisance-v2 remains a development benchmark rather than the final
+publication-grade localization benchmark.
 
-### TracIn-style baseline
+## 11. Shortcut diagnostic
 
-Use the gradient of a target objective whose direction is mathematically
-equivalent to improving the pairwise margin.
+Separately record simple candidate-diff features:
 
-Checkpoint choice and learning-rate weighting must be prospectively specified.
+- changed-slot count;
+- text-change count;
+- label-change count.
 
-The TracIn adapter must document its sign orientation before candidate scores
-are inspected.
+If a trivial structural rule isolates a candidate, that is evidence of
+benchmark leakage, not evidence for sophisticated localization.
 
-### Simple lexical baselines
+## 12. Head-restricted TRAK development baseline
 
-Use the same complete target-slice texts. Do not select only failed examples.
+The first development TRAK baseline is explicitly head-restricted:
 
-These baselines are explicitly intended to reveal structural shortcuts.
+- pre_classifier.weight
+- pre_classifier.bias
+- classifier.weight
+- classifier.bias
+- projection dimension 512
+- projection seed 0
+- padded DistilBERT-compatible adapter
+- standard multiclass target from Section 4.
 
-## 8. Development vs confirmatory use
+This is not represented as full-model TRAK. A broader-gradient baseline can be
+added only through a separate prospective decision, not in response to hidden
+root ranking.
 
-This contract is frozen for development feasibility.
+## 13. Required outputs
 
-Development may determine:
+Every result-bearing attribution run must record:
 
-- whether TRAK is technically reproducible on the pinned classifier;
-- projection dimension or other engineering settings using method-internal
-  guidance and non-root-aware diagnostics;
-- whether a second attribution family is needed;
-- implementation details required to map slot scores to candidate scores.
-
-Development may **not** select:
-
-- the attribution target based on root ranking;
-- the sign based on root ranking;
-- a target-example subset based on root ranking;
-- a candidate aggregation rule based on official-test outcomes.
-
-Before confirmatory execution, the exact successful baseline implementation and
-all remaining hyperparameters must be frozen.
-
-## 9. Required outputs
-
-Every baseline run must record:
-
-- baseline/composite model identities;
-- development partition hash;
-- target labels;
-- target-example count;
-- `M(theta_baseline)`;
-- `M(theta_composite)`;
-- `G_margin`;
-- native slot-score definition;
-- common suspiciousness sign mapping;
-- candidate changed-slot identities/hash;
-- primary summed candidate scores;
-- candidate ranking;
-- runtime and device;
-- method/library version and code revision;
+- model/release identities and code revision;
+- development-partition hash;
+- target labels and target counts per intent;
+- per-intent and class-balanced M for baseline and composite;
+- G_margin;
+- native attribution definition and sign conversion;
+- all three trajectory IDs;
+- opaque candidate-manifest hash;
+- candidate changed-slot hashes;
+- summed candidate scores and ranking;
+- runtime/device and library version;
+- confirmation that localization code did not load truth roles;
 - confirmation that the official test split was not loaded.
 
-## 10. Interpretation boundary
+## 14. Interpretation boundary
 
-A top-ranked candidate is a **diagnostic hypothesis**.
+A top-ranked candidate is a diagnostic hypothesis, not causal certification.
 
-It is not a causal certification.
+The separate restoration layer still tests every candidate against nuisance
+restorations under matched stochastic trajectories. Ranking can succeed while
+certification abstains; that is a legitimate result.
 
-MRF's separate restoration layer must still test the candidate against nuisance
-restorations and matched retraining variability. A ranking method may be
-correct while certification abstains, and that disagreement is scientifically
-meaningful.
+## 15. Frozen execution order
+
+1. merge this canonical contract;
+2. verify dependency-free tests;
+3. verify the frozen Stage-A release/training protocol is unchanged;
+4. run Stage A only: three baseline plus three composite models;
+5. apply the frozen Stage-A macro-recall/protected-behavior gate;
+6. if Stage A passes, compute G_margin;
+7. run head-restricted TRAK on the three composite checkpoints;
+8. record ranking without changing target, sign, or aggregation;
+9. only then decide whether to spend the additional 15 Stage-B restoration runs.
+
+Official Banking77 test data remain embargoed.
+
+EXP009_ATTRIBUTION_TARGET_V2=FROZEN

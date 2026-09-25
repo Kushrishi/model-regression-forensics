@@ -1,129 +1,80 @@
 # Baseline plan
 
-**Updated:** 2026-09-24  
-**Status:** prospective feasibility plan; exact confirmatory baseline set not yet frozen
+**Updated:** 2026-09-25
+**Status:** prospective development plan; confirmatory baseline set not yet frozen
 
-The purpose of baselines is to separate two questions:
+The baseline layer asks whether a method can rank version changes associated
+with the observed regression. The separate intervention layer asks whether a
+ranked change can be causally certified against alternatives.
 
-1. can a method **rank** version changes associated with the regression?
-2. does intervention evidence **certify** that a ranked change is specifically
-   responsible rather than merely influential?
-
-No baseline may use the hidden planted-root identifier.
+No localization baseline may use planted-root identity.
 
 ## Baseline families
 
-### B0 — Random candidate ranking
+B0: deterministic random candidate ranking.
 
-Purpose: chance reference.
+B1: structural and lexical shortcut baselines, including changed-slot count,
+text-change count, label-change count, and lexical overlap with the complete
+target development-eval slice.
 
-- deterministic seeded permutation;
-- evaluated at the version-change level;
-- no model or text access.
+B2: modern data attribution. TRAK is the first serious family because it is a
+well-established counterfactual attribution baseline with a public BERT
+classification implementation.
 
-### B1 — Simple change-level heuristics
+B3: a second attribution family such as TracIn-style checkpoint-gradient
+attribution if it adds meaningful methodological coverage.
 
-At minimum:
+B4: exact candidate restoration as the empirical intervention reference.
 
-- changed-record count / change magnitude;
-- whole-change lexical overlap with regressed evaluation examples;
-- changed-record-only lexical overlap.
+B5: MRF certification using matched stochastic restoration trajectories and
+explicit abstention when root and nuisance effects are not distinguishable.
 
-These are intentionally simple and help detect benchmark shortcuts.
+## Canonical target and aggregation
 
-### B2 — Modern example-level attribution
+The only current target contract is research/ATTRIBUTION_TARGET.md.
 
-Select at least one method that:
+Primary target:
 
-- supports transformer classification;
-- can score training examples for a defined target evaluation function;
-- is available in reproducible code;
-- can be executed within the project compute budget.
+- every dev-eval example in the two incident intents;
+- correct-class log-odds margin against all other classes;
+- equal example weight within intent;
+- equal weight across intents.
 
-TRAK is the first method to evaluate for feasibility because it is a
-well-established scalable attribution reference and has been demonstrated on
-BERT-family language models.
+Primary attribution state:
 
-If TRAK is technically incompatible with the frozen setup, document the reason
-before choosing the replacement.
+- the regressed composite release/model.
 
-### B3 — Gradient / influence cross-check
+Primary trajectory aggregation:
 
-If B2 alone represents only one attribution family, add a method from a
-different family such as TracIn-style checkpoint-gradient attribution or an
-appropriate influence-function approximation.
-
-Do not add baselines solely to increase method count.
-
-### B4 — Empirical intervention reference
-
-Where computationally feasible, use retraining/further-training or exact
-candidate restoration as the empirical reference signal.
-
-This reference is not itself an efficient debugging method. It defines what the
-approximate ranking methods are trying to predict.
-
-### B5 — MRF certification
-
-For each candidate intervention:
-
-- restore the candidate under the frozen release construction;
-- use matched stochastic trajectories;
-- measure target recovery;
-- measure protected-behavior movement;
-- compare candidate recovery with nuisance/restoration alternatives;
-- allow **abstention** when effects are not distinguishable.
-
-## Attribution target and change-level aggregation
-
-The development attribution target and primary candidate aggregation are now
-frozen in [`ATTRIBUTION_TARGET.md`](ATTRIBUTION_TARGET.md).
-
-Primary behavior target:
-
-- all development-eval examples in the frozen target pair;
-- correct-vs-other-target logit margin;
-- equal evaluation-example weight.
+- class-balance target-example support within each composite trajectory;
+- average support across all three composite trajectories.
 
 Primary candidate aggregation:
 
-- convert each method's native example score to the prospectively defined
-  common suspiciousness orientation;
-- sum suspiciousness over all composite-release slots changed by the candidate.
+- convert helpful-positive support to detracting-positive suspiciousness;
+- sum suspiciousness over all changed slots in the opaque candidate manifest.
 
-Normalized mean, absolute-score mass, and top-k mass may be reported only as
-secondary diagnostics. They do not replace the primary sum because the
-counterfactual intervention restores the complete candidate change.
-
-Do not select a target subset, sign, or aggregation rule by checking which one
-ranks the hidden root highest.
+Baseline-minus-composite attribution differences are not part of the primary
+ranking.
 
 ## Fairness requirements
 
-All methods must use only information declared available to the debugger.
+Record model/checkpoint access, training-data access, gradients/checkpoints,
+target examples, visible candidate metadata, runtime/device, number of trained
+models, method version, and code revision.
 
-Record:
+Any method with privileged truth information is an oracle/reference, not a fair
+localization baseline.
 
-- model/checkpoint access;
-- training-data access;
-- gradients/checkpoints required;
-- target evaluation examples;
-- hidden-truth access;
-- compute time;
-- number of training/retraining runs.
+## Completion criteria
 
-A method with privileged information should be labeled an oracle/reference,
-not compared as though it had the same observability.
-
-## Success criteria for the baseline stage
-
-The baseline stage is complete when:
+Development baseline work is complete when:
 
 1. at least one serious attribution baseline runs reproducibly;
-2. change-level aggregation is frozen for confirmatory work;
-3. shortcut baselines are recorded;
-4. compute and information access are documented;
-5. the certification layer can be evaluated separately from the ranking layer.
+2. opaque candidate truth isolation is verified;
+3. target, sign, trajectory aggregation, and candidate aggregation are frozen;
+4. structural shortcut baselines are recorded;
+5. compute and information access are documented;
+6. certification remains separable from ranking.
 
-This plan may be narrowed after feasibility work, but not after confirmatory
-outcomes are visible.
+Official-test outcomes may not select these choices.

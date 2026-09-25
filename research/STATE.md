@@ -1,6 +1,6 @@
 # Current research state
 
-**Updated:** 2026-09-24  
+**Updated:** 2026-09-25  
 **Active program:** Experiment 009 — stochastic counterfactual certification  
 **Evidence class:** development only
 
@@ -73,12 +73,17 @@ attribution method.
 
 Before result-bearing training:
 
-1. implement and validate at least one modern attribution baseline against the
-   frozen attribution-target contract;
-2. retain nuisance v2 only as a certification-effect pilot, not a blinded
+1. use only the canonical attribution-target v2 contract;
+2. verify the frozen Stage-A release/training protocol remains unchanged;
+3. retain nuisance v2 only as a certification-effect pilot, not a blinded
    localization benchmark;
-3. verify the MPS execution environment and evidence packaging;
-4. keep the official test split untouched.
+4. use the validated GitHub-hosted MPS execution path;
+5. run Stage A before any restoration sibling;
+6. keep the official test split untouched.
+
+Infrastructure feasibility is established: hosted Apple-Silicon MPS and the
+padded DistilBERT/TRAK technical smoke both pass. No Banking77 attribution
+candidate ranking has been observed.
 
 The current literature audit does not kill the 21-run nuisance-v2 pilot, but it
 changes its purpose to estimating root-vs-nuisance effect separation and
