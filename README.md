@@ -46,8 +46,9 @@ Current development evidence:
 - Stage-B root/nuisance restoration evidence has not yet been generated;
 - the official Banking77 test split remains untouched.
 
-See [research/STATE.md](research/STATE.md) for the canonical short-form state and
-[research/CLAIMS.md](research/CLAIMS.md) for claim boundaries.
+See [research/STATE.md](research/STATE.md) for the canonical short-form state,
+[research/CLAIMS.md](research/CLAIMS.md) for claim boundaries, and
+[research/ROADMAP.md](research/ROADMAP.md) for the milestone plan.
 
 ## Why intervention matters
 
