@@ -148,3 +148,23 @@ It may be considered only after:
 ## Frozen marker
 
 `EXP009_HOSTED_STAGE_A_AMENDMENT=FROZEN`
+
+
+## Pre-result revision — inline localization and compact artifacts
+
+This revision was frozen before any Stage-A training or Banking77 attribution
+ranking.
+
+The composite checkpoint is no longer uploaded as a workflow artifact. Instead,
+each completed composite job runs the already-validated target-faithful
+last-layer Grad-Dot baseline on that exact in-memory/on-disk final checkpoint,
+writes portable scores, and then deletes the model directory before upload.
+
+The localization process receives only an opaque candidate manifest plus the
+current composite release. It does not receive the root/nuisance truth mapping.
+The three trajectory rankings are aggregated first; benchmark truth is loaded
+only by a later scoring step after the aggregate ranking file exists.
+
+This revision reduces artifact storage and removes the dependency on a later
+workflow being able to recover a short-lived full-model checkpoint. It does not
+change the Stage-A gate or any model-training outcome.
