@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "authorized": true,
+  "authorized_date": "2026-09-25",
+  "base_preparation_commit": "e55ed34593df5df74054e3fe34f9b1a928faffca",
+  "trajectories": [
+    0,
+    1,
+    2
+  ],
+  "states": [
+    "baseline",
+    "composite"
+  ],
+  "official_test_split": "embargoed",
+  "stage_b_authorized": false
+}

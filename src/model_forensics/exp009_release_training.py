@@ -4,6 +4,7 @@ import hashlib
 import json
 import math
 import random
+import subprocess
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -38,6 +39,10 @@ from model_forensics.exp009_trajectory import (
     slot_schedule_sha256,
 )
 
+
+
+def _source_git_sha() -> str:
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
 
 def validate_release_alignment(
     partition: DevelopmentPartition,
@@ -347,6 +352,7 @@ def train_versioned_classifier_pilot(
         "confirmatory_result": False,
         "official_test_split_loaded": False,
         "run_id": run_id,
+        "source_git_sha": _source_git_sha(),
         "trajectory_id": trajectory_id,
         "trajectory_seeds": asdict(seeds),
         "development_partition_sha256": partition_sha256,

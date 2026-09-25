@@ -104,3 +104,68 @@ class DistilBertLogitsWrapper:
                 ).logits
 
         return _Wrapper(model)
+
+
+def last_layer_grad_dot_influence(
+    *,
+    train_features: Any,
+    train_logits: Any,
+    train_label_ids: Any,
+    target_features: Any,
+    target_label_ids: Any,
+    target_a_id: int,
+    target_b_id: int,
+) -> Any:
+    """Exact final-linear-layer one-checkpoint Grad-Dot influence matrix."""
+
+    import torch
+
+    train_features = torch.as_tensor(train_features)
+    train_logits = torch.as_tensor(train_logits)
+    train_label_ids = torch.as_tensor(train_label_ids, dtype=torch.long)
+    target_features = torch.as_tensor(target_features)
+    target_label_ids = torch.as_tensor(target_label_ids, dtype=torch.long)
+
+    if train_features.ndim != 2 or target_features.ndim != 2:
+        raise ValueError("features must be rank-2")
+    if train_logits.ndim != 2:
+        raise ValueError("train_logits must be rank-2")
+    if train_features.shape[0] != train_logits.shape[0]:
+        raise ValueError("training feature/logit counts differ")
+    if train_label_ids.shape != (train_logits.shape[0],):
+        raise ValueError("training label shape mismatch")
+    if target_label_ids.shape != (target_features.shape[0],):
+        raise ValueError("target label shape mismatch")
+    if train_features.shape[1] != target_features.shape[1]:
+        raise ValueError("feature widths differ")
+    if target_a_id == target_b_id:
+        raise ValueError("target IDs must differ")
+
+    num_labels = train_logits.shape[1]
+    allowed = (target_label_ids == target_a_id) | (target_label_ids == target_b_id)
+    if not bool(torch.all(allowed).item()):
+        raise ValueError("target labels must belong to the frozen pair")
+
+    train_delta = torch.softmax(train_logits, dim=1).clone()
+    train_rows = torch.arange(train_logits.shape[0])
+    train_delta[train_rows, train_label_ids] -= 1.0
+
+    target_delta = torch.zeros(
+        (target_features.shape[0], num_labels),
+        dtype=train_delta.dtype,
+    )
+    target_rows = torch.arange(target_features.shape[0])
+    other = torch.where(
+        target_label_ids == target_a_id,
+        torch.full_like(target_label_ids, target_b_id),
+        torch.full_like(target_label_ids, target_a_id),
+    )
+    target_delta[target_rows, target_label_ids] = -1.0
+    target_delta[target_rows, other] = 1.0
+
+    influence = (target_delta @ train_delta.T) * (
+        target_features @ train_features.T + 1.0
+    )
+    if not bool(torch.isfinite(influence).all().item()):
+        raise ValueError("Grad-Dot influence contains non-finite values")
+    return influence

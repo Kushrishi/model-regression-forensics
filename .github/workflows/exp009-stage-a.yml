@@ -5,8 +5,6 @@ on:
     branches: ["main"]
     paths:
       - "experiments/009_stochastic_counterfactual_certification/STAGE_A_RUN_REQUEST.json"
-  workflow_dispatch:
-
 permissions:
   contents: read
 
@@ -67,36 +65,38 @@ jobs:
             --trajectory-id "${{ matrix.trajectory }}" \
             --state "${{ matrix.state }}"
 
+      - name: Build truth-isolated attribution inputs
+        if: matrix.state == 'composite'
+        run: |
+          run_id=$(printf "mps_v2_t%04d_composite_e7_bs32_lr2e5" "${{ matrix.trajectory }}")
+          run_dir="artifacts/exp009/mps_certification_pilot_v2/runs/${run_id}"
+          uv run python scripts/build_exp009_attribution_bundle.py             --output-dir "${run_dir}/attribution_bundle"
+
+      - name: Score composite with frozen Grad-Dot baseline
+        if: matrix.state == 'composite'
+        run: |
+          run_id=$(printf "mps_v2_t%04d_composite_e7_bs32_lr2e5" "${{ matrix.trajectory }}")
+          run_dir="artifacts/exp009/mps_certification_pilot_v2/runs/${run_id}"
+          uv run python scripts/run_exp009_graddot_attribution.py             --trajectory-id "${{ matrix.trajectory }}"             --checkpoint-dir "${run_dir}/model"             --bundle-dir "${run_dir}/attribution_bundle"             --output "${run_dir}/graddot_summary.json"
+          rm -f "${run_dir}/attribution_bundle/composite_release.jsonl"
+
       - name: Package portable evidence
         shell: bash
         run: |
           run_id=$(printf "mps_v2_t%04d_%s_e7_bs32_lr2e5" "${{ matrix.trajectory }}" "${{ matrix.state }}")
           run_dir="artifacts/exp009/mps_certification_pilot_v2/runs/${run_id}"
           cp runner_provenance.txt "${run_dir}/runner_provenance.txt"
-          if [[ "${{ matrix.state }}" == "baseline" ]]; then
-            rm -rf "${run_dir}/model"
-          fi
+          rm -rf "${run_dir}/model"
           shasum -a 256 "${run_dir}/train_summary.json" "${run_dir}/development_eval_logits.jsonl"
           cat "${run_dir}/train_summary.json"
 
-      - name: Upload baseline evidence
-        if: matrix.state == 'baseline'
+      - name: Upload portable state evidence
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: exp009-stage-a-t${{ matrix.trajectory }}-baseline
+          name: exp009-stage-a-t${{ matrix.trajectory }}-${{ matrix.state }}
           path: artifacts/exp009/mps_certification_pilot_v2/runs/
           if-no-files-found: error
           retention-days: 30
-
-      - name: Upload composite evidence and checkpoint
-        if: matrix.state == 'composite'
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: exp009-stage-a-t${{ matrix.trajectory }}-composite
-          path: artifacts/exp009/mps_certification_pilot_v2/runs/
-          if-no-files-found: error
-          retention-days: 2
-          compression-level: 0
 
   analyze:
     name: Frozen Stage-A gate
@@ -130,10 +130,23 @@ jobs:
           uv run python scripts/analyze_exp009_mps_stage_a.py
           cat artifacts/exp009/mps_certification_pilot_v2/stage_a_analysis.json
 
+      - name: Aggregate blind Grad-Dot ranking
+        run: |
+          uv run python scripts/analyze_exp009_graddot_stage_a.py             --runs-root artifacts/exp009/mps_certification_pilot_v2/runs             --output artifacts/exp009/mps_certification_pilot_v2/graddot_aggregate.json
+          cat artifacts/exp009/mps_certification_pilot_v2/graddot_aggregate.json
+
+      - name: Evaluate already-written ranking against benchmark truth
+        run: |
+          uv run python scripts/score_exp009_graddot_truth.py             --ranking artifacts/exp009/mps_certification_pilot_v2/graddot_aggregate.json             --output artifacts/exp009/mps_certification_pilot_v2/graddot_truth_evaluation.json
+          cat artifacts/exp009/mps_certification_pilot_v2/graddot_truth_evaluation.json
+
       - name: Upload Stage-A analysis
         uses: actions/upload-artifact@v7.0.1
         with:
           name: exp009-stage-a-analysis
-          path: artifacts/exp009/mps_certification_pilot_v2/stage_a_analysis.json
+          path: |
+            artifacts/exp009/mps_certification_pilot_v2/stage_a_analysis.json
+            artifacts/exp009/mps_certification_pilot_v2/graddot_aggregate.json
+            artifacts/exp009/mps_certification_pilot_v2/graddot_truth_evaluation.json
           if-no-files-found: error
           retention-days: 90

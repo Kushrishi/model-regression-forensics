@@ -6,6 +6,7 @@ import pytest
 
 from model_forensics.exp009_graddot import (
     PairwiseMarginLoss,
+    last_layer_grad_dot_influence,
     suspiciousness_from_influence,
 )
 
@@ -158,3 +159,55 @@ def test_captum_one_checkpoint_matches_manual_last_layer_grad_dot() -> None:
         rtol=1e-5,
         atol=1e-6,
     )
+
+
+def test_analytic_last_layer_grad_dot_matches_autograd() -> None:
+    torch.manual_seed(23)
+    classifier = torch.nn.Linear(4, 3)
+    train_features = torch.randn(5, 4)
+    train_logits = classifier(train_features).detach()
+    train_labels = torch.tensor([0, 1, 2, 0, 1], dtype=torch.long)
+    target_features = torch.randn(3, 4)
+    target_labels = torch.tensor([0, 1, 0], dtype=torch.long)
+
+    observed = last_layer_grad_dot_influence(
+        train_features=train_features,
+        train_logits=train_logits,
+        train_label_ids=train_labels,
+        target_features=target_features,
+        target_label_ids=target_labels,
+        target_a_id=0,
+        target_b_id=1,
+    )
+
+    expected = torch.empty((3, 5), dtype=torch.float32)
+    for target_index in range(3):
+        classifier.zero_grad(set_to_none=True)
+        target_loss = PairwiseMarginLoss(0, 1, reduction="sum")(
+            classifier(target_features[target_index : target_index + 1]),
+            target_labels[target_index : target_index + 1],
+        )
+        target_grad = torch.autograd.grad(
+            target_loss,
+            (classifier.weight, classifier.bias),
+        )
+        target_vector = torch.cat([value.reshape(-1) for value in target_grad])
+
+        for train_index in range(5):
+            classifier.zero_grad(set_to_none=True)
+            train_loss = torch.nn.functional.cross_entropy(
+                classifier(train_features[train_index : train_index + 1]),
+                train_labels[train_index : train_index + 1],
+                reduction="sum",
+            )
+            train_grad = torch.autograd.grad(
+                train_loss,
+                (classifier.weight, classifier.bias),
+            )
+            train_vector = torch.cat([value.reshape(-1) for value in train_grad])
+            expected[target_index, train_index] = torch.dot(
+                target_vector,
+                train_vector,
+            )
+
+    torch.testing.assert_close(observed, expected, rtol=1e-5, atol=1e-6)
