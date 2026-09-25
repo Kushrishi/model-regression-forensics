@@ -52,11 +52,6 @@ def build_opaque_candidate_manifests(
         if not changed:
             raise ValueError(f"candidate role {role!r} has no changed slots")
 
-        candidate_id = _opaque_candidate_id(changed)
-        if candidate_id in observed_ids:
-            raise ValueError("opaque candidate ID collision")
-        observed_ids.add(candidate_id)
-
         if require_disjoint:
             for slot_id in changed:
                 previous = claimed_slots.get(slot_id)
@@ -64,7 +59,13 @@ def build_opaque_candidate_manifests(
                     raise ValueError(
                         f"candidate changes overlap at {slot_id}: {previous!r} and {role!r}"
                     )
+            for slot_id in changed:
                 claimed_slots[slot_id] = role
+
+        candidate_id = _opaque_candidate_id(changed)
+        if candidate_id in observed_ids:
+            raise ValueError("opaque candidate ID collision")
+        observed_ids.add(candidate_id)
 
         changed_hash = _changed_slot_hash(changed)
         diagnostic_rows.append(
