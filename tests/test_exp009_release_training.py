@@ -11,6 +11,7 @@ from model_forensics.exp009_data import (
 )
 from model_forensics.exp009_release import build_clean_release_slots
 from model_forensics.exp009_release_training import (
+    _collect_eval_logits,
     behavior_slice_metrics,
     validate_release_alignment,
 )
@@ -108,3 +109,36 @@ def test_behavior_slice_metrics_rejects_invalid_targets() -> None:
 
     with pytest.raises(ValueError, match="must exist"):
         behavior_slice_metrics({"a": 1.0, "b": 1.0}, target_labels=("a", "missing"))
+
+
+def test_collect_eval_logits_preserves_example_order() -> None:
+    torch = pytest.importorskip("torch")
+    from torch import nn
+
+    class ToyModel(nn.Module):
+        def forward(self, input_ids, attention_mask):
+            del attention_mask
+            logits = torch.stack(
+                (
+                    input_ids[:, 0].to(torch.float32),
+                    input_ids[:, 1].to(torch.float32),
+                ),
+                dim=1,
+            )
+            return type("Output", (), {"logits": logits})()
+
+    encoded = {
+        "input_ids": torch.tensor([[1, 2], [3, 4], [5, 6]], dtype=torch.long),
+        "attention_mask": torch.ones((3, 2), dtype=torch.long),
+    }
+
+    rows = _collect_eval_logits(
+        ToyModel(),
+        encoded_eval=encoded,
+        example_count=3,
+        batch_size=2,
+        device="cpu",
+        torch=torch,
+    )
+
+    assert rows == [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]

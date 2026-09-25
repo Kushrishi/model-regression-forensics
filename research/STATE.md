@@ -76,15 +76,21 @@ The literature audit narrows MRF to a **release-change
 counterfactual-certification** problem rather than a new training-data
 attribution method.
 
+The last-layer Grad-Dot definition now passes an external Captum 0.9.0
+cross-check on a non-result-bearing toy model.
+
+The hosted Stage-A execution arrangement and evidence package are frozen in
+`HOSTED_STAGE_A_EXECUTION_AMENDMENT.md`.
+
 Before Stage-A result-bearing training:
 
-1. validate the frozen last-layer Grad-Dot baseline against Captum 0.9.0;
-2. freeze the hosted-runner execution amendment and evidence packaging;
+1. merge and validate the hosted Stage-A infrastructure;
+2. add one explicit Stage-A run-authorization request on `main`;
 3. keep the official test split untouched.
 
-If the Grad-Dot feasibility gate passes, Stage A may train only the three
-baseline/composite trajectory pairs. Stage B remains blocked until the frozen
-Stage-A regression gate and development localization analysis are complete.
+The authorized Stage A may train only the three baseline and three composite
+siblings. Stage B remains blocked until the frozen Stage-A regression gate and
+development localization analysis are complete.
 
 TRAK remains a secondary feasibility track until its target mapping is
 theoretically aligned with the frozen pairwise behavior scalar.
