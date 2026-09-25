@@ -3,13 +3,13 @@ from __future__ import annotations
 import math
 
 import pytest
+
 from model_forensics.exp009_attribution import (
     aggregate_candidate_suspiciousness,
     rank_candidate_scores,
     summarize_margin_regression,
     target_pair_margin_summary,
 )
-
 
 LABELS = ("A", "B", "C")
 TARGET = ("A", "B")
