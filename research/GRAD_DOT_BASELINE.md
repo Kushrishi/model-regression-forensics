@@ -31,9 +31,13 @@ This is a **last-layer** baseline.
 It must not be described as full-model Grad-Dot, full-model TracIn, or equivalent
 to a full-model attribution method.
 
-The final fully connected layer is chosen because Captum's
-`TracInCPFast` computes the exact same influence score as naive backpropagation
-when the influence parameter set is restricted to that final layer.
+The final fully connected layer is chosen because it gives a compact,
+well-defined gradient baseline while retaining both classifier weight and bias
+parameters.
+
+Captum validation uses standard `TracInCP` restricted to the
+`classifier` layer so the reference implementation computes gradients for the
+same selected parameter set as the explicit definition below.
 
 ## Training-example objective
 
@@ -142,11 +146,13 @@ TracIn checkpoints.
 Before any Banking77 Grad-Dot ranking:
 
 1. pin `captum==0.9.0` for the feasibility test;
-2. instantiate `TracInCPFast` with exactly one checkpoint;
+2. instantiate `TracInCP` with exactly one checkpoint and
+   `layers=["classifier"]`;
 3. use ordinary summed cross-entropy as `loss_fn`;
 4. use the frozen negative pairwise-margin loss as `test_loss_fn`;
 5. verify Captum's influence matrix against an explicit manual gradient-dot
-   calculation on a tiny classifier;
+   calculation over `classifier.weight` and `classifier.bias` on a tiny
+   classifier;
 6. verify MRF's suspiciousness sign is the negative mean Captum influence.
 
 This smoke test is infrastructure evidence only.
@@ -182,3 +188,21 @@ counterfactual-restoration comparison before MRF may make a certification claim.
 ## Frozen marker
 
 `EXP009_GRAD_DOT_BASELINE=FROZEN`
+
+
+## Pre-result validator correction
+
+The first infrastructure check used `TracInCPFast` as the external
+cross-check. That check failed against the explicit manual gradient-dot that
+included both `classifier.weight` and `classifier.bias`.
+
+No Banking77 attribution score, candidate ranking, Stage-A model, or restoration
+outcome had been observed.
+
+The scientific definition above was therefore **not** changed to fit the fast
+helper. The validator was changed to standard `TracInCP` restricted to the
+`classifier` layer, which directly evaluates the same selected parameter set.
+
+This correction is infrastructure validation only and does not alter the frozen
+target objective, suspiciousness sign, candidate aggregation, or trajectory
+aggregation.
