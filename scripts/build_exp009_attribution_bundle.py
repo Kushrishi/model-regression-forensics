@@ -27,9 +27,7 @@ def _canonical_json_sha256(payload: object) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Build truth-isolated Exp009 attribution inputs"
-    )
+    parser = argparse.ArgumentParser(description="Build truth-isolated Exp009 attribution inputs")
     parser.add_argument(
         "--cache-path",
         type=Path,

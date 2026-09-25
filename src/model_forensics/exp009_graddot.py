@@ -163,9 +163,7 @@ def last_layer_grad_dot_influence(
     target_delta[target_rows, target_label_ids] = -1.0
     target_delta[target_rows, other] = 1.0
 
-    influence = (target_delta @ train_delta.T) * (
-        target_features @ train_features.T + 1.0
-    )
+    influence = (target_delta @ train_delta.T) * (target_features @ train_features.T + 1.0)
     if not bool(torch.isfinite(influence).all().item()):
         raise ValueError("Grad-Dot influence contains non-finite values")
     return influence

@@ -46,9 +46,7 @@ def main() -> None:
 
     candidate_ids = tuple(sorted(candidate_sets[0]))
     means = {
-        candidate_id: sum(
-            float(row["candidate_scores"][candidate_id]) for row in summaries
-        )
+        candidate_id: sum(float(row["candidate_scores"][candidate_id]) for row in summaries)
         / len(summaries)
         for candidate_id in candidate_ids
     }
