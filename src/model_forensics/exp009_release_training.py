@@ -165,10 +165,7 @@ def _collect_eval_logits(
                 if key in {"input_ids", "attention_mask"}
             }
             logits = model(**inputs).logits.detach().cpu()  # type: ignore[operator]
-            rows.extend(
-                [float(value) for value in row]
-                for row in logits.tolist()
-            )
+            rows.extend([float(value) for value in row] for row in logits.tolist())
 
     if len(rows) != example_count:
         raise AssertionError(
@@ -299,10 +296,7 @@ def train_versioned_classifier_pilot(
         device=device,
         torch=torch,
     )
-    logit_predictions = [
-        max(range(len(row)), key=row.__getitem__)
-        for row in eval_logits
-    ]
+    logit_predictions = [max(range(len(row)), key=row.__getitem__) for row in eval_logits]
     if logit_predictions != predictions:
         raise AssertionError("saved development-eval logits disagree with evaluated predictions")
 
@@ -342,8 +336,7 @@ def train_versioned_classifier_pilot(
     ]
     logits_path.write_text(
         "".join(
-            json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n"
-            for row in logits_rows
+            json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n" for row in logits_rows
         ),
         encoding="utf-8",
     )
