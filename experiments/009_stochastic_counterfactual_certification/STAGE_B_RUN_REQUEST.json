@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "authorized": true,
+  "authorized_date": "2026-09-25",
+  "evidence_class": "development",
+  "preparation_main_commit": "04eef31ff0433036a5bbd84450f23eaba52b1ecc",
+  "stage_a_result": {
+    "workflow_run_id": 36139384603,
+    "source_git_sha": "cb508c845157a3212a05cc5592d0e384e220877f",
+    "analysis_artifact_id": 10870312800,
+    "analysis_artifact_digest": "sha256:ca6b14691f9b3df6e950ed8274d76e9912e8d02f3886a4eded24ae9b16ea59af"
+  },
+  "trajectories": [
+    0,
+    1,
+    2
+  ],
+  "states": [
+    "composite",
+    "restore_root",
+    "restore_n1",
+    "restore_n2",
+    "restore_n3",
+    "restore_n4"
+  ],
+  "fresh_composite_per_trajectory": true,
+  "stage_b_training_runs": 18,
+  "official_test_split": "embargoed",
+  "analysis_mode": "descriptive_no_threshold",
+  "execution_amendment": "experiments/009_stochastic_counterfactual_certification/HOSTED_STAGE_B_EXECUTION_AMENDMENT.md"
+}

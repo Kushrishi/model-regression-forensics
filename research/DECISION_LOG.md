@@ -727,3 +727,31 @@ This decision does not authorize result-bearing Stage-B training. Authorization
 requires a separate run-request commit after CI validates the workflow and
 analysis implementation.
 \n
+
+## 2026-09-25 — Exp009 Stage B authorized
+
+The hosted Stage-B implementation passed standard CI and Research CI after the
+execution architecture, effect analysis, and integrity checks were prospectively
+frozen on preparation revision `04eef31ff0433036a5bbd84450f23eaba52b1ecc`.
+
+A separate `STAGE_B_RUN_REQUEST.json` now authorizes the development pilot.
+The request pins:
+
+- Stage-A workflow run `36139384603`;
+- Stage-A source revision
+  `cb508c845157a3212a05cc5592d0e384e220877f`;
+- Stage-A analysis artifact `10870312800` and its SHA-256 digest;
+- preparation revision `04eef31ff0433036a5bbd84450f23eaba52b1ecc`;
+- trajectories 0, 1, and 2;
+- the fresh composite plus root and four nuisance restorations;
+- 18 Stage-B result-bearing runs;
+- descriptive analysis with no retrospective success threshold;
+- the official-test embargo.
+
+This authorization changes no root dose, nuisance identity, training
+configuration, target definition, trajectory ID, Stage-A threshold, or
+interpretation boundary.
+
+The authorization commit is intended to trigger the hosted Stage-B workflow on
+`main`. Stage-B outcomes remain development evidence regardless of direction.
+
