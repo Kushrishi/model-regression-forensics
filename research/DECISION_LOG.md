@@ -755,3 +755,35 @@ interpretation boundary.
 The authorization commit is intended to trigger the hosted Stage-B workflow on
 `main`. Stage-B outcomes remain development evidence regardless of direction.
 
+## 2026-09-25 — Exp009 Stage B completes; continue to structurally matched benchmark
+
+Hosted workflow `36154597887` completed the full prospectively frozen Stage-B
+development pilot at source
+`310d638211364ad6a9eb3b53c654bf6f261f0ad6`.
+
+All three same-session trajectories completed their fresh composite, root
+restoration, and all four nuisance restorations. All 18 planned Stage-B
+trainings were retained. The official Banking77 test split was not loaded.
+
+The planted-root target recoveries were `+0.163603`, `+0.091912`, and
+`+0.117647`. The corresponding root-minus-strongest-nuisance margins were
+`+0.148897`, `+0.091912`, and `+0.117647`.
+
+Thus the root restoration was strictly larger than every nuisance restoration
+in all three development trajectories. Mean root recovery was `+0.124387`;
+mean root-minus-strongest-nuisance margin was `+0.119485`.
+
+No causal-certification threshold was applied, no hypothesis test was
+performed, no p-value was reported, and no multiplicity correction was added
+after observing the result.
+
+Decision: complete roadmap M1 and M2 and continue to M3, a prospectively
+designed structurally matched benchmark. This is a qualitative development
+decision that the effect structure is informative enough to justify the next
+benchmark; it is not a retrospective Stage-B success threshold.
+
+The nuisance-v2 structural mismatch remains unresolved. The root changes labels
+only, whereas nuisance-v2 changes both text and labels. Accordingly, this
+result does not establish confirmatory causal specificity, a strong blinded
+localization benchmark, or generalization. No Stage-B trajectory will be rerun
+or replaced for scientific reasons.

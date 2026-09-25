@@ -82,29 +82,48 @@ blind debugger localized the root among structurally matched candidate changes.
 
 The Stage-A Grad-Dot result must be interpreted within that boundary.
 
+## Stage-B development result
+
+Workflow run `36154597887` completed the full frozen Stage-B pilot at source
+revision `310d638211364ad6a9eb3b53c654bf6f261f0ad6`.
+
+All 18 planned Stage-B trainings completed. The official Banking77 test split
+remained untouched.
+
+Across the three paired trajectories:
+
+- mean root target recovery: **+0.124387**;
+- root recovery range: **+0.091912 to +0.163603**;
+- mean root-minus-strongest-nuisance margin: **+0.119485**;
+- minimum root-minus-strongest-nuisance margin: **+0.091912**;
+- root restoration was strictly larger than every nuisance restoration in
+  **3 / 3** trajectories.
+
+No Stage-B causal threshold, hypothesis test, p-value, or multiplicity
+correction was applied.
+
+See
+`experiments/009_stochastic_counterfactual_certification/STAGE_B_RESULT.md`
+and `STAGE_B_RESULT.json`.
+
 ## Current decision boundary
 
-Stage B is **authorized for development execution** by
-`STAGE_B_RUN_REQUEST.json`, pinned to preparation revision
-`04eef31ff0433036a5bbd84450f23eaba52b1ecc` and the recorded Stage-A evidence from workflow
-`36139384603`.
+Development milestones M1 and M2 are complete.
 
-The frozen hosted design remains unchanged:
+The Stage-B effect structure warrants continuing to a paper-grade,
+**structurally matched benchmark**. This is a development decision, not a
+retrospective certification threshold.
 
-- trajectories 0, 1, and 2;
-- one fresh composite plus all five restorations per trajectory;
-- six siblings run sequentially in one `macos-15` runner session;
-- prospectively rotated restoration order;
-- 18 Stage-B result-bearing runs;
-- same-session composite subtraction for every restoration effect;
-- all four nuisance contrasts retained;
-- no Stage-B significance test or causal-certification threshold;
-- official Banking77 test split remains embargoed.
+The nuisance-v2 limitation remains decisive: the planted root changes labels
+without changing text, while nuisance-v2 changes both text and labels. Therefore
+the current Stage-A localization result and Stage-B restoration result may not
+be promoted into a strong blinded-localization or confirmatory causal-specificity
+claim.
 
-Authorization does not convert the pilot into confirmatory evidence. The next
-scientific state transition occurs only after the complete Stage-B effect
-artifact is produced and audited. Unfavorable restoration effects remain valid
-development results and may not be rerun or substituted for scientific reasons.
+The next active milestone is M3: prospectively design and freeze candidate
+changes whose observable structure is matched closely enough that localization
+cannot exploit this artifact. Confirmatory statistics, abstention rules,
+trajectory count, and official-test access remain future frozen decisions.
 
 ## Not established
 
