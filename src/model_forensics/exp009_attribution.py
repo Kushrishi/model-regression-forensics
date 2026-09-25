@@ -95,9 +95,7 @@ def target_classification_margin_summary(
 
         correct_index = index[true_label]
         incorrect = tuple(
-            value
-            for class_index, value in enumerate(numeric_row)
-            if class_index != correct_index
+            value for class_index, value in enumerate(numeric_row) if class_index != correct_index
         )
         margin = numeric_row[correct_index] - _logsumexp(incorrect)
         margins_by_label[true_label].append(margin)
@@ -105,9 +103,7 @@ def target_classification_margin_summary(
     if not margins_by_label[target_a] or not margins_by_label[target_b]:
         raise ValueError("target evaluation slice must contain both frozen target labels")
 
-    per_label_means = {
-        label: fmean(margins_by_label[label]) for label in (target_a, target_b)
-    }
+    per_label_means = {label: fmean(margins_by_label[label]) for label in (target_a, target_b)}
     return TargetMarginSummary(
         mean_margin=fmean(per_label_means.values()),
         example_count=sum(len(values) for values in margins_by_label.values()),
@@ -178,9 +174,7 @@ def class_balanced_slot_support(
 
     by_label = {
         label: tuple(
-            example_id
-            for example_id in target_ids
-            if target_label_by_example[example_id] == label
+            example_id for example_id in target_ids if target_label_by_example[example_id] == label
         )
         for label in (target_a, target_b)
     }
@@ -189,9 +183,7 @@ def class_balanced_slot_support(
 
     output: dict[str, float] = {}
     for slot_id, example_scores in scores_by_slot.items():
-        missing = [
-            example_id for example_id in target_ids if example_id not in example_scores
-        ]
+        missing = [example_id for example_id in target_ids if example_id not in example_scores]
         if missing:
             raise ValueError(
                 f"slot {slot_id!r} is missing {len(missing)} target attribution scores"
@@ -250,17 +242,13 @@ def aggregate_candidate_suspiciousness(
         if len(slot_ids) != len(set(slot_ids)):
             raise ValueError(f"candidate {candidate_id!r} repeats a changed slot")
 
-        missing = sorted(
-            slot_id for slot_id in slot_ids if slot_id not in normalized_scores
-        )
+        missing = sorted(slot_id for slot_id in slot_ids if slot_id not in normalized_scores)
         if missing:
             raise ValueError(
                 f"candidate {candidate_id!r} is missing suspiciousness for slots: {missing}"
             )
 
-        output[candidate_id] = math.fsum(
-            normalized_scores[slot_id] for slot_id in slot_ids
-        )
+        output[candidate_id] = math.fsum(normalized_scores[slot_id] for slot_id in slot_ids)
 
     return output
 
