@@ -13,15 +13,22 @@ class GradDotSummary:
 
 
 class PairwiseMarginLoss:
-    """Negative correct-vs-paired-target margin for Captum test examples."""
+    """Negative correct-vs-paired-target margin for influence test examples."""
 
-    reduction = "sum"
-
-    def __init__(self, target_a_id: int, target_b_id: int) -> None:
+    def __init__(
+        self,
+        target_a_id: int,
+        target_b_id: int,
+        *,
+        reduction: str = "none",
+    ) -> None:
         if target_a_id == target_b_id:
             raise ValueError("pairwise target IDs must be distinct")
+        if reduction not in {"none", "sum", "mean"}:
+            raise ValueError("reduction must be 'none', 'sum', or 'mean'")
         self.target_a_id = int(target_a_id)
         self.target_b_id = int(target_b_id)
+        self.reduction = reduction
 
     def __call__(self, logits: Any, labels: Any) -> Any:
         import torch
@@ -44,8 +51,12 @@ class PairwiseMarginLoss:
             torch.full_like(labels, self.target_a_id),
         )
         row = torch.arange(logits.shape[0], device=logits.device)
-        margin = logits[row, labels] - logits[row, other]
-        return (-margin).sum()
+        losses = -(logits[row, labels] - logits[row, other])
+        if self.reduction == "none":
+            return losses
+        if self.reduction == "sum":
+            return losses.sum()
+        return losses.mean()
 
 
 def suspiciousness_from_influence(influence: Any) -> Any:
