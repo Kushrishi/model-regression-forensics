@@ -92,9 +92,7 @@ def test_class_balanced_slot_support_matches_macro_weighting() -> None:
 
 
 def test_detracting_support_is_positive_suspiciousness() -> None:
-    result = detracting_support_to_suspiciousness(
-        {"harmful": -0.8, "helpful": 0.4}
-    )
+    result = detracting_support_to_suspiciousness({"harmful": -0.8, "helpful": 0.4})
     assert result == {"harmful": 0.8, "helpful": -0.4}
 
 
@@ -113,13 +111,9 @@ def test_candidate_aggregation_uses_primary_sum() -> None:
 
 def test_candidate_aggregation_requires_every_changed_slot_score() -> None:
     with pytest.raises(ValueError, match="missing suspiciousness"):
-        aggregate_candidate_suspiciousness(
-            {"s1": 1.0}, {"candidate": ("s1", "s2")}
-        )
+        aggregate_candidate_suspiciousness({"s1": 1.0}, {"candidate": ("s1", "s2")})
 
 
 def test_candidate_ranking_descends_and_uses_candidate_id_for_ties() -> None:
-    ranking = rank_candidate_scores(
-        {"z_change": 1.0, "a_change": 1.0, "middle": 2.0}
-    )
+    ranking = rank_candidate_scores({"z_change": 1.0, "a_change": 1.0, "middle": 2.0})
     assert ranking == ("middle", "a_change", "z_change")
