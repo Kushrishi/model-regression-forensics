@@ -1,7 +1,7 @@
 # Current research state
 
-**Updated:** 2026-09-24  
-**Active program:** Experiment 009 — stochastic counterfactual certification  
+**Updated:** 2026-09-25
+**Active program:** Experiment 009 — stochastic counterfactual certification
 **Evidence class:** development only
 
 This file is the canonical short-form statement of the project's current
@@ -39,6 +39,14 @@ interventions and ordinary retraining variability?
   2. `card_about_to_expire` ↔ `getting_spare_card`
   3. `card_payment_wrong_exchange_rate` ↔ `exchange_charge`
   4. `cash_withdrawal_charge` ↔ `cash_withdrawal_not_recognised`
+- Candidate truth is isolated from debugger-facing manifests with deterministic
+  opaque IDs.
+- The authoritative attribution target is the frozen correct-vs-paired-target
+  margin in `research/ATTRIBUTION_TARGET.md`.
+- GitHub-hosted `macos-15` was verified as ARM64 with working PyTorch MPS and
+  the frozen Stage-A batch/sequence shape.
+- The DistilBERT TRAK infrastructure smoke passed, but TRAK's standard multiclass
+  objective is not treated as equivalent to the frozen pairwise target.
 
 ## Important limitation of nuisance v2
 
@@ -60,29 +68,26 @@ The MPS development pilot specifies:
 - a maximum of 21 result-bearing training runs;
 - no adaptive nuisance substitution after outcomes are observed.
 
-This pilot has not yet produced restoration results.
+No Stage-A result has been generated yet.
 
 ## Current bottleneck
 
-Do **not** start the 21-run development pilot solely because the implementation
-exists.
-
-The 2025-2026 literature audit narrows MRF to a **release-change
+The literature audit narrows MRF to a **release-change
 counterfactual-certification** problem rather than a new training-data
 attribution method.
 
-Before result-bearing training:
+Before Stage-A result-bearing training:
 
-1. implement and validate at least one modern attribution baseline against the
-   frozen attribution-target contract;
-2. retain nuisance v2 only as a certification-effect pilot, not a blinded
-   localization benchmark;
-3. verify the MPS execution environment and evidence packaging;
-4. keep the official test split untouched.
+1. validate the frozen last-layer Grad-Dot baseline against Captum 0.9.0;
+2. freeze the hosted-runner execution amendment and evidence packaging;
+3. keep the official test split untouched.
 
-The current literature audit does not kill the 21-run nuisance-v2 pilot, but it
-changes its purpose to estimating root-vs-nuisance effect separation and
-stochastic variability for later confirmatory design.
+If the Grad-Dot feasibility gate passes, Stage A may train only the three
+baseline/composite trajectory pairs. Stage B remains blocked until the frozen
+Stage-A regression gate and development localization analysis are complete.
+
+TRAK remains a secondary feasibility track until its target mapping is
+theoretically aligned with the frozen pairwise behavior scalar.
 
 ## Not established
 
@@ -100,9 +105,10 @@ The project does not currently establish:
 When documents disagree, use this priority:
 
 1. frozen experiment protocol/result files for the experiment they govern;
-2. this file for current project-level state;
-3. `research/CLAIMS.md` for externally safe claim boundaries;
-4. `research/DECISION_LOG.md` for historical decisions;
-5. README and portfolio copy.
+2. `research/ATTRIBUTION_TARGET.md` for localization-target semantics;
+3. this file for current project-level state;
+4. `research/CLAIMS.md` for externally safe claim boundaries;
+5. `research/DECISION_LOG.md` for historical decisions;
+6. README and portfolio copy.
 
 Website and LinkedIn text must never outrun this repository state.
