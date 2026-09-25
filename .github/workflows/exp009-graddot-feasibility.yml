@@ -1,0 +1,39 @@
+name: Exp009 Grad-Dot feasibility
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "research/GRAD_DOT_BASELINE.md"
+      - "src/model_forensics/exp009_graddot.py"
+      - "tests/test_exp009_graddot.py"
+      - ".github/workflows/exp009-graddot-feasibility.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  captum-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+
+      - name: Install project research dependencies
+        run: uv sync --extra research --extra dev
+
+      - name: Install frozen Captum validation version
+        run: uv pip install captum==0.9.0
+
+      - name: Validate one-checkpoint last-layer Grad-Dot
+        run: uv run pytest tests/test_exp009_graddot.py -q
