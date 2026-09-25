@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 DISTILBERT_HEAD_PARAMETER_NAMES = (
     "pre_classifier.weight",
     "pre_classifier.bias",
