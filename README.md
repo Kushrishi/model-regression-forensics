@@ -43,7 +43,7 @@ Current development evidence:
   trajectories;
 - the target-faithful last-layer Grad-Dot baseline ranked the planted root first
   in all three trajectories under truth-isolated scoring;
-- Stage-B root/nuisance restoration evidence has not yet been generated;
+- the frozen Stage-B pilot completed all 18 trainings; root restoration exceeded every nuisance restoration in all three paired trajectories, with mean root recovery +0.1244 and mean root-minus-strongest-nuisance margin +0.1195;
 - the official Banking77 test split remains untouched.
 
 See [research/STATE.md](research/STATE.md) for the canonical short-form state,
@@ -74,8 +74,7 @@ The pilot is staged:
 - **Stage B:** only if Stage A passes, run exhaustive root and nuisance
   restorations and measure paired recovery effects.
 
-The pilot is intended to estimate effect structure and stochastic variability.
-Three trajectories are not treated as final confirmatory statistical evidence.
+The completed pilot estimates effect structure and stochastic variability. Its favorable root-vs-nuisance separation motivates a structurally matched next benchmark, but three development trajectories are not treated as confirmatory statistical evidence.
 
 The exact frozen protocol is recorded under
 [`experiments/009_stochastic_counterfactual_certification/`](experiments/009_stochastic_counterfactual_certification/).
