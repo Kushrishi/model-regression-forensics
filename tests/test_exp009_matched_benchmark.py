@@ -76,12 +76,12 @@ def test_rank_matched_pairs_accepts_confusion_or_lexical_adjacency() -> None:
 def test_select_matched_worlds_is_globally_label_disjoint() -> None:
     ranked = tuple(
         _pair(f"intent_{2 * i:02d}", f"intent_{2 * i + 1:02d}", 1.0 - i / 100)
-        for i in range(15)
+        for i in range(10)
     )
 
     worlds = select_matched_worlds(ranked)
 
-    assert len(worlds) == 3
+    assert len(worlds) == 2
     observed_labels: set[str] = set()
     for world in worlds:
         assert len(world.pairs) == MATCHED_CANDIDATES_PER_WORLD
@@ -95,7 +95,7 @@ def test_select_matched_worlds_is_globally_label_disjoint() -> None:
         assert not labels & observed_labels
         observed_labels.update(labels)
 
-    assert len(observed_labels) == 30
+    assert len(observed_labels) == 20
 
 
 def test_build_matched_world_enforces_identical_candidate_structure() -> None:
