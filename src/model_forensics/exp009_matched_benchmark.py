@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import hashlib
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass
 from itertools import combinations
-from typing import Iterable
-
 from model_forensics.exp009_candidates import build_opaque_candidate_manifests
 from model_forensics.exp009_data import DevelopmentPartition
 from model_forensics.exp009_release import (
@@ -189,7 +188,7 @@ def _root_position(world_index: int) -> int:
     if world_index < 0:
         raise ValueError("world_index must be non-negative")
     digest = hashlib.sha256(
-        f"exp009-matched-root-v1|world={world_index}".encode("utf-8")
+        f"exp009-matched-root-v1|world={world_index}".encode()
     ).digest()
     return int.from_bytes(digest[:8], byteorder="big") % MATCHED_CANDIDATES_PER_WORLD
 
@@ -372,7 +371,7 @@ def build_matched_world(
 
     role_map: dict[str, tuple[Exp009ReleaseSlot, ...]] = {}
     pair_truth: dict[str, dict[str, object]] = {}
-    for index, (pair, candidate) in enumerate(zip(definition.pairs, candidates, strict=True)):
+    for index, (_pair, candidate) in enumerate(zip(definition.pairs, candidates, strict=True)):
         role = "root" if index == definition.root_position else f"non_root_{index}"
         role_map[role] = candidate
 
