@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "experiment": "exp009_structurally_matched_benchmark",
+  "evidence_class": "clean_only_structural_preflight",
+  "date": "2026-09-25",
+  "workflow_run_id": 36211417215,
+  "source_git_sha": "8d7dc743134d2a4658c44f70695db2609d232af7",
+  "artifact_id": 10895363438,
+  "development_partition_sha256": "61ecbdd9224cf2bbeafcf5ceb9164cfc3fc74eb449129136198646385aaa8e88",
+  "baseline_release_sha256": "cb83232c055c4c55ca50f2fbd86627d59dc806ab33a861abc7402990ddb7e20c",
+  "eligible_pair_count": 81,
+  "selected_world_count": 2,
+  "selected_candidate_count": 10,
+  "selected_unique_intent_count": 20,
+  "worlds": [
+    {
+      "world_index": 0,
+      "root_position": 4,
+      "root_pair": ["card_about_to_expire", "getting_spare_card"],
+      "pairs_in_selection_order": [
+        ["get_physical_card", "pin_blocked"],
+        ["Refund_not_showing_up", "request_refund"],
+        ["card_payment_not_recognised", "extra_charge_on_statement"],
+        ["activate_my_card", "card_not_working"],
+        ["card_about_to_expire", "getting_spare_card"]
+      ],
+      "global_pair_ranks": [1, 4, 5, 6, 9],
+      "candidate_ids_sorted": [
+        "candidate_243b5f64c58c",
+        "candidate_312093c9b8e2",
+        "candidate_8b44e8447992",
+        "candidate_9703557fa315",
+        "candidate_a20a6e0c5636"
+      ],
+      "composite_release_sha256": "8e951a2e1aa1d234f3fd8f8aefd1afecfc8baca0124666d99b201593b9bf4f29",
+      "all_candidate_structures_identical": true,
+      "pairwise_changed_slots_disjoint": true,
+      "intent_labels_pairwise_disjoint": true,
+      "composite_order_independent": true
+    },
+    {
+      "world_index": 1,
+      "root_position": 4,
+      "root_pair": ["card_arrival", "getting_virtual_card"],
+      "pairs_in_selection_order": [
+        ["card_payment_wrong_exchange_rate", "exchange_charge"],
+        ["cash_withdrawal_charge", "cash_withdrawal_not_recognised"],
+        ["top_up_by_card_charge", "verify_top_up"],
+        ["cancel_transfer", "transfer_timing"],
+        ["card_arrival", "getting_virtual_card"]
+      ],
+      "global_pair_ranks": [10, 13, 22, 23, 33],
+      "candidate_ids_sorted": [
+        "candidate_536db54151a9",
+        "candidate_57f79a46afab",
+        "candidate_9ad7671deeae",
+        "candidate_f42b9032f799",
+        "candidate_f676800eda89"
+      ],
+      "composite_release_sha256": "a67802d6b8ab190557812a9b572adf33881a33187c2497ac280f72b978719d2e",
+      "all_candidate_structures_identical": true,
+      "pairwise_changed_slots_disjoint": true,
+      "intent_labels_pairwise_disjoint": true,
+      "composite_order_independent": true
+    }
+  ],
+  "candidate_structure": {
+    "changed_slot_count": 66,
+    "text_change_count": 0,
+    "label_change_count": 66,
+    "aggregate_label_count_delta": {},
+    "touched_label_count": 2,
+    "transition_counts_per_direction": [33, 33],
+    "slot_count": 8001
+  },
+  "artifact_sha256": {
+    "summary.json": "321c1c5d1756e8fdee4a433c11ef0914ebf31616053e72c644c772296a25c344",
+    "world_00/diagnostic_manifest.json": "2861f10e35d40d28a94890bf6d49d2ff96c04161937d653bac11276846e1c0f4",
+    "world_00/structural_audit.json": "9347e94ef0b74805c7c60a29cbc0b7c1469c1960bfbaddb469d8f28ae455ae3b",
+    "world_00/truth_manifest.json": "4ad2e5c331072457edd7db8bf8ec39e0fc263f22465c50ba5d9e18ca77eb3ef8",
+    "world_01/diagnostic_manifest.json": "9d1b10a29fc4ee0babfb839172fec368a16360470d74b89a2a91f06cb1cc7ebd",
+    "world_01/structural_audit.json": "c0429b80f9ebd77d01bbeff54da7144d51af6cd61cfa22eb6de4e2c27e15f67e",
+    "world_01/truth_manifest.json": "ada221f35aa6ba1a50c19413f383e6b5b97476db1803d9dff4ac8f907ca368b7"
+  },
+  "model_training_performed": false,
+  "official_test_split_loaded": false,
+  "claim_boundary": {
+    "localization_success_established": false,
+    "causal_specificity_established": false,
+    "confirmatory_certification_established": false,
+    "structurally_matched_candidate_construction_established": true
+  }
+}
