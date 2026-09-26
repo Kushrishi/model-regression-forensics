@@ -177,10 +177,13 @@ root_position = uint64(
 
 using the first eight digest bytes in big-endian order.
 
-The pair at that position is the hidden root for benchmark truth.
+The pair at that position is the root for the benchmark truth manifest.
 
 The debugger-facing manifest contains only opaque candidate IDs and never the
-root position.
+truth role. This is **code-path truth isolation, not adversarial secrecy**: the
+protocol is public and the known target behavior can make the responsible pair
+semantically inferable. No MRF claim may depend on the root being cryptographically
+hidden from a benchmark reader.
 
 ## 9. Opaque candidate IDs
 
