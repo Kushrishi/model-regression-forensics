@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "experiment": "exp009_structurally_matched_benchmark",
+  "date": "2026-09-25",
+  "evidence_class": "clean_only_structural_capacity_preflight",
+  "development_partition_sha256": "61ecbdd9224cf2bbeafcf5ceb9164cfc3fc74eb449129136198646385aaa8e88",
+  "initial_protocol_world_count": 3,
+  "candidates_per_world": 5,
+  "required_disjoint_pairs_for_initial_design": 15,
+  "eligible_edge_count": 81,
+  "eligible_vertex_count": 27,
+  "greedy_disjoint_pair_count": 11,
+  "maximum_matching_pair_count": 13,
+  "three_world_capacity": false,
+  "initial_structural_preflight_workflow_run_id": 36211223915,
+  "maximum_matching_diagnostic_workflow_run_id": 36211324469,
+  "initial_preflight_failure": "world 2: fewer than 5 globally disjoint eligible pairs remain",
+  "model_training_performed": false,
+  "official_test_split_loaded": false,
+  "decision": "do_not_relax_pair_eligibility; prospectively reduce matched benchmark from three worlds to two complete worlds before model training"
+}
