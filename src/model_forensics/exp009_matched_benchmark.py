@@ -339,6 +339,22 @@ def build_matched_world(
                 raise AssertionError("matched candidate changed-slot sets overlap")
 
     composite = _combine_disjoint_changes(baseline, candidates)
+    reverse_composite = _combine_disjoint_changes(baseline, reversed(candidates))
+    if reverse_composite != composite:
+        raise AssertionError("matched composite depends on candidate application order")
+
+    individual_restorations_exact = all(
+        restore_release_slots(
+            candidate,
+            baseline,
+            restore_slot_ids=changed_slot_ids(baseline, candidate),
+        )
+        == baseline
+        for candidate in candidates
+    )
+    if not individual_restorations_exact:
+        raise AssertionError("standalone matched candidate did not restore exactly to baseline")
+
     expected_composite_changes = (
         MATCHED_CANDIDATES_PER_WORLD * MATCHED_CHANGED_SLOT_COUNT
     )
@@ -429,6 +445,8 @@ def build_matched_world(
         "intent_labels_pairwise_disjoint": True,
         "composite_changed_slot_count": expected_composite_changes,
         "composite_release_sha256": release_sha256(composite),
+        "composite_order_independent": True,
+        "all_individual_candidate_restorations_exact_baseline": True,
         "all_restorations_leave_exactly_four_candidate_changes": all(
             len(changed_slot_ids(baseline, restored))
             == (MATCHED_CANDIDATES_PER_WORLD - 1) * MATCHED_CHANGED_SLOT_COUNT
