@@ -1,6 +1,6 @@
 # Claims ledger
 
-**Updated:** 2026-09-25
+**Updated:** 2026-10-01
 
 This ledger defines the strongest wording currently supported by the project.
 
@@ -10,18 +10,20 @@ This ledger defines the strongest wording currently supported by the project.
 | Restoring a planted root can recover target behavior while non-root restorations also cause recovery. | **Supported** | Demonstrated in Experiment 008; this is why restorative influence is not treated as unique causal certification. |
 | The Exp009 1/4 planted fault creates a reproducible localized development regression across three paired trajectories. | **Development evidence** | Passed the frozen development replication rule; not confirmatory evidence. |
 | The frozen Exp009 nuisance-v2 composite passes the hosted Stage-A localized-regression gate. | **Development evidence** | All four prospectively declared Stage-A gate components passed across trajectories 0, 1, and 2 in workflow run 36139384603. |
-| The target-faithful last-layer Grad-Dot baseline localized the planted Exp009 root at rank 1 in the hosted Stage-A development benchmark. | **Development evidence** | The opaque root candidate ranked first in all three trajectories and in the aggregate; truth was loaded only after the aggregate ranking existed. Structural mismatch between root and nuisance diffs prevents a strong structurally matched blinded-localization claim. |
+| The target-faithful last-layer Grad-Dot baseline localized the planted Exp009 root at rank 1 in the hosted Stage-A development benchmark. | **Development evidence** | The opaque root candidate ranked first in all three trajectories and in the aggregate; truth was loaded only after the aggregate ranking existed. The nuisance-v2 structural mismatch prevents promotion of this result to the new matched benchmark. |
 | Nuisance rule v1 is viable. | **Not supported** | The frozen rule produced zero eligible pairs and was stopped before nuisance training. |
-| Nuisance rule v2 supports a strong blinded-localization benchmark. | **Not supported** | Root and nuisance diffs are structurally distinguishable. |
+| Nuisance rule v2 supports a strong structurally matched blinded-localization benchmark. | **Not supported** | Root and nuisance diffs are structurally distinguishable. |
 | Nuisance rule v2 can support a development comparison of restoration effects. | **Development evidence** | Stage B completed all 18 frozen trainings; root restoration exceeded every nuisance restoration in all three paired development trajectories. |
-| Exp009 establishes causal specificity for the localized root. | **Not established** | Stage B shows favorable development root-vs-nuisance effect separation, but n=3 descriptive evidence plus root/nuisance structural mismatch prevents a confirmatory causal-specificity claim. |
+| Exp009 M3 has a prospectively constructed structurally matched candidate benchmark. | **Supported** | Two complete five-candidate worlds passed clean-only structural preflight after a prospectively documented capacity amendment. Every candidate uses the same 66-slot label-only mechanism; no matched-benchmark model training or official-test access was used to select the worlds. |
+| Three complete matched benchmark worlds were feasible under the frozen clean eligibility rules. | **False** | Clean-only capacity analysis found maximum matching capacity of 13 disjoint pairs versus 15 required. The protocol was prospectively amended to two worlds without relaxing eligibility. |
+| The M3 matched benchmark has demonstrated successful root localization. | **Untested** | M3 freezes construction only. No matched-benchmark model-training/localization outcome is currently established. |
+| Exp009 establishes causal specificity for the localized root. | **Not established** | Stage B shows favorable development root-vs-nuisance effect separation, but the old candidate structure and n=3 descriptive evidence are insufficient; the new matched benchmark has not yet produced certification evidence. |
 | Explicit treatment of retraining stochasticity is itself novel. | **Not supported** | Adjacent literature already studies stochastic/distributional training-data attribution. |
-| MRF provides a distinct useful framework for post-hoc causal certification over versioned release changes. | **Research hypothesis** | Requires refreshed related work, competitive baselines, and confirmatory evidence. |
+| MRF provides a distinct useful framework for post-hoc causal certification over versioned release changes. | **Research hypothesis** | Requires competitive matched-benchmark baselines, prospectively frozen certify/abstain rules, and confirmatory evidence. |
 | MRF outperforms modern data-attribution methods. | **Untested** | No broad baseline comparison supports this claim. |
 | Exp009 generalizes beyond Banking77/DistilBERT. | **Untested** | No cross-substrate confirmation exists. |
 | MRF has a completed paper or accepted publication. | **False** | The project is active research; no paper has been submitted or published. |
 
 ## Rule
 
-Any public or manuscript claim stronger than this table requires a corresponding
-evidence update in the same scientific milestone.
+Any public or manuscript claim stronger than this table requires a corresponding evidence update in the same scientific milestone.
