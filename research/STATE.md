@@ -1,94 +1,35 @@
 # Current research state
 
-**Updated:** 2026-09-25  
+**Updated:** 2026-10-01  
 **Active program:** Experiment 009 — stochastic counterfactual certification  
 **Evidence class:** development only
 
-This file is the canonical short-form statement of the project's current
-scientific state. Historical experiment documents remain authoritative for
-their own frozen protocols and outcomes.
+This file is the canonical short-form statement of the project's current scientific state. Historical experiment documents remain authoritative for their own frozen protocols and outcomes.
 
 ## Research question
 
-Given a known-good release, a regressed release, and a finite set of versioned
-training changes, can a suspected cause be supported by counterfactual
-restoration evidence that is distinguishable from plausible non-root
-interventions and ordinary retraining variability?
+Given a known-good release, a regressed release, and a finite set of versioned training changes, can a suspected cause be supported by counterfactual restoration evidence that is distinguishable from plausible non-root interventions and ordinary retraining variability?
 
-## Established development state
+## Completed Exp009 development evidence
 
-- Banking77 development train: 8,001 examples.
-- Banking77 development eval: 1,998 examples.
-- Number of intents: 77.
-- Official Banking77 test split: untouched.
-- Classifier family: pinned `distilbert-base-uncased`.
-- Training schedules and release construction are versioned and hashed.
-- Pilot target pair:
-  `Refund_not_showing_up` ↔ `request_refund`.
-- Accepted development root:
-  1/4 symmetric label-mapping fault, 66 changed stable slots.
-- Root dose replication:
-  frozen development gate passed on trajectories 0, 1, and 2.
-- Nuisance rule v1:
-  infeasible; zero eligible pairs; no nuisance training performed.
-- Nuisance rule v2:
-  frozen after the recorded v1 construction failure and before nuisance-model
-  outcomes.
-- Frozen nuisance-v2 pairs:
-  1. `activate_my_card` ↔ `card_not_working`
-  2. `card_about_to_expire` ↔ `getting_spare_card`
-  3. `card_payment_wrong_exchange_rate` ↔ `exchange_charge`
-  4. `cash_withdrawal_charge` ↔ `cash_withdrawal_not_recognised`
-- Candidate truth is isolated from debugger-facing manifests with deterministic
-  opaque IDs.
-- The authoritative attribution target is the frozen correct-vs-paired-target
-  margin in `research/ATTRIBUTION_TARGET.md`.
-- GitHub-hosted `macos-15` was verified as ARM64 with working PyTorch MPS and
-  the frozen Stage-A batch/sequence shape.
-- The DistilBERT TRAK infrastructure smoke passed, but TRAK's standard multiclass
-  objective is not treated as equivalent to the frozen pairwise target.
+The Banking77 development substrate uses 8,001 training examples and 1,998 development-evaluation examples across 77 intents with a pinned `distilbert-base-uncased` classifier. The official Banking77 test split remains untouched.
 
-## Stage-A hosted result
+### Stage A
 
-Workflow run `36139384603` completed all six authorized Stage-A training
-siblings at source revision
-`cb508c845157a3212a05cc5592d0e384e220877f`.
+Workflow run `36139384603` completed the authorized Stage-A training siblings.
 
-The frozen behavioral gate passed:
+The frozen behavioral gate passed across trajectories 0, 1, and 2:
 
-- mean target regression: **0.129289** (required >= 0.10);
-- minimum per-trajectory target regression: **0.091912** (required >= 0.05);
-- mean protected regression: **0.002711** (required <= 0.02);
-- maximum per-trajectory protected regression: **0.003602**
-  (required <= 0.03).
+- mean target regression: **0.129289**;
+- minimum per-trajectory target regression: **0.091912**;
+- mean protected regression: **0.002711**;
+- maximum per-trajectory protected regression: **0.003602**.
 
-The truth-isolated last-layer Grad-Dot baseline ranked
-`candidate_243b5f64c58c` first in all three trajectories. The aggregate ranking
-was written before benchmark truth was loaded. Subsequent truth scoring
-identified that candidate as the planted root, giving root rank 1 and top-1
-correct = true.
+The truth-isolated last-layer Grad-Dot baseline ranked the planted root first in all three trajectories. That result is development evidence only because the nuisance-v2 candidate changes were structurally distinguishable from the root.
 
-This is development evidence. See
-`experiments/009_stochastic_counterfactual_certification/STAGE_A_RESULT.md`.
+### Stage B
 
-## Important limitation of nuisance v2
-
-The root changes labels without changing text. The nuisance-v2 updates change
-both selected text and labels while preserving aggregate label counts.
-
-Therefore the current v2 construction is adequate for a **development
-root-vs-nuisance restoration-effect pilot**, but not for a strong claim that a
-blind debugger localized the root among structurally matched candidate changes.
-
-The Stage-A Grad-Dot result must be interpreted within that boundary.
-
-## Stage-B development result
-
-Workflow run `36154597887` completed the full frozen Stage-B pilot at source
-revision `310d638211364ad6a9eb3b53c654bf6f261f0ad6`.
-
-All 18 planned Stage-B trainings completed. The official Banking77 test split
-remained untouched.
+Workflow run `36154597887` completed all 18 frozen Stage-B trainings.
 
 Across the three paired trajectories:
 
@@ -96,46 +37,69 @@ Across the three paired trajectories:
 - root recovery range: **+0.091912 to +0.163603**;
 - mean root-minus-strongest-nuisance margin: **+0.119485**;
 - minimum root-minus-strongest-nuisance margin: **+0.091912**;
-- root restoration was strictly larger than every nuisance restoration in
-  **3 / 3** trajectories.
+- root restoration exceeded every nuisance restoration in **3 / 3** trajectories.
 
-No Stage-B causal threshold, hypothesis test, p-value, or multiplicity
-correction was applied.
+No confirmatory threshold, p-value, or multiplicity procedure was applied to Stage B.
 
-See
-`experiments/009_stochastic_counterfactual_certification/STAGE_B_RESULT.md`
-and `STAGE_B_RESULT.json`.
+## M3 structurally matched benchmark
+
+**State: complete.**
+
+M3 replaced the structurally mismatched nuisance-v2 construction with a prospectively frozen matched candidate benchmark.
+
+The base protocol initially requested three worlds with five globally intent-disjoint candidates per world. Clean-only capacity preflight showed that three complete worlds were impossible under the frozen eligibility rules: the eligible graph had 81 edges over 27 vertices and a maximum matching of 13 disjoint pairs, below the 15 required.
+
+The project did not relax the eligibility rules after observing that failure. Amendment 1 prospectively reduced M3 to **two complete worlds** before any matched-benchmark model training and without accessing the official test split.
+
+The final benchmark contains:
+
+- 2 worlds;
+- 5 candidates per world;
+- 10 candidate changes across 20 unique intents;
+- exactly 66 changed stable slots per candidate;
+- symmetric 33/33 label swaps;
+- zero text changes;
+- preserved aggregate label mass;
+- identical debugger-facing candidate structure;
+- pairwise-disjoint changed-slot sets and intent labels;
+- deterministic opaque candidate IDs;
+- exact standalone restoration to baseline;
+- composite order independence.
+
+The amended hosted structural preflight passed in workflow run `36211417215`. A final post-formatting rerun on the merged implementation also passed. No matched-benchmark model training was performed by M3, and the official Banking77 test split remained embargoed.
+
+Passing M3 establishes **structurally matched candidate construction only**. It does not establish localization success or causal specificity.
 
 ## Current decision boundary
 
-Development milestones M1 and M2 are complete.
+M1, M2, and M3 are complete.
 
-The Stage-B effect structure warrants continuing to a paper-grade,
-**structurally matched benchmark**. This is a development decision, not a
-retrospective certification threshold.
+The next active milestone is **M4 — competitive localization baselines**.
 
-The nuisance-v2 limitation remains decisive: the planted root changes labels
-without changing text, while nuisance-v2 changes both text and labels. Therefore
-the current Stage-A localization result and Stage-B restoration result may not
-be promoted into a strong blinded-localization or confirmatory causal-specificity
-claim.
+Before treating localization as scientifically interesting, M4 must compare diagnostics against simple target-compatible references. Because the target behavior is known, a semantic/change-overlap baseline may localize the responsible pair easily. That is a legitimate result and must not trigger post-hoc benchmark redesign.
 
-The next active milestone is M3: prospectively design and freeze candidate
-changes whose observable structure is matched closely enough that localization
-cannot exploit this artifact. Confirmatory statistics, abstention rules,
-trajectory count, and official-test access remain future frozen decisions.
+Required baseline families include:
+
+- seeded random reference;
+- simple semantic/lexical or changed-record overlap where applicable;
+- target-faithful last-layer Grad-Dot;
+- modern influence/data-attribution approaches only where their objective can be implemented faithfully for the frozen target.
+
+TRAK remains feasibility evidence unless its scoring objective becomes genuinely commensurate with the frozen target without redefining that target.
+
+Matched-benchmark model training, trajectory count, certification statistic, abstention rule, protected-equivalence rule, multiplicity treatment, rerun policy, and any official-test access remain separate future decisions. They must be frozen prospectively before the corresponding result-bearing work.
 
 ## Not established
 
 The project does not currently establish:
 
+- localization success on the M3 matched benchmark;
 - causal specificity for Exp009;
 - confirmatory causal certification;
 - general training-data root-cause identification;
 - superiority to modern attribution or influence methods;
-- novelty from stochastic retraining alone;
-- a blinded-localization benchmark under structurally matched candidates;
-- cross-model or cross-dataset generalization.
+- cross-model or cross-dataset generalization; or
+- a completed paper or accepted publication.
 
 ## Source-of-truth order
 
