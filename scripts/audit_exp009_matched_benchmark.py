@@ -70,8 +70,7 @@ def main() -> None:
         "--evidence-root",
         type=Path,
         default=Path(
-            "experiments/009_stochastic_counterfactual_certification/"
-            "pilot_evidence/clean"
+            "experiments/009_stochastic_counterfactual_certification/pilot_evidence/clean"
         ),
     )
     parser.add_argument(
@@ -135,8 +134,7 @@ def main() -> None:
         _write_json(world_dir / "structural_audit.json", built.structural_audit)
 
         candidate_ids = [
-            str(row["candidate_id"])
-            for row in built.diagnostic_manifest["candidates"]
+            str(row["candidate_id"]) for row in built.diagnostic_manifest["candidates"]
         ]
         root_pair = definition.root_pair
         world_summaries.append(
@@ -154,9 +152,7 @@ def main() -> None:
                 ],
                 "candidate_ids": candidate_ids,
                 "baseline_release_sha256": release_sha256(baseline),
-                "composite_release_sha256": built.structural_audit[
-                    "composite_release_sha256"
-                ],
+                "composite_release_sha256": built.structural_audit["composite_release_sha256"],
                 "structural_audit": built.structural_audit,
             }
         )
@@ -189,14 +185,8 @@ def main() -> None:
     print(f"baseline_release_sha256={release_sha256(baseline)}")
     print(f"eligible_pair_count={len(ranked)}")
     print(f"selected_world_count={len(worlds)}")
-    print(
-        "selected_candidate_count="
-        f"{summary_payload['selected_candidate_count']}"
-    )
-    print(
-        "selected_unique_intent_count="
-        f"{summary_payload['selected_unique_intent_count']}"
-    )
+    print(f"selected_candidate_count={summary_payload['selected_candidate_count']}")
+    print(f"selected_unique_intent_count={summary_payload['selected_unique_intent_count']}")
     for world in world_summaries:
         print(
             f"world={world['world_index']} "
