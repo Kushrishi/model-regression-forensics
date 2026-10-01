@@ -107,8 +107,7 @@ def rank_matched_pairs(
         missing = set(labels) - set(recalls)
         if missing:
             raise ValueError(
-                f"trajectory {trajectory_id} is missing per-label recall for "
-                f"{sorted(missing)!r}"
+                f"trajectory {trajectory_id} is missing per-label recall for {sorted(missing)!r}"
             )
 
     true_counts: Counter[str] = Counter()
@@ -150,9 +149,7 @@ def rank_matched_pairs(
         if true_counts[label_a] <= 0 or true_counts[label_b] <= 0:
             raise ValueError("eligible matched label has no pooled clean predictions")
 
-        mean_symmetric_rate = 0.5 * (
-            a_to_b / true_counts[label_a] + b_to_a / true_counts[label_b]
-        )
+        mean_symmetric_rate = 0.5 * (a_to_b / true_counts[label_a] + b_to_a / true_counts[label_b])
         eligible.append(
             MatchedPairScore(
                 label_a=label_a,
@@ -188,9 +185,7 @@ def rank_matched_pairs(
 def _root_position(world_index: int) -> int:
     if world_index < 0:
         raise ValueError("world_index must be non-negative")
-    digest = hashlib.sha256(
-        f"exp009-matched-root-v1|world={world_index}".encode()
-    ).digest()
+    digest = hashlib.sha256(f"exp009-matched-root-v1|world={world_index}".encode()).digest()
     return int.from_bytes(digest[:8], byteorder="big") % MATCHED_CANDIDATES_PER_WORLD
 
 
@@ -205,9 +200,7 @@ def select_matched_worlds(
     if world_count <= 0:
         raise ValueError("world_count must be positive")
     if candidates_per_world != MATCHED_CANDIDATES_PER_WORLD:
-        raise ValueError(
-            "v1 matched benchmark requires exactly five candidates per world"
-        )
+        raise ValueError("v1 matched benchmark requires exactly five candidates per world")
 
     used_labels: set[str] = set()
     worlds: list[MatchedWorldDefinition] = []
@@ -277,10 +270,7 @@ def _combine_disjoint_changes(
                 raise ValueError(f"candidate changes overlap at stable slot {slot_id}")
             replacements[slot_id] = candidate_by_id[slot_id]
 
-    return tuple(
-        replacements.get(slot.slot_id, slot)
-        for slot in baseline
-    )
+    return tuple(replacements.get(slot.slot_id, slot) for slot in baseline)
 
 
 def _candidate_structural_row(
@@ -315,11 +305,7 @@ def build_matched_world(
     if len(definition.pairs) != MATCHED_CANDIDATES_PER_WORLD:
         raise ValueError("matched world must contain exactly five candidate pairs")
 
-    labels = [
-        label
-        for pair in definition.pairs
-        for label in (pair.label_a, pair.label_b)
-    ]
+    labels = [label for pair in definition.pairs for label in (pair.label_a, pair.label_b)]
     if len(labels) != len(set(labels)):
         raise ValueError("matched world candidate intent labels must be disjoint")
 
@@ -355,9 +341,7 @@ def build_matched_world(
     if not individual_restorations_exact:
         raise AssertionError("standalone matched candidate did not restore exactly to baseline")
 
-    expected_composite_changes = (
-        MATCHED_CANDIDATES_PER_WORLD * MATCHED_CHANGED_SLOT_COUNT
-    )
+    expected_composite_changes = MATCHED_CANDIDATES_PER_WORLD * MATCHED_CHANGED_SLOT_COUNT
     if len(changed_slot_ids(baseline, composite)) != expected_composite_changes:
         raise AssertionError("matched composite changed-slot count drift")
 
@@ -424,8 +408,7 @@ def build_matched_world(
     for key, value in expected.items():
         if first[key] != value:
             raise AssertionError(
-                f"matched candidate structural audit failed for {key}: "
-                f"{first[key]!r} != {value!r}"
+                f"matched candidate structural audit failed for {key}: {first[key]!r} != {value!r}"
             )
 
     truth = {
