@@ -1,0 +1,54 @@
+name: Exp009 matched benchmark preflight
+
+on:
+  push:
+    branches: ["exp009-structurally-matched-benchmark"]
+    paths:
+      - "experiments/009_stochastic_counterfactual_certification/STRUCTURALLY_MATCHED_BENCHMARK_PROTOCOL.md"
+      - "src/model_forensics/exp009_matched_benchmark.py"
+      - "scripts/audit_exp009_matched_benchmark.py"
+      - "tests/test_exp009_matched_benchmark.py"
+      - ".github/workflows/exp009-matched-preflight.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  structural-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+
+      - name: Install development dependencies
+        run: uv sync --extra dev
+
+      - name: Run matched benchmark structural preflight
+        run: uv run python scripts/audit_exp009_matched_benchmark.py
+
+      - name: Hash structural evidence
+        run: |
+          find artifacts/exp009/matched_benchmark_preflight -type f -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > artifacts/exp009/matched_benchmark_preflight.sha256
+          cat artifacts/exp009/matched_benchmark_preflight.sha256
+
+      - name: Upload structural-preflight evidence
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: exp009-matched-benchmark-preflight
+          path: |
+            artifacts/exp009/matched_benchmark_preflight
+            artifacts/exp009/matched_benchmark_preflight.sha256
+          if-no-files-found: error
+          retention-days: 90
