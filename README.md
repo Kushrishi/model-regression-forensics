@@ -2,82 +2,77 @@
 
 Model Regression Forensics (MRF) studies a narrow model-debugging question:
 
-> When a model regresses after a versioned training change, what evidence is
-> sufficient to identify a responsible change rather than a merely correlated
-> one?
+> When a model regresses after a versioned training change, what evidence is sufficient to identify a responsible change rather than a merely correlated one?
 
 The project separates three ideas that are easy to conflate:
 
 1. **localization** — a diagnostic ranks a change as suspicious;
 2. **restorative influence** — reverting that change improves the failed behavior;
-3. **causal specificity** — its effect is distinguishable from plausible
-   non-root interventions and ordinary retraining variability.
+3. **causal specificity** — its effect is distinguishable from plausible non-root interventions and ordinary retraining variability.
 
-MRF is active independent research. It is not a production debugging product
-and it does not currently claim a general solution to training-data attribution.
+MRF is active independent research. It is not a production debugging product and it does not currently claim a general solution to training-data attribution.
 
 ## Current research state
 
-Experiments 000-008 are completed development history. Experiment 009 is the
-active research program.
+Experiments 000-008 are completed development history. Experiment 009 is the active research program on Banking77 with a pinned DistilBERT classifier, deterministic versioned training releases, and repeated paired stochastic trajectories.
 
-Exp009 moves from the retired synthetic task family to Banking77 with a pinned
-DistilBERT classifier, deterministic versioned training releases, and repeated
-paired stochastic trajectories.
+Completed development evidence includes:
 
-Current development evidence:
+- a 1/4 symmetric planted label-mapping fault that changes 66 stable training slots and passed the frozen localized-regression replication gate across three paired trajectories;
+- a truth-isolated last-layer Grad-Dot Stage-A baseline that ranked the planted root first in all three trajectories;
+- a frozen Stage-B intervention pilot in which all 18 trainings completed and root restoration exceeded every nuisance restoration in all three paired trajectories, with mean root recovery **+0.1244** and mean root-minus-strongest-nuisance margin **+0.1195**;
+- retention of the Stage-A/Stage-B limitation that the nuisance-v2 candidate changes were structurally distinguishable from the planted root.
 
-- the clean development substrate and model configuration are fixed;
-- the pilot target pair is `Refund_not_showing_up` ↔ `request_refund`;
-- a 1/4 symmetric label-mapping fault changes 66 stable training slots;
-- that fault passed the frozen development replication gate on three paired
-  trajectories;
-- the first prospectively frozen nuisance-selection rule was infeasible and was
-  retained as a negative design result;
-- a second development nuisance rule was frozen before nuisance-model training
-  and selected four non-root changes;
-- those nuisance changes are suitable for an intervention-effect pilot but are
-  **not structurally matched well enough for a strong blinded-localization
-  claim**;
-- the hosted Stage-A composite-regression gate passed across all three frozen
-  trajectories;
-- the target-faithful last-layer Grad-Dot baseline ranked the planted root first
-  in all three trajectories under truth-isolated scoring;
-- the frozen Stage-B pilot completed all 18 trainings; root restoration exceeded every nuisance restoration in all three paired trajectories, with mean root recovery +0.1244 and mean root-minus-strongest-nuisance margin +0.1195;
-- the official Banking77 test split remains untouched.
+That limitation motivated M3 rather than being hidden.
 
-See [research/STATE.md](research/STATE.md) for the canonical short-form state,
-[research/CLAIMS.md](research/CLAIMS.md) for claim boundaries, and
-[research/ROADMAP.md](research/ROADMAP.md) for the milestone plan.
+## Structurally matched benchmark
+
+**M3 is complete.**
+
+The new benchmark prospectively matches the observable structure of every candidate change:
+
+- 66 changed stable slots per candidate;
+- 33 label swaps in each direction;
+- zero text changes;
+- preserved aggregate label mass;
+- two touched labels per candidate;
+- identical debugger-facing schema;
+- pairwise-disjoint changed slots and intent labels;
+- deterministic opaque candidate IDs;
+- exact restoration and composite-order audits.
+
+The original M3 protocol requested three five-candidate worlds. Before any matched-benchmark model training, a clean-only capacity preflight showed that the frozen eligibility graph could support at most 13 globally disjoint candidate pairs, fewer than the 15 required. The project did not weaken the eligibility rule to force the preferred design. A prospective amendment reduced the benchmark to **two complete worlds**.
+
+The amended hosted structural preflight passed for **2 worlds, 10 candidates, and 20 unique candidate-touched intents**. The official Banking77 test split remains untouched, and M3 performed no matched-benchmark model training.
+
+This establishes matched benchmark construction only. It does **not** establish localization success or causal specificity on the new benchmark.
+
+## Current milestone
+
+**M4 — competitive localization baselines is active.**
+
+The next question is how much localization signal remains after structural mismatch is removed. The benchmark intentionally does not hide the known target behavior from the debugger, so simple semantic/change-overlap information may be strong.
+
+M4 therefore requires comparison against:
+
+- a seeded random reference;
+- a simple semantic/lexical or changed-record-overlap baseline where applicable;
+- target-faithful last-layer Grad-Dot;
+- modern influence/data-attribution methods only where their objective can be implemented faithfully for the frozen target.
+
+If a simple baseline solves localization, that is a valid result rather than a reason to redesign the benchmark after observing it.
+
+The eventual research contribution remains the later question of whether counterfactual retraining can support a prospectively defined **certify/abstain** decision that distinguishes a responsible change from plausible alternatives under retraining stochasticity.
+
+See [research/STATE.md](research/STATE.md) for the canonical short-form state, [research/CLAIMS.md](research/CLAIMS.md) for claim boundaries, and [research/ROADMAP.md](research/ROADMAP.md) for the milestone plan.
 
 ## Why intervention matters
 
 A high attribution score is not causal evidence by itself.
 
-Earlier experiments repeatedly exposed this distinction. In Experiment 008,
-for example, the planted root was localized correctly and restoring it recovered
-the target behavior, yet non-root restorations also produced material recovery.
-The frozen causal-specificity criterion therefore failed.
+Earlier experiments repeatedly exposed this distinction. In Experiment 008, for example, the planted root was localized correctly and restoring it recovered the target behavior, yet non-root restorations also produced material recovery. The frozen causal-specificity criterion therefore failed.
 
 MRF treats that failure as evidence, not as a threshold-tuning problem.
-
-## Exp009 development design
-
-The current development pilot compares a clean baseline, a composite regressed
-release, root restoration, and four nuisance restorations under matched
-training trajectories.
-
-The pilot is staged:
-
-- **Stage A:** verify that the composite release produces the intended localized
-  regression under the frozen gate;
-- **Stage B:** only if Stage A passes, run exhaustive root and nuisance
-  restorations and measure paired recovery effects.
-
-The completed pilot estimates effect structure and stochastic variability. Its favorable root-vs-nuisance separation motivates a structurally matched next benchmark, but three development trajectories are not treated as confirmatory statistical evidence.
-
-The exact frozen protocol is recorded under
-[`experiments/009_stochastic_counterfactual_certification/`](experiments/009_stochastic_counterfactual_certification/).
 
 ## Research discipline
 
@@ -86,14 +81,11 @@ The repository uses several rules to reduce post-hoc reasoning:
 - clean behavior is checked before root-cause analysis;
 - planted truth is isolated from diagnostic inputs;
 - benchmark construction rules are frozen before result-bearing runs;
+- feasibility amendments are recorded before affected model outcomes;
 - development and confirmatory evidence are kept separate;
 - negative gates and failed constructions are retained;
 - generated evidence includes hashes and runtime provenance;
 - claims are bounded to what the current experiment actually tests.
-
-The refreshed literature and baseline audit informed the current development
-pilot. A new prospective audit is required before any confirmatory benchmark or
-broader attribution claim.
 
 ## Repository map
 
@@ -106,8 +98,7 @@ src/            reusable research implementation
 tests/          software and scientific-invariant tests
 ```
 
-Historical experiments remain in the repository because they document how later
-benchmark controls were motivated. They are not all part of the current method.
+Historical experiments remain in the repository because they document how later benchmark controls were motivated. They are not all part of the current method.
 
 ## Reproducibility
 
@@ -129,19 +120,18 @@ uv sync --extra dev --extra research
 uv run pytest
 ```
 
-Training and inference protocols record their own pinned model/configuration
-requirements. Large generated checkpoints are not committed as ordinary source
-files.
+Training and inference protocols record their own pinned model/configuration requirements. Large generated checkpoints are not committed as ordinary source files.
 
 ## Scope
 
-The current evidence is conditional on the evaluated tasks, models, and frozen
-protocols. MRF does not currently establish:
+The current evidence is conditional on the evaluated tasks, models, and frozen protocols. MRF does not currently establish:
 
+- successful localization on the new matched benchmark;
+- confirmatory Exp009 causal certification;
 - state-of-the-art training-data attribution;
+- superiority to modern attribution methods;
 - general causal identification for arbitrary ML incidents;
-- cross-model or cross-dataset generalization;
-- confirmatory Exp009 causal certification; or
-- a non-trivial blinded-localization result for the current nuisance-v2 pilot.
+- cross-model or cross-dataset generalization; or
+- a completed paper or accepted publication.
 
 Those boundaries are intentional.
