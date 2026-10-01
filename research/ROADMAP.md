@@ -1,91 +1,70 @@
 # Research roadmap
 
-**Updated:** 2026-09-25  
+**Updated:** 2026-10-01  
 **Active program:** Experiment 009  
 **Target:** publication-grade evidence for post-hoc causal certification of versioned model regressions
 
-This roadmap defines project-level milestones. Frozen experiment protocols and
-run requests remain authoritative for result-defining choices.
+This roadmap defines project-level milestones. Frozen experiment protocols and run requests remain authoritative for result-defining choices.
 
 ## M1 — Development restoration pilot
 
 **State:** complete
 
-Goal: finish the already-authorized three-trajectory Stage-B pilot without
-changing its design.
+The frozen three-trajectory Stage-B pilot completed all 18 planned trainings. Every root and nuisance restoration was retained, same-session composite subtraction was preserved, the official Banking77 test remained untouched, and no significance threshold was invented after seeing outcomes.
 
-Exit requirements:
-
-- all 18 planned Stage-B model trainings complete or a documented technical
-  failure prevents completion;
-- every root and nuisance restoration is retained;
-- same-session composite subtraction is preserved;
-- no Stage-B significance threshold is introduced post hoc;
-- official Banking77 test remains untouched;
-- a permanent Stage-B evidence/result record is audited and committed.
-
-This milestone estimates restoration-effect structure and stochastic
-variability. It is not confirmatory causal certification.
+This milestone estimates restoration-effect structure and stochastic variability. It is not confirmatory causal certification.
 
 ## M2 — Development decision gate
 
-**State:** complete — continue to M3
+**State:** complete — continued to M3
 
-Goal: decide whether the observed root-vs-nuisance effect structure justifies a
-paper-grade benchmark.
-
-Required review:
-
-- root restoration effect by trajectory;
-- all four nuisance effects by trajectory;
-- root-minus-nuisance paired margins;
-- protected-behavior drift;
-- variability and worst competing nuisance;
-- failure/invalid-run audit.
-
-Possible outcomes are all valid:
-
-1. continue to a stronger benchmark;
-2. narrow the hypothesis;
-3. stop the certification claim if the effect is not distinguishable enough.
-
-No development threshold may be invented merely to force continuation.
+The development result showed consistent root-vs-nuisance restoration separation across all three paired trajectories and justified building a stronger benchmark. That decision did not convert the pilot into confirmatory evidence.
 
 ## M3 — Structurally matched benchmark
 
-**State:** active
+**State:** complete
 
-Goal: remove the current nuisance-v2 structural leakage.
+Goal: remove the nuisance-v2 structural mismatch before further end-to-end benchmark work.
 
-Before result-bearing training, freeze:
+Completed design:
 
-- benchmark worlds and candidate-generation rule;
-- root and nuisance changes with matched observable structure;
-- opaque candidate representation;
-- target behavior and protected behavior;
-- trajectory count and stochastic pairing;
-- benchmark exclusion/invalidity rules.
+- all candidates use the same 66-slot symmetric label-swap mechanism;
+- candidate text is unchanged and aggregate label mass is preserved;
+- candidate-facing schema is structurally identical;
+- candidate changed slots and touched intents are disjoint within/across worlds;
+- opaque candidate representation and exact restoration audits are implemented;
+- target behavior, protected behavior, exclusion rules, and clean-only eligibility/ranking are frozen;
+- official Banking77 test remains embargoed.
 
-The current nuisance-v2 pilot may motivate this design but may not be presented
-as a strong structurally matched localization benchmark.
+The base protocol requested three five-candidate worlds. Clean-only graph-capacity evidence showed that only 13 globally disjoint eligible pairs were possible versus 15 required. Amendment 1 therefore reduced the benchmark to two complete worlds **before any matched-benchmark model training**, without weakening eligibility criteria.
+
+The amended structural preflight passed for:
+
+- 2 worlds;
+- 5 candidates per world;
+- 10 candidate pairs;
+- 20 unique candidate-touched intents.
+
+M3 establishes a prospectively constructed structurally matched candidate benchmark. It does not establish localization success or causal specificity.
 
 ## M4 — Competitive localization baselines
 
-**State:** partially developed
+**State:** active
 
-Goal: compare target-compatible diagnostics without changing the scientific
-target to suit a method.
+Goal: determine how much localization signal remains once structural mismatch is removed, without redefining the target to suit a method.
 
 Required baseline families:
 
 - seeded random reference;
-- simple lexical/change-overlap reference where applicable;
+- simple semantic/lexical or changed-record overlap where applicable;
 - target-faithful last-layer Grad-Dot;
-- modern influence/data-attribution baselines only where their objective can be
-  implemented faithfully for the frozen target.
+- modern influence/data-attribution baselines only where their objective can be implemented faithfully for the frozen target.
 
-TRAK remains feasibility evidence unless its scoring objective is made genuinely
-commensurate with the benchmark target without redefining that target.
+The known target behavior makes a simple semantic/change-overlap baseline particularly important. If that baseline solves localization, report the result rather than redesigning the benchmark after observing it.
+
+TRAK remains feasibility evidence unless its scoring objective is made genuinely commensurate with the frozen target without redefining that target.
+
+Before result-bearing matched-world training, M4 must also define the development execution matrix and exactly which localization outputs are compared. M4 evidence remains development evidence.
 
 ## M5 — Confirmatory certification protocol
 
@@ -97,7 +76,7 @@ Before any confirmatory outcome is observed, freeze:
 - primary restorative-effect statistic;
 - causal-specificity/abstention rule;
 - multiplicity treatment across nuisance contrasts;
-- protected-behavior rule;
+- protected-behavior/equivalence rule;
 - technical-rerun policy;
 - official-test access rule;
 - all primary baselines.
@@ -108,8 +87,7 @@ Development evidence from M1-M4 must not be relabeled confirmatory.
 
 **State:** contingent on M5
 
-Goal: test whether the method survives at least one materially different model,
-dataset, or regression substrate.
+Goal: test whether the method survives at least one materially different model, dataset, or regression substrate.
 
 This milestone is required before any broad generalization claim.
 
@@ -127,19 +105,18 @@ Deliverables:
 - manuscript/preprint;
 - tagged public release.
 
-## Stop rules
+## Stop / narrow rules
 
-The project should be narrowed or stopped rather than optimized around an
-unfavorable result if:
+The project should be narrowed or stopped rather than optimized around an unfavorable result if:
 
-- a structurally matched benchmark cannot be constructed without obvious
-  leakage;
-- root restoration is not reliably distinguishable from plausible nuisances;
-- a competitive baseline makes the proposed certification framing redundant; or
-- the literature closes the claimed contribution gap.
+- the structurally matched benchmark yields no meaningful target-localized regression without post-hoc construction changes;
+- root restoration is not reliably distinguishable from plausible non-root interventions;
+- a simple or competitive baseline makes the proposed localization contribution trivial or redundant;
+- a faithful attribution baseline cannot be compared without changing the scientific target; or
+- contemporary literature closes the intended contribution gap.
+
+A negative localization or certification result is valid evidence and must not trigger retrospective benchmark redesign.
 
 ## Public narrative rule
 
-Repository evidence is the source of truth. Website, GitHub profile, CV, and
-LinkedIn wording may summarize only completed milestones and must not outrun
-`research/CLAIMS.md`.
+Repository evidence is the source of truth. Website, GitHub profile, CV, and LinkedIn wording may summarize only completed milestones and must not outrun `research/CLAIMS.md`.
