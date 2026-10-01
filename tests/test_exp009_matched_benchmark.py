@@ -75,8 +75,7 @@ def test_rank_matched_pairs_accepts_confusion_or_lexical_adjacency() -> None:
 
 def test_select_matched_worlds_is_globally_label_disjoint() -> None:
     ranked = tuple(
-        _pair(f"intent_{2 * i:02d}", f"intent_{2 * i + 1:02d}", 1.0 - i / 100)
-        for i in range(10)
+        _pair(f"intent_{2 * i:02d}", f"intent_{2 * i + 1:02d}", 1.0 - i / 100) for i in range(10)
     )
 
     worlds = select_matched_worlds(ranked)
@@ -86,11 +85,7 @@ def test_select_matched_worlds_is_globally_label_disjoint() -> None:
     for world in worlds:
         assert len(world.pairs) == MATCHED_CANDIDATES_PER_WORLD
         assert 0 <= world.root_position < MATCHED_CANDIDATES_PER_WORLD
-        labels = {
-            label
-            for pair in world.pairs
-            for label in (pair.label_a, pair.label_b)
-        }
+        labels = {label for pair in world.pairs for label in (pair.label_a, pair.label_b)}
         assert len(labels) == 10
         assert not labels & observed_labels
         observed_labels.update(labels)
@@ -127,21 +122,11 @@ def test_build_matched_world_enforces_identical_candidate_structure() -> None:
     assert world.structural_audit["candidate_structure"]["text_change_count"] == 0
     assert world.structural_audit["candidate_structure"]["aggregate_label_count_delta"] == {}
     assert world.structural_audit["composite_order_independent"] is True
-    assert (
-        world.structural_audit["all_individual_candidate_restorations_exact_baseline"]
-        is True
-    )
-    assert (
-        world.structural_audit["all_restorations_leave_exactly_four_candidate_changes"]
-        is True
-    )
+    assert world.structural_audit["all_individual_candidate_restorations_exact_baseline"] is True
+    assert world.structural_audit["all_restorations_leave_exactly_four_candidate_changes"] is True
 
-    diagnostic_ids = {
-        row["candidate_id"] for row in world.diagnostic_manifest["candidates"]
-    }
-    truth_ids = {
-        row["candidate_id"] for row in world.truth_manifest["truth"]
-    }
+    diagnostic_ids = {row["candidate_id"] for row in world.diagnostic_manifest["candidates"]}
+    truth_ids = {row["candidate_id"] for row in world.truth_manifest["truth"]}
     assert diagnostic_ids == truth_ids
     assert world.truth_manifest["root_position"] == 2
 
@@ -155,9 +140,7 @@ def test_matched_world_rejects_reused_intent_labels() -> None:
         _pair("h", "i", 0.6),
     )
     records = tuple(
-        _record(label, index)
-        for label in "abcdefghi"
-        for index in range(MATCHED_PER_DIRECTION)
+        _record(label, index) for label in "abcdefghi" for index in range(MATCHED_PER_DIRECTION)
     )
     baseline = build_clean_release_slots(records)
 
