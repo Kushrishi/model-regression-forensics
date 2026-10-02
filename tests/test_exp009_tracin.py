@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-torch = pytest.importorskip("torch")
-
 from model_forensics.exp009_graddot import last_layer_grad_dot_influence
 from model_forensics.exp009_tracin import (
     LastLayerCheckpointView,
     checkpointed_last_layer_influence,
 )
+
+torch = pytest.importorskip("torch")
 
 
 def _view(*, learning_rate: float) -> LastLayerCheckpointView:
