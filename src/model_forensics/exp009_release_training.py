@@ -306,11 +306,6 @@ def train_versioned_classifier_pilot(
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), config.max_grad_norm)
             producing_learning_rate = float(optimizer.param_groups[0]["lr"])
-            if not math.isfinite(producing_learning_rate) or producing_learning_rate <= 0.0:
-                raise RuntimeError(
-                    "optimizer learning rate that produces an epoch checkpoint "
-                    "must be finite and positive"
-                )
             optimizer.step()
             optimizer_step_count += 1
             scheduler.step()
@@ -321,6 +316,8 @@ def train_versioned_classifier_pilot(
         if epoch_checkpoint_path is not None:
             if producing_learning_rate is None:
                 raise AssertionError("epoch completed without an optimizer update")
+            if not math.isfinite(producing_learning_rate) or producing_learning_rate <= 0.0:
+                raise RuntimeError("epoch-producing learning rate must be finite and positive")
             epoch_number = epoch_index + 1
             checkpoint_dir = epoch_checkpoint_path / f"epoch_{epoch_number:02d}"
             model.save_pretrained(checkpoint_dir, safe_serialization=True)
