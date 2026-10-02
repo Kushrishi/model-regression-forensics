@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
 
 from model_forensics.exp009_graddot import last_layer_grad_dot_influence
 
