@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "record": "m4-execution-start-checkpoint",
+  "snapshot_date_utc": "2026-10-03",
+  "workflow_run_id": 37083633414,
+  "workflow_url": "https://github.com/Kushrishi/model-regression-forensics/actions/runs/37083633414",
+  "source_git_sha": "8cc9a3c3175a9e4133bd571b6a8fc140845a764c",
+  "execution_git_sha": "a5ec718e6081624893fed406eedb1dd5e1405892",
+  "authorization_pull_request": 26,
+  "preparation_pull_request": 25,
+  "prepare_job_id": 111089284000,
+  "prepare_conclusion": "success",
+  "clean_jobs_started": [
+    {
+      "trajectory": 0,
+      "job_id": 111089359434
+    },
+    {
+      "trajectory": 1,
+      "job_id": 111089359432
+    },
+    {
+      "trajectory": 2,
+      "job_id": 111089359533
+    }
+  ],
+  "clean_models": 3,
+  "planned_composite_models": 6,
+  "worlds": [
+    0,
+    1
+  ],
+  "trajectories": [
+    0,
+    1,
+    2
+  ],
+  "completed_localization_result_accepted": false,
+  "partial_numerical_outputs_analyzed": false,
+  "official_test_authorized": false,
+  "restoration_authorized": false,
+  "next_action": "Inspect operational completion and provenance for the complete frozen matrix. Blind rankings must be finalized before separate benchmark-truth scoring. Preserve failures and do not accept partial aggregates or tune from rankings.",
+  "rerun_note": "Any diagnosed operational retry retains this workflow's execution commit and run/attempt provenance. Scientific code corrections require a new source, green checks and separate request."
+}
