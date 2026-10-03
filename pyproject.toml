@@ -1,7 +1,7 @@
 [project]
 name = "model-regression-forensics"
 version = "0.0.1"
-description = "Research scaffold for provenance-aware causal debugging of ML model regressions."
+description = "Reproducible case study of training-release regression localization and its limits."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
