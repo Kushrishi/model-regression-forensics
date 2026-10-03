@@ -1,0 +1,15 @@
+{
+  "cases": [{"case_id": "a", "expected": "yes"}, {"case_id": "b", "expected": "no"}],
+  "baseline": {
+    "release_id": "baseline",
+    "predictions": [{"case_id": "a", "observed": "yes"}, {"case_id": "b", "observed": "yes"}]
+  },
+  "candidate": {
+    "release_id": "candidate",
+    "predictions": [{"case_id": "a", "observed": "no"}, {"case_id": "b", "observed": "no"}]
+  },
+  "slices": [
+    {"name": "target", "case_ids": ["a"], "maximum_accuracy_drop": 0.0},
+    {"name": "protected", "case_ids": ["b"], "maximum_accuracy_drop": 0.0}
+  ]
+}
