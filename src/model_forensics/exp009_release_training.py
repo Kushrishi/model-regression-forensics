@@ -20,6 +20,7 @@ from model_forensics.exp009_classifier import (
     _resolved_commit_hash,
     _runtime_metadata,
     _set_torch_seed,
+    _tensor_state_sha256,
     label_vocabulary,
     load_pilot_tokenizer,
     select_device,
@@ -179,6 +180,22 @@ def _collect_eval_logits(
     return rows
 
 
+def _prepare_epoch_checkpoint_root(
+    root: str | Path | None,
+    *,
+    epochs: int,
+) -> Path | None:
+    if root is None:
+        return None
+    if epochs <= 0:
+        raise ValueError("epoch checkpoint capture requires at least one epoch")
+    path = Path(root)
+    if path.exists() and any(path.iterdir()):
+        raise FileExistsError(f"refusing to overwrite non-empty epoch checkpoint root: {path}")
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def train_versioned_classifier_pilot(
     partition: DevelopmentPartition,
     *,
@@ -188,8 +205,17 @@ def train_versioned_classifier_pilot(
     target_labels: tuple[str, str],
     run_id: str,
     output_root: str | Path,
+    epoch_checkpoint_root: str | Path | None = None,
 ) -> dict[str, object]:
-    """Train one development-only classifier from an aligned versioned release."""
+    """Train one development-only classifier from an aligned versioned release.
+
+    ``epoch_checkpoint_root`` is optional so historical callers retain their exact
+    behavior. When supplied, the trainer stores a run-local model snapshot after
+    every epoch and records the exact model-state hash, cumulative optimizer-step
+    count, and learning rate used by the final optimizer update that produced
+    that checkpoint. M4 uses this provenance for its seven-checkpoint TracIn
+    definition; the checkpoint bytes need not be retained after blind scoring.
+    """
 
     config.validate()
     partition_sha256 = validate_frozen_development_partition(partition)
@@ -205,6 +231,10 @@ def train_versioned_classifier_pilot(
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"refusing to overwrite non-empty Exp009 release output: {output}")
     output.mkdir(parents=True, exist_ok=True)
+    epoch_checkpoint_path = _prepare_epoch_checkpoint_root(
+        epoch_checkpoint_root,
+        epochs=config.epochs,
+    )
 
     import torch
     import transformers
@@ -250,6 +280,8 @@ def train_versioned_classifier_pilot(
     _set_torch_seed(torch, seeds.dropout_seed)
     started = time.perf_counter()
     epoch_mean_losses: list[float] = []
+    epoch_checkpoint_records: list[dict[str, object]] = []
+    optimizer_step_count = 0
 
     for epoch_index in range(config.epochs):
         model.train()
@@ -260,6 +292,7 @@ def train_versioned_classifier_pilot(
         )
         ordered_indices = [slot_index[slot_id] for slot_id in ordered_slot_ids]
         total_loss = 0.0
+        producing_learning_rate: float | None = None
 
         for batch in _batch_indices(ordered_indices, config.batch_size):
             inputs = {
@@ -272,11 +305,32 @@ def train_versioned_classifier_pilot(
             loss = model(**inputs, labels=labels_tensor).loss
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), config.max_grad_norm)
+            producing_learning_rate = float(optimizer.param_groups[0]["lr"])
             optimizer.step()
+            optimizer_step_count += 1
             scheduler.step()
             total_loss += float(loss.detach().cpu())
 
         epoch_mean_losses.append(total_loss / steps_per_epoch)
+
+        if epoch_checkpoint_path is not None:
+            if producing_learning_rate is None:
+                raise AssertionError("epoch completed without an optimizer update")
+            if not math.isfinite(producing_learning_rate) or producing_learning_rate <= 0.0:
+                raise RuntimeError("epoch-producing learning rate must be finite and positive")
+            epoch_number = epoch_index + 1
+            checkpoint_dir = epoch_checkpoint_path / f"epoch_{epoch_number:02d}"
+            model.save_pretrained(checkpoint_dir, safe_serialization=True)
+            model_state_sha256 = _tensor_state_sha256(dict(model.state_dict()))
+            epoch_checkpoint_records.append(
+                {
+                    "epoch": epoch_number,
+                    "model_state_sha256": model_state_sha256,
+                    "optimizer_step_count": optimizer_step_count,
+                    "producing_learning_rate": producing_learning_rate,
+                    "checkpoint_dir": str(checkpoint_dir),
+                }
+            )
 
     elapsed_seconds = time.perf_counter() - started
     metrics, predictions = _evaluate_model(
@@ -405,6 +459,10 @@ def train_versioned_classifier_pilot(
         "checkpoint_dir": str(checkpoint_dir),
         "predictions_file": str(predictions_path),
     }
+    if epoch_checkpoint_path is not None:
+        summary["epoch_checkpoints"] = epoch_checkpoint_records
+        summary["epoch_checkpoint_root"] = str(epoch_checkpoint_path)
+
     (output / "train_summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",

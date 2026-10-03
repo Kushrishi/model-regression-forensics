@@ -1,6 +1,6 @@
 # Current research state
 
-**Updated:** 2026-10-01  
+**Updated:** 2026-10-02
 **Active program:** Experiment 009 — stochastic counterfactual certification  
 **Evidence class:** development only
 
@@ -87,7 +87,9 @@ Required baseline families include:
 
 TRAK remains feasibility evidence unless its scoring objective becomes genuinely commensurate with the frozen target without redefining that target.
 
-Matched-benchmark model training, trajectory count, certification statistic, abstention rule, protected-equivalence rule, multiplicity treatment, rerun policy, and any official-test access remain separate future decisions. They must be frozen prospectively before the corresponding result-bearing work.
+The M4 protocol and Amendment 1 freeze the two-world, three-trajectory localization matrix and B0 through B4 before matched-world training. Execution preparation now reconstructs all frozen M3 identities, trains exactly three clean models and six composite models, captures all seven composite checkpoints, and finalizes blind rankings before a separate truth-scoring job. The initial zero-rate warmup update is permitted; epoch checkpoints record the positive rate of the final producing update. B0 retains unsigned 64-bit integer precision throughout ranking.
+
+Result-bearing execution requires a separate request pinning the merged implementation, successful CI and Research CI, and all protocol identities. No matched-world model training has started during this preparation. M5 certification, restoration, and official-test access remain separate future decisions.
 
 ## Not established
 
