@@ -56,6 +56,14 @@ uv run ruff format --check .
 uv run pytest
 ```
 
-Optional ML checks require `uv sync --extra dev --extra research`. Model training has additional pinned protocol requirements and is not needed to inspect or replay the accepted result.
+The lightweight checks can skip tests that need ML dependencies. Research CI separately runs the Grad-Dot, TracIn and epoch-checkpoint checks with those dependencies and rejects skipped tests in that required suite. These are implementation checks, not a rerun of the accepted Banking77 trainings.
+
+For local numerical checks, install `uv sync --extra dev --extra research`, then run:
+
+```bash
+uv run --with captum==0.9.0 pytest tests/test_exp009_graddot.py tests/test_exp009_tracin.py tests/test_exp009_epoch_checkpoints.py
+```
+
+Model training has additional pinned protocol requirements and is not needed to inspect or replay the accepted result.
 
 Any future certification study requires a distinct scientific justification and a new prospective protocol under the [continuation gate](research/M4_CONTINUATION_GATE.md). Historical evidence remains frozen.
