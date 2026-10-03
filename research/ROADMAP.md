@@ -1,7 +1,7 @@
 # Research roadmap
 
 **Updated:** 2026-10-03 UTC
-**Completed study:** Experiment 009 matched localization  
+**Completed study:** Experiment 009 matched localization
 **Current disposition:** preserve a reproducible technical case study; further certification research held
 
 The current deliverable is a readable completed case study with linked history and artifact replay. M1-M4 are complete; M5-M6 below are contingent historical proposals, not an active execution queue. The [continuation gate](M4_CONTINUATION_GATE.md) governs any future certification work.
