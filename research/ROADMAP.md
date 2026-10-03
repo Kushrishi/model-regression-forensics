@@ -1,10 +1,12 @@
 # Research roadmap
 
 **Updated:** 2026-10-03 UTC
-**Active program:** Experiment 009  
-**Target:** publication-grade evidence for post-hoc causal certification of versioned model regressions
+**Completed study:** Experiment 009 matched localization  
+**Current disposition:** preserve a reproducible technical case study; further certification research held
 
-This roadmap defines project-level milestones. Frozen experiment protocols and run requests remain authoritative for result-defining choices.
+The current deliverable is a readable completed case study with linked history and artifact replay. M1-M4 are complete; M5-M6 below are contingent historical proposals, not an active execution queue. The [continuation gate](M4_CONTINUATION_GATE.md) governs any future certification work.
+
+This roadmap records project-level milestones. Frozen experiment protocols and run requests remain authoritative for result-defining choices.
 
 ## M1 — Development restoration pilot
 
@@ -92,9 +94,11 @@ This milestone is required before any broad generalization claim.
 
 ## M7 — Paper and reproducibility release
 
-**State:** contingent on evidence
+**State:** technical report draft and artifact replay available; submission and a tagged release are not established
 
-Deliverables:
+The [technical report](M4_TECHNICAL_REPORT.md), [experiment history](EXPERIMENT_HISTORY.md), and [replay guide](REPRODUCE_M4.md) present the completed evidence. This bounded reporting work does not depend on starting M5 or establish a publication.
+
+Historical paper-level deliverables:
 
 - final related-work audit and contribution boundary;
 - frozen claims ledger;
