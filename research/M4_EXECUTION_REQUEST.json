@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-03",
+  "milestone": "M4_LOCALIZATION",
+  "source_git_sha": "8cc9a3c3175a9e4133bd571b6a8fc140845a764c",
+  "official_test_authorized": false,
+  "restoration_authorized": false,
+  "trajectories": [
+    0,
+    1,
+    2
+  ],
+  "worlds": [
+    0,
+    1
+  ],
+  "clean_models": 3,
+  "composite_models": 6,
+  "epochs": 7,
+  "methods": [
+    "B0_deterministic_random",
+    "B1_target_label_overlap",
+    "B2_lexical_jaccard",
+    "B3_final_checkpoint_grad_dot",
+    "B4_seven_checkpoint_tracin"
+  ],
+  "protocol_sha256": {
+    "research/M4_LOCALIZATION_BASELINE_PROTOCOL.md": "59e35ea82a4ae53496a5f9fc7f6602631bdb921fc972317f1a00cc1b0cf6c292",
+    "research/M4_LOCALIZATION_BASELINE_PROTOCOL_AMENDMENT_1.md": "c22adc8e2dffe4dba0ce493ec3a75f03d68f1f70993855a9b335908751ee7d06",
+    "research/ATTRIBUTION_TARGET.md": "1606b92fc461f2d87961695a23218b7a74b09df25e0c721494dd3572d4426c03",
+    "research/GRAD_DOT_BASELINE.md": "be20aee5551753c84736e529b1634263f3f9800284b04a5fbc6c3f4ada51534d",
+    "experiments/009_stochastic_counterfactual_certification/STRUCTURALLY_MATCHED_BENCHMARK_PROTOCOL.md": "fe791c299934d3c4b421fba65c64344b10cc7c8f05921503b2152dd0fb2f92d9",
+    "experiments/009_stochastic_counterfactual_certification/STRUCTURALLY_MATCHED_BENCHMARK_PROTOCOL_AMENDMENT_1.md": "42e99f753bd4636dda275b0a10e3d2a45298256bad88748476d82459f1d86ed0",
+    "experiments/009_stochastic_counterfactual_certification/MATCHED_BENCHMARK_PREFLIGHT_RESULT.json": "e776a5fd3cfc221782dfb5bb75fb10e9fad489f3874918ac81409016d80aff7f",
+    "uv.lock": "34697ea8fef98d9f9ab7d68f3f120902db0b98c0fdee506328481a6a613108d4"
+  },
+  "successful_source_ci": [
+    {
+      "name": "Research CI",
+      "run_id": 37082987900,
+      "head_sha": "8cc9a3c3175a9e4133bd571b6a8fc140845a764c",
+      "conclusion": "success",
+      "event": "push",
+      "url": "https://github.com/Kushrishi/model-regression-forensics/actions/runs/37082987900"
+    },
+    {
+      "name": "CI",
+      "run_id": 37082987856,
+      "head_sha": "8cc9a3c3175a9e4133bd571b6a8fc140845a764c",
+      "conclusion": "success",
+      "event": "push",
+      "url": "https://github.com/Kushrishi/model-regression-forensics/actions/runs/37082987856"
+    }
+  ],
+  "successful_input_preflight": {
+    "run_id": 37082987868,
+    "head_sha": "8cc9a3c3175a9e4133bd571b6a8fc140845a764c",
+    "conclusion": "success"
+  },
+  "execution_substrate": "GitHub-hosted macos-15 MPS",
+  "execution_boundary": "M4 development localization only; frozen two matched worlds, B0 through B4, complete target slices, no restoration or official test.",
+  "truth_access_rule": "Only the separate scoring job after all six blind trajectory records are aggregated, hashed, uploaded and downloaded with exact digest verification.",
+  "failure_policy": "Preserve failed attempts; no automatic scientific retry, subject/world replacement, partial aggregate, or outcome-driven tuning. Operational retries require diagnosed operational failure; code corrections require new merged source, successful source CI, and a separate request."
+}
