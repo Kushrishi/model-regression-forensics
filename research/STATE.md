@@ -1,7 +1,8 @@
 # Current research state
 
 **Updated:** 2026-10-03 UTC
-**Active program:** Experiment 009 — stochastic counterfactual certification  
+**Completed study:** Experiment 009 — matched localization case study  
+**Status:** accepted study; further certification research held pending independent review  
 **Evidence class:** development only
 
 This file is the canonical short-form statement of the project's current scientific state. Historical experiment documents remain authoritative for their own frozen protocols and outcomes.
@@ -74,7 +75,7 @@ Passing M3 establishes **structurally matched candidate construction only**. It 
 
 M1, M2, and M3 are complete.
 
-The next active milestone is **M4 — competitive localization baselines**.
+**M4 — competitive localization baselines is complete.** Its accepted result and continuation decision are recorded below. Earlier benchmark preparation and baseline requirements are retained as development history.
 
 Before treating localization as scientifically interesting, M4 must compare diagnostics against simple target-compatible references. Because the target behavior is known, a semantic/change-overlap baseline may localize the responsible pair easily. That is a legitimate result and must not trigger post-hoc benchmark redesign.
 
@@ -104,6 +105,8 @@ Simple visible-change baselines localized the root in both constructed worlds. M
 The formal continuation gate in `research/M4_CONTINUATION_GATE.md` accepts M4 and holds M5 pending an independent scientific justification. No restoration or official-test access is authorized.
 
 `research/M4_TECHNICAL_REPORT.md` presents the accepted design, all six recorded target-margin changes, world-level rankings, and provenance as a bounded technical report draft. `research/M4_CONTRIBUTION_REVIEW.md` assesses adjacent literature and retains the M5 hold; it is an author-led assessment, not independent continuation approval.
+
+The [experiment history](EXPERIMENT_HISTORY.md) links the complete development sequence. [Artifact replay](REPRODUCE_M4.md) reproduces the accepted aggregation and truth scoring without training. Neither changes the continuation gate.
 
 ## Not established
 
