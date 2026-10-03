@@ -1,0 +1,15 @@
+{
+  "cause_discovered_by_comparator": false,
+  "dataset": "sklearn.datasets.load_digits",
+  "dataset_sha256": "f6d9e39f37dc45d327f6db33428ee58970ccceabb2535a5c179de35886b70443",
+  "deepchecks_runtime_comparison": "not_performed",
+  "evaluation_count": 540,
+  "independent_numpy_reference_agrees": true,
+  "injected_bug": "Reverse feature order at inference only; deliberately constructed",
+  "numpy_version": "2.3.5",
+  "restoration_all_slices_pass": true,
+  "sklearn_version": "1.8.0",
+  "test_ids_sha256": "d4d0f0fc1d9bcd1884f18b2d533feca472a18a76bb275354ea983bc7a7c1fa32",
+  "train_count": 1257,
+  "usefulness_or_novelty_established": false
+}
