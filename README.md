@@ -49,22 +49,15 @@ This establishes matched benchmark construction only. It does **not** establish 
 
 ## Current milestone
 
-**M4 — competitive localization baselines is active.**
+**M4 — competitive localization baselines is complete.**
 
-The next question is how much localization signal remains after structural mismatch is removed. The benchmark intentionally does not hide the known target behavior from the debugger, so simple semantic/change-overlap information may be strong.
+The source-pinned study completed three clean and six composite trainings across two matched worlds and three paired trajectories. Complete blind rankings were persisted before separate truth scoring.
 
-M4 therefore requires comparison against:
+Target-label overlap and lexical Jaccard each ranked the root first in both worlds. Final-checkpoint Grad-Dot and seven-checkpoint TracIn each ranked it first in one world and last in the other. Model-based methods added no top-1 benefit over the simple visible-change baselines in this design.
 
-- a seeded random reference;
-- a simple semantic/lexical or changed-record-overlap baseline where applicable;
-- target-faithful last-layer Grad-Dot;
-- modern influence/data-attribution methods only where their objective can be implemented faithfully for the frozen target.
+M4 remains descriptive development evidence. It does not establish causal certification or a general comparison of attribution methods. The [continuation gate](research/M4_CONTINUATION_GATE.md) accepts the result and holds M5 pending a focused scientific justification.
 
-If a simple baseline solves localization, that is a valid result rather than a reason to redesign the benchmark after observing it.
-
-The eventual research contribution remains the later question of whether counterfactual retraining can support a prospectively defined **certify/abstain** decision that distinguishes a responsible change from plausible alternatives under retraining stochasticity.
-
-See [research/STATE.md](research/STATE.md) for the canonical short-form state, [research/CLAIMS.md](research/CLAIMS.md) for claim boundaries, and [research/ROADMAP.md](research/ROADMAP.md) for the milestone plan.
+See [research/STATE.md](research/STATE.md) for canonical state, [research/CLAIMS.md](research/CLAIMS.md) for claim boundaries, and [research/M4_RESULT.json](research/M4_RESULT.json) for exact result and artifact identities.
 
 ## Why intervention matters
 
@@ -126,7 +119,7 @@ Training and inference protocols record their own pinned model/configuration req
 
 The current evidence is conditional on the evaluated tasks, models, and frozen protocols. MRF does not currently establish:
 
-- successful localization on the new matched benchmark;
+- localization success beyond the two evaluated matched worlds;
 - confirmatory Exp009 causal certification;
 - state-of-the-art training-data attribution;
 - superiority to modern attribution methods;

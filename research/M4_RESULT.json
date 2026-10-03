@@ -1,0 +1,112 @@
+{
+  "acceptance_checks": {
+    "all_12_jobs_successful": true,
+    "all_six_scoring_records_present": true,
+    "blind_aggregate_replayed_byte_identically": true,
+    "blind_archive_digest_matches_actions": true,
+    "blind_finalization_precedes_truth_job": true,
+    "frozen_source_and_protocol_authorization_verified": true,
+    "seven_checkpoints_per_composite_validated": true,
+    "truth_archive_digest_matches_actions": true,
+    "truth_evaluation_replayed_byte_identically": true
+  },
+  "artifact_archives": [
+    {
+      "id": 11262009082,
+      "name": "exp009-m4-finalized-blind-rankings",
+      "sha256": "1989dad7976143d7b4f5ec2ade1ab31543f1d1d8354a86500f27bf26c6348057"
+    },
+    {
+      "id": 11261714353,
+      "name": "exp009-m4-truth-evaluation",
+      "sha256": "ec22493b97b5a9a35ad0e2ba9b6329049800301226d9f2244199aa7e2664b6be"
+    }
+  ],
+  "artifacts": {
+    "research/M4_RESULT_ARTIFACTS/blind_aggregate.json": "364ef75ba5d2d3b36106ef06dcaad50ecc3f3abceea8753a18cbf218814d4927",
+    "research/M4_RESULT_ARTIFACTS/blind_aggregate.json.sha256": "2204680e5e4ef717f3ca46b6af5adf5621e8510530461a382d73b80472d7af9d",
+    "research/M4_RESULT_ARTIFACTS/truth_evaluation.json": "3d7125bda181966c6d514b4ddc458673f30e81d05ada6803fd27e68ab6649a17",
+    "research/M4_RESULT_ARTIFACTS/truth_summary.json": "f2a0538627ce982808d8fb0446c40c5c3ff732d388a5b6dfe601796ba7216b4b",
+    "research/M4_RESULT_ARTIFACTS/truth_world_00.json": "a6fa60dda60a6dfa2d106c97c3e8446049ead57272bb01bd7caef53072562522",
+    "research/M4_RESULT_ARTIFACTS/truth_world_01.json": "ad90eff14ee6c650c083eccc8c2387bfb210fb42e54994d7d1b3a0fa51ecdf92",
+    "research/M4_RESULT_ARTIFACTS/world_00_t0.json": "39b97e6049c68733ef0435c01ece6d09f4f772e80f991f6a6b45956a40443f36",
+    "research/M4_RESULT_ARTIFACTS/world_00_t1.json": "4c1552f72a38f10d46d0c744d18d2f1463f8ab01b7f9d05ebff30476d8d5f25e",
+    "research/M4_RESULT_ARTIFACTS/world_00_t2.json": "bde3745e4e1c045cc24668e525af7b3cd9794e0457d4066d2d2ff43acf6c5f5a",
+    "research/M4_RESULT_ARTIFACTS/world_01_t0.json": "58db15e9e76f2c0dcd878c1b94f47d60c1f6ba2f8d914dc5bfb2ec791748c8a7",
+    "research/M4_RESULT_ARTIFACTS/world_01_t1.json": "2e1c5e1c47e8f29953707221483ac30b81bb09f08f8ae07b040a9912bfe406ab",
+    "research/M4_RESULT_ARTIFACTS/world_01_t2.json": "aff98ed62de290bc03e18934a772cb9b703fcc0b0ba8760e94fdeba4c45bc627"
+  },
+  "blind_aggregate_sha256": "364ef75ba5d2d3b36106ef06dcaad50ecc3f3abceea8753a18cbf218814d4927",
+  "completed_blind_score_records": 6,
+  "completed_clean_trainings": 3,
+  "completed_composite_trainings": 6,
+  "confirmatory_certification_established": false,
+  "continuation_decision": "hold_M5_pending_independent_scientific_justification",
+  "continuation_record": "research/M4_CONTINUATION_GATE.md",
+  "date_utc": "2026-10-03",
+  "evidence_class": "development",
+  "execution_source_sha": "a5ec718e6081624893fed406eedb1dd5e1405892",
+  "implementation_source_sha": "8cc9a3c3175a9e4133bd571b6a8fc140845a764c",
+  "method_summary": {
+    "B0_deterministic_random": {
+      "top1_accuracy": 0.0,
+      "top1_worlds": 0,
+      "world_count": 2
+    },
+    "B1_target_label_overlap": {
+      "top1_accuracy": 1.0,
+      "top1_worlds": 2,
+      "world_count": 2
+    },
+    "B2_lexical_jaccard": {
+      "top1_accuracy": 1.0,
+      "top1_worlds": 2,
+      "world_count": 2
+    },
+    "B3_final_checkpoint_grad_dot": {
+      "top1_accuracy": 0.5,
+      "top1_worlds": 1,
+      "world_count": 2
+    },
+    "B4_seven_checkpoint_tracin": {
+      "top1_accuracy": 0.5,
+      "top1_worlds": 1,
+      "world_count": 2
+    }
+  },
+  "official_test_split_loaded": false,
+  "record": "m4-complete-localization-result",
+  "restoration_authorized": false,
+  "schema_version": 1,
+  "status": "accepted_complete",
+  "trajectories": [
+    0,
+    1,
+    2
+  ],
+  "workflow_run_id": 37083633414,
+  "workflow_url": "https://github.com/Kushrishi/model-regression-forensics/actions/runs/37083633414",
+  "world_count": 2,
+  "world_root_ranks": [
+    {
+      "root_ranks": {
+        "B0_deterministic_random": 3,
+        "B1_target_label_overlap": 1,
+        "B2_lexical_jaccard": 1,
+        "B3_final_checkpoint_grad_dot": 1,
+        "B4_seven_checkpoint_tracin": 1
+      },
+      "world_id": "world_00"
+    },
+    {
+      "root_ranks": {
+        "B0_deterministic_random": 3,
+        "B1_target_label_overlap": 1,
+        "B2_lexical_jaccard": 1,
+        "B3_final_checkpoint_grad_dot": 5,
+        "B4_seven_checkpoint_tracin": 5
+      },
+      "world_id": "world_01"
+    }
+  ]
+}
