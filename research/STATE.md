@@ -132,3 +132,7 @@ When documents disagree, use this priority:
 6. README and portfolio copy.
 
 Website and LinkedIn text must never outrun this repository state.
+
+## Engineering utility checkpoint
+
+PRs 35 and 36 are merged. The strict exact-label comparator and an external digits fixture are implemented; its eleven slice reports agree with an independent NumPy reference. This is implementation validation, not causal specificity, independent scientific review or a competitor benchmark. Next is a cheap alternative-repair ambiguity task under [the architecture](../docs/continuation_architecture.md). Expensive certification research remains behind the existing scientific gate.
