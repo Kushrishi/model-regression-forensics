@@ -59,6 +59,8 @@ M4 remains descriptive development evidence. It does not establish causal certif
 
 See [research/STATE.md](research/STATE.md) for canonical state, [research/CLAIMS.md](research/CLAIMS.md) for claim boundaries, and [research/M4_RESULT.json](research/M4_RESULT.json) for exact result and artifact identities.
 
+Read the [technical report draft](research/M4_TECHNICAL_REPORT.md) for the experiment, complete results, provenance, and limitations, and the [contribution review](research/M4_CONTRIBUTION_REVIEW.md) for why further certification compute remains held.
+
 ## Why intervention matters
 
 A high attribution score is not causal evidence by itself.
