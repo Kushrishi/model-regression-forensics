@@ -1,6 +1,6 @@
 # Research roadmap
 
-**Updated:** 2026-10-02
+**Updated:** 2026-10-03 UTC
 **Active program:** Experiment 009  
 **Target:** publication-grade evidence for post-hoc causal certification of versioned model regressions
 
@@ -49,26 +49,25 @@ M3 establishes a prospectively constructed structurally matched candidate benchm
 
 ## M4 — Competitive localization baselines
 
-**State:** active
+**State:** complete; M5 held at continuation gate
 
-Goal: determine how much localization signal remains once structural mismatch is removed, without redefining the target to suit a method.
+M4 completed on 2026-10-03 UTC in source-pinned run `37083633414`. All three clean and six composite trainings, six blind scoring records, complete blind aggregation, and separate truth scoring succeeded. Replay from the retained scoring records reproduced the blind aggregate and truth evaluation byte-for-byte.
 
-Required baseline families:
+Primary world-level root ranks:
 
-- seeded random reference;
-- simple semantic/lexical or changed-record overlap where applicable;
-- target-faithful last-layer Grad-Dot;
-- modern influence/data-attribution baselines only where their objective can be implemented faithfully for the frozen target.
+- B0 deterministic random: **3, 3**;
+- B1 target-label overlap: **1, 1**;
+- B2 lexical Jaccard: **1, 1**;
+- B3 final-checkpoint Grad-Dot: **1, 5**;
+- B4 seven-checkpoint TracIn: **1, 5**.
 
-The known target behavior makes a simple semantic/change-overlap baseline particularly important. If that baseline solves localization, report the result rather than redesigning the benchmark after observing it.
+Simple visible-change baselines localized the root in both constructed worlds. Model-based methods added no top-1 benefit in this design. These are descriptive development results from two worlds, not causal certification or a general method comparison. Exact records are in `research/M4_RESULT.json` and `research/M4_RESULT_ARTIFACTS/`.
 
-TRAK remains feasibility evidence unless its scoring objective is made genuinely commensurate with the frozen target without redefining that target.
-
-The M4 protocol and Amendment 1 freeze B0 through B4, two worlds, three trajectories, three clean models, six composites, and seven producing-rate-weighted composite checkpoints. Source-pinned execution preparation is implemented with separate blind aggregation and post-finalization benchmark truth scoring. A separate request may authorize training only after merged-source CI and Research CI pass. Preparation itself performed no matched-world model training. Separately authorized run `37083633414` has now passed its authorization/input checks and started the three clean trainings. The complete frozen localization result is pending; partial rankings are ineligible for reporting. M4 evidence remains development evidence.
+The formal continuation gate in `research/M4_CONTINUATION_GATE.md` accepts M4 and holds M5 pending an independent scientific justification. No restoration or official-test access is authorized.
 
 ## M5 — Confirmatory certification protocol
 
-**State:** not started
+**State:** not started; held pending the M4 continuation gate
 
 Before any confirmatory outcome is observed, freeze:
 

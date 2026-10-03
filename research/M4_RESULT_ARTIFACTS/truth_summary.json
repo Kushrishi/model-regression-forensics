@@ -1,0 +1,20 @@
+{
+  "development_partition_sha256": "61ecbdd9224cf2bbeafcf5ceb9164cfc3fc74eb449129136198646385aaa8e88",
+  "mode": "m4_truth_only_bundle",
+  "model_training_performed": false,
+  "official_test_split_loaded": false,
+  "schema_version": 1,
+  "world_count": 2,
+  "worlds": [
+    {
+      "path": "artifacts/exp009/m4/truth/world_00.json",
+      "truth_manifest_present": true,
+      "world_id": "world_00"
+    },
+    {
+      "path": "artifacts/exp009/m4/truth/world_01.json",
+      "truth_manifest_present": true,
+      "world_id": "world_01"
+    }
+  ]
+}

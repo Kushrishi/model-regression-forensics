@@ -1,6 +1,6 @@
 # Current research state
 
-**Updated:** 2026-10-02
+**Updated:** 2026-10-03 UTC
 **Active program:** Experiment 009 — stochastic counterfactual certification  
 **Evidence class:** development only
 
@@ -89,13 +89,25 @@ TRAK remains feasibility evidence unless its scoring objective becomes genuinely
 
 The M4 protocol and Amendment 1 freeze the two-world, three-trajectory localization matrix and B0 through B4 before matched-world training. Execution preparation now reconstructs all frozen M3 identities, trains exactly three clean models and six composite models, captures all seven composite checkpoints, and finalizes blind rankings before a separate truth-scoring job. The initial zero-rate warmup update is permitted; epoch checkpoints record the positive rate of the final producing update. B0 retains unsigned 64-bit integer precision throughout ranking.
 
-Result-bearing execution requires a separate request pinning the merged implementation, successful CI and Research CI, and all protocol identities. Preparation itself performed no matched-world model training. The separate request now authorizes run `37083633414` from execution commit `a5ec718e6081624893fed406eedb1dd5e1405892`, with implementation source `8cc9a3c3175a9e4133bd571b6a8fc140845a764c`. Hosted authorization and frozen-input reconstruction passed, and the three clean training jobs started. Six composite trainings and complete blind localization follow through the frozen workflow. No completed M4 localization result has been accepted. The start checkpoint is recorded in `research/M4_EXECUTION_STATUS.json`. M5 certification, restoration, and official-test access remain separate future decisions.
+M4 completed on 2026-10-03 UTC in source-pinned run `37083633414`. All three clean and six composite trainings, six blind scoring records, complete blind aggregation, and separate truth scoring succeeded. Replay from the retained scoring records reproduced the blind aggregate and truth evaluation byte-for-byte.
+
+Primary world-level root ranks:
+
+- B0 deterministic random: **3, 3**;
+- B1 target-label overlap: **1, 1**;
+- B2 lexical Jaccard: **1, 1**;
+- B3 final-checkpoint Grad-Dot: **1, 5**;
+- B4 seven-checkpoint TracIn: **1, 5**.
+
+Simple visible-change baselines localized the root in both constructed worlds. Model-based methods added no top-1 benefit in this design. These are descriptive development results from two worlds, not causal certification or a general method comparison. Exact records are in `research/M4_RESULT.json` and `research/M4_RESULT_ARTIFACTS/`.
+
+The formal continuation gate in `research/M4_CONTINUATION_GATE.md` accepts M4 and holds M5 pending an independent scientific justification. No restoration or official-test access is authorized.
 
 ## Not established
 
 The project does not currently establish:
 
-- localization success on the M3 matched benchmark;
+- localization success beyond the two evaluated M3 worlds;
 - causal specificity for Exp009;
 - confirmatory causal certification;
 - general training-data root-cause identification;

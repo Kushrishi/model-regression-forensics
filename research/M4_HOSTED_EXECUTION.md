@@ -1,6 +1,6 @@
 # Hosted M4 execution
 
-**Status:** implementation preparation, no execution request present
+**Status:** completed under the separate source-pinned request; accepted result in `M4_RESULT.json`
 
 This implementation executes the frozen M4 localization protocol and Amendment 1. It adds no method, target, candidate, trajectory, or causal-certification claim.
 

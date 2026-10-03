@@ -1,0 +1,85 @@
+{
+  "baseline_release_sha256": "cb83232c055c4c55ca50f2fbd86627d59dc806ab33a861abc7402990ddb7e20c",
+  "benchmark_namespace": "exp009-structurally-matched-benchmark-v1",
+  "composite_release_sha256": "a67802d6b8ab190557812a9b572adf33881a33187c2497ac280f72b978719d2e",
+  "development_partition_sha256": "61ecbdd9224cf2bbeafcf5ceb9164cfc3fc74eb449129136198646385aaa8e88",
+  "mode": "m4_truth_only_world",
+  "model_training_performed": false,
+  "official_test_split_loaded": false,
+  "schema_version": 1,
+  "truth_manifest": {
+    "baseline_release_sha256": "cb83232c055c4c55ca50f2fbd86627d59dc806ab33a861abc7402990ddb7e20c",
+    "benchmark_namespace": "exp009-structurally-matched-benchmark-v1",
+    "candidate_count": 5,
+    "candidate_namespace": "exp009-attribution-candidate-v1",
+    "pair_truth_by_candidate_id": {
+      "candidate_536db54151a9": {
+        "internal_role": "non_root_0",
+        "label_a": "card_payment_wrong_exchange_rate",
+        "label_b": "exchange_charge",
+        "pair_rank_within_world": 0
+      },
+      "candidate_57f79a46afab": {
+        "internal_role": "root",
+        "label_a": "card_arrival",
+        "label_b": "getting_virtual_card",
+        "pair_rank_within_world": 4
+      },
+      "candidate_9ad7671deeae": {
+        "internal_role": "non_root_1",
+        "label_a": "cash_withdrawal_charge",
+        "label_b": "cash_withdrawal_not_recognised",
+        "pair_rank_within_world": 1
+      },
+      "candidate_f42b9032f799": {
+        "internal_role": "non_root_2",
+        "label_a": "top_up_by_card_charge",
+        "label_b": "verify_top_up",
+        "pair_rank_within_world": 2
+      },
+      "candidate_f676800eda89": {
+        "internal_role": "non_root_3",
+        "label_a": "cancel_transfer",
+        "label_b": "transfer_timing",
+        "pair_rank_within_world": 3
+      }
+    },
+    "root_position": 4,
+    "schema_version": 1,
+    "truth": [
+      {
+        "candidate_id": "candidate_536db54151a9",
+        "candidate_release_sha256": "4e80f0a3db5e4bb6fd46bb928c2b54b8864b1264dfa168fcfa76e029b9b4cdb9",
+        "changed_slot_ids_sha256": "94ddc2843862db67cc7e2ed4e2d555347ca3fbe3b8d9b579ebb5da2005fab851",
+        "internal_role": "non_root_0"
+      },
+      {
+        "candidate_id": "candidate_57f79a46afab",
+        "candidate_release_sha256": "3ffbe15ee46e63e8b3ed828c7fa7904dba2b845b87d5ec52e3acc329ef6268dc",
+        "changed_slot_ids_sha256": "b9c507aaa63b634f7a6433f1a7b819d7bbc5af8e8d534b7f6fcf72da127afb4b",
+        "internal_role": "root"
+      },
+      {
+        "candidate_id": "candidate_9ad7671deeae",
+        "candidate_release_sha256": "63d6a9f2bbbd8f111df106fa76bcab096da3b5f5e38a2b8d530cc3542a34f653",
+        "changed_slot_ids_sha256": "85e973fac2e1c99d8c268a7fd49952bb0a9ee05bccda689d94ccf316c36e8906",
+        "internal_role": "non_root_1"
+      },
+      {
+        "candidate_id": "candidate_f42b9032f799",
+        "candidate_release_sha256": "d03d7557b0a846281a5af459b21f9fdeff5782fcf63590aff09ec97ee5b67950",
+        "changed_slot_ids_sha256": "97ba8ea1b4369de92530f8a020e8465a700ec808dfd7b5bd32c2bf2cb028ec9a",
+        "internal_role": "non_root_2"
+      },
+      {
+        "candidate_id": "candidate_f676800eda89",
+        "candidate_release_sha256": "e0deb6566fbd10531f435e5a38487f4f94df8321f94ccb4ab3760aee199351de",
+        "changed_slot_ids_sha256": "b38800e4a46f60b4cc5a5379767434ace573cbb2f1fb4f02c52d90d947acb92d",
+        "internal_role": "non_root_3"
+      }
+    ],
+    "world_index": 1
+  },
+  "world_id": "world_01",
+  "world_index": 1
+}

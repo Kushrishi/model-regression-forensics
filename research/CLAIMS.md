@@ -1,6 +1,6 @@
 # Claims ledger
 
-**Updated:** 2026-10-01
+**Updated:** 2026-10-03 UTC
 
 This ledger defines the strongest wording currently supported by the project.
 
@@ -16,7 +16,8 @@ This ledger defines the strongest wording currently supported by the project.
 | Nuisance rule v2 can support a development comparison of restoration effects. | **Development evidence** | Stage B completed all 18 frozen trainings; root restoration exceeded every nuisance restoration in all three paired development trajectories. |
 | Exp009 M3 has a prospectively constructed structurally matched candidate benchmark. | **Supported** | Two complete five-candidate worlds passed clean-only structural preflight after a prospectively documented capacity amendment. Every candidate uses the same 66-slot label-only mechanism; no matched-benchmark model training or official-test access was used to select the worlds. |
 | Three complete matched benchmark worlds were feasible under the frozen clean eligibility rules. | **False** | Clean-only capacity analysis found maximum matching capacity of 13 disjoint pairs versus 15 required. The protocol was prospectively amended to two worlds without relaxing eligibility. |
-| The M3 matched benchmark has demonstrated successful root localization. | **Untested** | M3 freezes construction only. No matched-benchmark model-training/localization outcome is currently established. |
+| Simple visible-change baselines localized the root in the two M3 matched worlds. | **Development evidence** | M4 B1 target-label overlap and B2 lexical Jaccard each ranked the root first in both worlds after blind finalization. This is not causal certification or general localization evidence. |
+| Model-based M4 methods improve top-1 localization over simple baselines in this design. | **Not supported** | B3 Grad-Dot and B4 checkpoint TracIn each ranked the root first in world 00 and last in world 01. Both simple baselines ranked it first in both worlds. |
 | Exp009 establishes causal specificity for the localized root. | **Not established** | Stage B shows favorable development root-vs-nuisance effect separation, but the old candidate structure and n=3 descriptive evidence are insufficient; the new matched benchmark has not yet produced certification evidence. |
 | Explicit treatment of retraining stochasticity is itself novel. | **Not supported** | Adjacent literature already studies stochastic/distributional training-data attribution. |
 | MRF provides a distinct useful framework for post-hoc causal certification over versioned release changes. | **Research hypothesis** | Requires competitive matched-benchmark baselines, prospectively frozen certify/abstain rules, and confirmatory evidence. |

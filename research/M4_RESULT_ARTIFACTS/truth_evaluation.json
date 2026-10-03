@@ -1,0 +1,91 @@
+{
+  "blind_aggregate_sha256": "364ef75ba5d2d3b36106ef06dcaad50ecc3f3abceea8753a18cbf218814d4927",
+  "blind_artifacts_finalized_before_truth": true,
+  "method_summary": {
+    "B0_deterministic_random": {
+      "top1_accuracy": 0.0,
+      "top1_worlds": 0,
+      "world_count": 2
+    },
+    "B1_target_label_overlap": {
+      "top1_accuracy": 1.0,
+      "top1_worlds": 2,
+      "world_count": 2
+    },
+    "B2_lexical_jaccard": {
+      "top1_accuracy": 1.0,
+      "top1_worlds": 2,
+      "world_count": 2
+    },
+    "B3_final_checkpoint_grad_dot": {
+      "top1_accuracy": 0.5,
+      "top1_worlds": 1,
+      "world_count": 2
+    },
+    "B4_seven_checkpoint_tracin": {
+      "top1_accuracy": 0.5,
+      "top1_worlds": 1,
+      "world_count": 2
+    }
+  },
+  "mode": "m4_truth_evaluation",
+  "official_test_split_loaded": false,
+  "schema_version": 1,
+  "source_git_sha": "a5ec718e6081624893fed406eedb1dd5e1405892",
+  "worlds": [
+    {
+      "methods": {
+        "B0_deterministic_random": {
+          "root_rank": 3,
+          "top1": false
+        },
+        "B1_target_label_overlap": {
+          "root_rank": 1,
+          "top1": true
+        },
+        "B2_lexical_jaccard": {
+          "root_rank": 1,
+          "top1": true
+        },
+        "B3_final_checkpoint_grad_dot": {
+          "root_rank": 1,
+          "top1": true
+        },
+        "B4_seven_checkpoint_tracin": {
+          "root_rank": 1,
+          "top1": true
+        }
+      },
+      "root_candidate_id": "candidate_9703557fa315",
+      "truth_artifact_sha256": "a6fa60dda60a6dfa2d106c97c3e8446049ead57272bb01bd7caef53072562522",
+      "world_id": "world_00"
+    },
+    {
+      "methods": {
+        "B0_deterministic_random": {
+          "root_rank": 3,
+          "top1": false
+        },
+        "B1_target_label_overlap": {
+          "root_rank": 1,
+          "top1": true
+        },
+        "B2_lexical_jaccard": {
+          "root_rank": 1,
+          "top1": true
+        },
+        "B3_final_checkpoint_grad_dot": {
+          "root_rank": 5,
+          "top1": false
+        },
+        "B4_seven_checkpoint_tracin": {
+          "root_rank": 5,
+          "top1": false
+        }
+      },
+      "root_candidate_id": "candidate_57f79a46afab",
+      "truth_artifact_sha256": "ad90eff14ee6c650c083eccc8c2387bfb210fb42e54994d7d1b3a0fa51ecdf92",
+      "world_id": "world_01"
+    }
+  ]
+}

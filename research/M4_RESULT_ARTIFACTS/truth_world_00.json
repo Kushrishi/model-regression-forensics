@@ -1,0 +1,85 @@
+{
+  "baseline_release_sha256": "cb83232c055c4c55ca50f2fbd86627d59dc806ab33a861abc7402990ddb7e20c",
+  "benchmark_namespace": "exp009-structurally-matched-benchmark-v1",
+  "composite_release_sha256": "8e951a2e1aa1d234f3fd8f8aefd1afecfc8baca0124666d99b201593b9bf4f29",
+  "development_partition_sha256": "61ecbdd9224cf2bbeafcf5ceb9164cfc3fc74eb449129136198646385aaa8e88",
+  "mode": "m4_truth_only_world",
+  "model_training_performed": false,
+  "official_test_split_loaded": false,
+  "schema_version": 1,
+  "truth_manifest": {
+    "baseline_release_sha256": "cb83232c055c4c55ca50f2fbd86627d59dc806ab33a861abc7402990ddb7e20c",
+    "benchmark_namespace": "exp009-structurally-matched-benchmark-v1",
+    "candidate_count": 5,
+    "candidate_namespace": "exp009-attribution-candidate-v1",
+    "pair_truth_by_candidate_id": {
+      "candidate_243b5f64c58c": {
+        "internal_role": "non_root_1",
+        "label_a": "Refund_not_showing_up",
+        "label_b": "request_refund",
+        "pair_rank_within_world": 1
+      },
+      "candidate_312093c9b8e2": {
+        "internal_role": "non_root_3",
+        "label_a": "activate_my_card",
+        "label_b": "card_not_working",
+        "pair_rank_within_world": 3
+      },
+      "candidate_8b44e8447992": {
+        "internal_role": "non_root_0",
+        "label_a": "get_physical_card",
+        "label_b": "pin_blocked",
+        "pair_rank_within_world": 0
+      },
+      "candidate_9703557fa315": {
+        "internal_role": "root",
+        "label_a": "card_about_to_expire",
+        "label_b": "getting_spare_card",
+        "pair_rank_within_world": 4
+      },
+      "candidate_a20a6e0c5636": {
+        "internal_role": "non_root_2",
+        "label_a": "card_payment_not_recognised",
+        "label_b": "extra_charge_on_statement",
+        "pair_rank_within_world": 2
+      }
+    },
+    "root_position": 4,
+    "schema_version": 1,
+    "truth": [
+      {
+        "candidate_id": "candidate_243b5f64c58c",
+        "candidate_release_sha256": "7ba6b58723c30d17bdcc424058cf81c45a600f4959386329976565e64a6101d8",
+        "changed_slot_ids_sha256": "48a27a97c1d74ff0ff4daa6738c8b45aa315ce3c110174f5f8bdc683e494a127",
+        "internal_role": "non_root_1"
+      },
+      {
+        "candidate_id": "candidate_312093c9b8e2",
+        "candidate_release_sha256": "03c706f0ecf00483343c70a9b1fc77c4e1efd09929fb36e2c86f64244a0d9ddb",
+        "changed_slot_ids_sha256": "1a4d70584e598f1526123d4748efbe1724ffa46982204d7ae3fcc9328b2304c9",
+        "internal_role": "non_root_3"
+      },
+      {
+        "candidate_id": "candidate_8b44e8447992",
+        "candidate_release_sha256": "60bbdb49033dd7648a9a133fba92c64904152273096ddaed68d1510f991f8bde",
+        "changed_slot_ids_sha256": "e55e81cb0371f0bccd14de6f92200c9b353894485438322f883abc32cec8b604",
+        "internal_role": "non_root_0"
+      },
+      {
+        "candidate_id": "candidate_9703557fa315",
+        "candidate_release_sha256": "910eb078e530b2da8bfb69575222e9deeb5bda6ad70f3eed9100462544907335",
+        "changed_slot_ids_sha256": "ee078c7cd18ee207466c2f0cc83f3c966fd3d469cd8c836aa5d8d4e2019b8ca2",
+        "internal_role": "root"
+      },
+      {
+        "candidate_id": "candidate_a20a6e0c5636",
+        "candidate_release_sha256": "b4a0cc7c711cc80262f897f016b8eed83a0c7dc9ee68c7c65034648a92f01f71",
+        "changed_slot_ids_sha256": "2bf8b9854c9f282b6617f5c9bee03d478723409931bb254169003138214f16ba",
+        "internal_role": "non_root_2"
+      }
+    ],
+    "world_index": 0
+  },
+  "world_id": "world_00",
+  "world_index": 0
+}
