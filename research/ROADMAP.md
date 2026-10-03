@@ -64,7 +64,7 @@ The known target behavior makes a simple semantic/change-overlap baseline partic
 
 TRAK remains feasibility evidence unless its scoring objective is made genuinely commensurate with the frozen target without redefining that target.
 
-The M4 protocol and Amendment 1 freeze B0 through B4, two worlds, three trajectories, three clean models, six composites, and seven producing-rate-weighted composite checkpoints. Source-pinned execution preparation is implemented with separate blind aggregation and post-finalization benchmark truth scoring. A separate request may authorize training only after merged-source CI and Research CI pass. No matched-world model training has started during preparation. M4 evidence remains development evidence.
+The M4 protocol and Amendment 1 freeze B0 through B4, two worlds, three trajectories, three clean models, six composites, and seven producing-rate-weighted composite checkpoints. Source-pinned execution preparation is implemented with separate blind aggregation and post-finalization benchmark truth scoring. A separate request may authorize training only after merged-source CI and Research CI pass. Preparation itself performed no matched-world model training. Separately authorized run `37083633414` has now passed its authorization/input checks and started the three clean trainings. The complete frozen localization result is pending; partial rankings are ineligible for reporting. M4 evidence remains development evidence.
 
 ## M5 — Confirmatory certification protocol
 
