@@ -1,17 +1,21 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
+import subprocess
 from pathlib import Path
 from typing import Any
 
 from model_forensics.exp009_attribution import rank_candidate_scores
 from model_forensics.exp009_m4 import (
-    M4CheckpointRecord,
     M4_TRAJECTORIES,
+    M4CheckpointRecord,
     mean_trajectory_candidate_scores,
     validate_m4_checkpoint_records,
 )
+from model_forensics.exp009_m4_authorization import verify_authorization
 
 METHODS = (
     "B0_deterministic_random",
@@ -50,10 +54,17 @@ def _checkpoint_rows(raw: object) -> tuple[M4CheckpointRecord, ...]:
     return validate_m4_checkpoint_records(records)
 
 
-def _numeric_scores(raw: object) -> dict[str, float]:
+def _numeric_scores(raw: object, *, integer: bool = False) -> dict[str, float]:
     if not isinstance(raw, dict) or not raw:
         raise TypeError("candidate score mapping must be a non-empty object")
-    return {str(candidate_id): float(value) for candidate_id, value in raw.items()}
+    if integer:
+        if any(type(value) is not int for value in raw.values()):
+            raise ValueError("B0 scores must preserve frozen integer precision")
+        return {str(key): value for key, value in raw.items()}
+    scores = {str(candidate_id): float(value) for candidate_id, value in raw.items()}
+    if not all(math.isfinite(value) for value in scores.values()):
+        raise ValueError("non-finite candidate score")
+    return scores
 
 
 def main() -> None:
@@ -63,6 +74,9 @@ def main() -> None:
     parser.add_argument("--input-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    verify_authorization(Path.cwd())
+    if args.output.exists():
+        raise FileExistsError("refusing to overwrite M4 evidence")
 
     records: dict[tuple[str, int], dict[str, Any]] = {}
     for path in sorted(args.input_root.glob("*.json")):
@@ -83,17 +97,22 @@ def main() -> None:
     expected = {(world_id, trajectory) for world_id in WORLD_IDS for trajectory in M4_TRAJECTORIES}
     if set(records) != expected:
         raise AssertionError(
-            f"M4 trajectory artifact set mismatch: expected={sorted(expected)} observed={sorted(records)}"
+            f"M4 trajectory artifact set mismatch: expected={sorted(expected)} "
+            f"observed={sorted(records)}"
         )
 
     source_shas = {str(row["source_git_sha"]) for row in records.values()}
     if len(source_shas) != 1:
         raise AssertionError("M4 trajectory artifacts were not produced from one source SHA")
     source_git_sha = next(iter(source_shas))
+    if source_git_sha != subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip():
+        raise ValueError("trajectory source differs from the authorized execution commit")
 
     worlds: list[dict[str, object]] = []
     for world_id in WORLD_IDS:
-        trajectory_rows = {trajectory: records[(world_id, trajectory)] for trajectory in M4_TRAJECTORIES}
+        trajectory_rows = {
+            trajectory: records[(world_id, trajectory)] for trajectory in M4_TRAJECTORIES
+        }
         identities = {
             (
                 str(row["development_partition_sha256"]),
@@ -120,15 +139,21 @@ def main() -> None:
             if not isinstance(method_scores, dict) or set(method_scores) != set(METHODS):
                 raise AssertionError(f"{world_id}/t{trajectory}: frozen M4 method set drift")
             for method in METHODS:
-                scores = _numeric_scores(method_scores[method])
+                scores = _numeric_scores(method_scores[method], integer=method == METHODS[0])
                 scores_by_method[method][trajectory] = scores
                 candidate_sets.add(tuple(sorted(scores)))
 
             clean_scalar = float(row["clean_target_mean_margin"])
             composite_scalar = float(row["composite_target_mean_margin"])
             regression = float(row["target_margin_regression"])
+            if not all(
+                math.isfinite(value) for value in (clean_scalar, composite_scalar, regression)
+            ):
+                raise ValueError("non-finite target margin")
             if abs((clean_scalar - composite_scalar) - regression) > 1e-12:
-                raise AssertionError(f"{world_id}/t{trajectory}: target regression arithmetic drift")
+                raise AssertionError(
+                    f"{world_id}/t{trajectory}: target regression arithmetic drift"
+                )
 
             trajectory_diagnostics.append(
                 {
@@ -136,9 +161,7 @@ def main() -> None:
                     "clean_target_mean_margin": clean_scalar,
                     "composite_target_mean_margin": composite_scalar,
                     "target_margin_regression": regression,
-                    "paired_initial_model_state_sha256": row[
-                        "paired_initial_model_state_sha256"
-                    ],
+                    "paired_initial_model_state_sha256": row["paired_initial_model_state_sha256"],
                     "paired_slot_schedule_sha256": row["paired_slot_schedule_sha256"],
                     "checkpoint_records": row["checkpoint_records"],
                     "method_scores": method_scores,
@@ -147,7 +170,9 @@ def main() -> None:
             )
 
         if len(candidate_sets) != 1:
-            raise AssertionError(f"{world_id}: candidate set differs across M4 methods/trajectories")
+            raise AssertionError(
+                f"{world_id}: candidate set differs across M4 methods/trajectories"
+            )
 
         primary_scores: dict[str, dict[str, float]] = {}
         primary_rankings: dict[str, list[str]] = {}
@@ -163,7 +188,11 @@ def main() -> None:
             else:
                 aggregate = mean_trajectory_candidate_scores(scores_by_method[method])
             primary_scores[method] = {key: aggregate[key] for key in sorted(aggregate)}
-            primary_rankings[method] = list(rank_candidate_scores(aggregate))
+            primary_rankings[method] = (
+                sorted(aggregate, key=lambda key: (-aggregate[key], key))
+                if method == METHODS[0]
+                else list(rank_candidate_scores(aggregate))
+            )
 
         worlds.append(
             {
@@ -200,6 +229,9 @@ def main() -> None:
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.with_suffix(".json.sha256").write_text(
+        hashlib.sha256(args.output.read_bytes()).hexdigest() + "\n", encoding="utf-8"
+    )
 
     print("M4_BLIND_LOCALIZATION_AGGREGATE=COMPLETE")
     print(f"source_git_sha={source_git_sha}")

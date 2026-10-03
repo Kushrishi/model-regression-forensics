@@ -5,12 +5,14 @@ import hashlib
 import json
 import shutil
 import subprocess
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
 from model_forensics.exp009_attribution import (
     aggregate_candidate_suspiciousness,
     rank_candidate_scores,
+    target_pair_margin_summary,
 )
 from model_forensics.exp009_classifier import (
     Exp009ClassifierPilotConfig,
@@ -35,6 +37,7 @@ from model_forensics.exp009_m4 import (
     target_label_overlap_candidate_scores,
     validate_m4_checkpoint_records,
 )
+from model_forensics.exp009_m4_authorization import verify_authorization
 from model_forensics.exp009_m4_bundle import load_m4_blind_world_bundle
 from model_forensics.exp009_release import Exp009ReleaseSlot, release_sha256
 from model_forensics.exp009_release_training import train_versioned_classifier_pilot
@@ -79,8 +82,8 @@ def _logits_and_classifier_inputs(
         stop = min(start + batch_size, example_count)
         captured: list[Any] = []
 
-        def _capture(_module: Any, inputs: tuple[Any, ...]) -> None:
-            captured.append(inputs[0].detach())
+        def _capture(_module: Any, inputs: tuple[Any, ...], _captured=captured) -> None:
+            _captured.append(inputs[0].detach())
 
         handle = model.classifier.register_forward_pre_hook(_capture)
         try:
@@ -189,8 +192,7 @@ def _candidate_scores_from_suspiciousness(
 ) -> dict[str, float]:
     values = suspiciousness.tolist()
     slot_scores = {
-        slot.slot_id: float(score)
-        for slot, score in zip(changed_slots, values, strict=True)
+        slot.slot_id: float(score) for slot, score in zip(changed_slots, values, strict=True)
     }
     return aggregate_candidate_suspiciousness(slot_scores, candidates)
 
@@ -200,6 +202,8 @@ def main() -> None:
         description="Train and blindly score one frozen M4 matched world/trajectory."
     )
     parser.add_argument("--world-bundle", type=Path, required=True)
+    parser.add_argument("--mode", choices=("clean", "composite"), default="composite")
+    parser.add_argument("--clean-root", type=Path)
     parser.add_argument("--trajectory-id", type=int, choices=(0, 1, 2), required=True)
     parser.add_argument("--work-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -209,9 +213,15 @@ def main() -> None:
         default=Path("artifacts/exp009/source/banking77_train.csv"),
     )
     args = parser.parse_args()
+    verify_authorization(Path.cwd())
+    if args.output.exists():
+        raise FileExistsError("refusing to overwrite M4 evidence")
 
     import torch
     import transformers
+
+    if select_device(torch) != "mps":
+        raise RuntimeError("authorized M4 execution requires the hosted MPS substrate")
 
     bundle = load_m4_blind_world_bundle(args.world_bundle)
     if bundle["development_partition_sha256"] is None:
@@ -273,20 +283,40 @@ def main() -> None:
     )
     world_id = str(bundle["world_id"])
     trajectory_id = args.trajectory_id
-    clean_run_id = f"m4_{world_id}_t{trajectory_id:04d}_clean"
+    clean_run_id = f"m4_t{trajectory_id:04d}_clean"
     composite_run_id = f"m4_{world_id}_t{trajectory_id:04d}_composite"
     output_root = args.work_root / "training"
     checkpoint_root = args.work_root / "composite_epoch_checkpoints"
 
-    clean_summary = train_versioned_classifier_pilot(
-        partition,
-        release_slots=baseline,
-        trajectory_id=trajectory_id,
-        config=config,
-        target_labels=(target_a, target_b),
-        run_id=clean_run_id,
-        output_root=output_root,
-    )
+    if args.mode == "clean":
+        if bundle["world_index"] != 0 or args.clean_root is not None:
+            raise ValueError("clean models are trained once per trajectory using world_00")
+        summary = train_versioned_classifier_pilot(
+            partition,
+            release_slots=baseline,
+            trajectory_id=trajectory_id,
+            config=config,
+            target_labels=(target_a, target_b),
+            run_id=clean_run_id,
+            output_root=output_root,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+        return
+    if args.clean_root is None:
+        raise ValueError("composite scoring requires the independently trained clean artifact")
+    clean_run_root = args.clean_root / "training" / clean_run_id
+    clean_summary = json.loads((clean_run_root / "train_summary.json").read_text())
+    if clean_summary["trajectory_id"] != trajectory_id:
+        raise ValueError("clean trajectory identity drift")
+    if clean_summary["release"]["release_sha256"] != release_sha256(baseline):
+        raise ValueError("clean release identity drift")
+    if clean_summary["development_partition_sha256"] != partition_sha256:
+        raise ValueError("clean development partition drift")
+    if clean_summary["source_git_sha"] != _git_sha():
+        raise ValueError("clean model source differs from the authorized execution commit")
+    if clean_summary["pilot_config"] != asdict(config):
+        raise ValueError("clean training configuration drift")
     composite_summary = train_versioned_classifier_pilot(
         partition,
         release_slots=composite,
@@ -380,12 +410,7 @@ def main() -> None:
         candidates=candidates,
     )
 
-    b0_scores = {
-        candidate_id: float(value)
-        for candidate_id, value in deterministic_random_candidate_scores(
-            world_id, candidate_ids
-        ).items()
-    }
+    b0_scores = deterministic_random_candidate_scores(world_id, candidate_ids)
     b1_scores = target_label_overlap_candidate_scores(
         composite,
         candidates,
@@ -414,9 +439,43 @@ def main() -> None:
         "B4_seven_checkpoint_tracin": {key: b4_scores[key] for key in sorted(b4_scores)},
     }
     method_rankings = {
-        method: list(rank_candidate_scores(scores)) for method, scores in method_scores.items()
+        method: (
+            sorted(scores, key=lambda key: (-scores[key], key))
+            if method == "B0_deterministic_random"
+            else list(rank_candidate_scores(scores))
+        )
+        for method, scores in method_scores.items()
     }
 
+    def margin_from_logits(path: Path, summary: dict) -> float:
+        payload = path.read_bytes()
+        if (
+            hashlib.sha256(payload).hexdigest()
+            != summary["attribution_target"]["eval_logits_sha256"]
+        ):
+            raise ValueError("saved development logits identity drift")
+        rows = [json.loads(line) for line in payload.decode().splitlines()]
+        return target_pair_margin_summary(
+            [row["logits"] for row in rows],
+            [row["true_label"] for row in rows],
+            label_order=labels,
+            target_labels=(target_a, target_b),
+        ).mean_margin
+
+    clean_margin = margin_from_logits(
+        clean_run_root / "development_eval_logits.jsonl", clean_summary
+    )
+    composite_margin = margin_from_logits(
+        output_root / composite_run_id / "development_eval_logits.jsonl", composite_summary
+    )
+    slot_scores = {
+        "B3_final_checkpoint_grad_dot": dict(
+            zip(changed_slot_ids, b3_suspiciousness.tolist(), strict=True)
+        ),
+        "B4_seven_checkpoint_tracin": dict(
+            zip(changed_slot_ids, b4_suspiciousness.tolist(), strict=True)
+        ),
+    }
     output = {
         "schema_version": 1,
         "mode": "m4_blind_localization_trajectory",
@@ -435,6 +494,13 @@ def main() -> None:
         "target_example_count": len(target_records),
         "candidate_count": len(candidate_ids),
         "changed_slot_count": len(changed_slots),
+        "clean_target_mean_margin": clean_margin,
+        "composite_target_mean_margin": composite_margin,
+        "target_margin_regression": clean_margin - composite_margin,
+        "slot_scores": slot_scores,
+        "slot_score_sha256": {
+            method: _canonical_json_sha256(scores) for method, scores in slot_scores.items()
+        },
         "paired_initial_model_state_sha256": clean_init,
         "paired_slot_schedule_sha256": clean_summary["slot_schedule_sha256"],
         "checkpoint_records": checkpoint_payload,

@@ -3,8 +3,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
+
+from model_forensics.exp009_m4_authorization import verify_authorization
 
 METHODS = (
     "B0_deterministic_random",
@@ -41,14 +44,20 @@ def _root_candidate_id(truth_world: dict[str, Any]) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Score already-finalized blind M4 rankings against separately held benchmark truth."
+        description="Score finalized blind M4 rankings against separately held benchmark truth."
     )
     parser.add_argument("--blind-aggregate", type=Path, required=True)
+    parser.add_argument("--blind-sha256-file", type=Path, required=True)
     parser.add_argument("--truth-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    verify_authorization(Path.cwd())
+    if args.output.exists():
+        raise FileExistsError("refusing to overwrite M4 evidence")
 
     blind_bytes = args.blind_aggregate.read_bytes()
+    if hashlib.sha256(blind_bytes).hexdigest() != args.blind_sha256_file.read_text().strip():
+        raise ValueError("finalized blind aggregate digest mismatch")
     blind = json.loads(blind_bytes)
     if not isinstance(blind, dict):
         raise TypeError("M4 blind aggregate must be a JSON object")
@@ -60,10 +69,17 @@ def main() -> None:
         raise AssertionError("M4 blind aggregate already reports truth access")
     if blind.get("official_test_split_loaded") is not False:
         raise AssertionError("M4 blind aggregate violated official-test embargo")
+    if (
+        blind["source_git_sha"]
+        != subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    ):
+        raise ValueError("blind aggregate source differs from the authorized execution commit")
 
     worlds = blind.get("worlds")
     if not isinstance(worlds, list) or len(worlds) != 2:
         raise AssertionError("M4 truth scoring requires exactly two frozen worlds")
+    if {world["world_id"] for world in worlds} != {"world_00", "world_01"}:
+        raise ValueError("frozen truth scoring world set drift")
 
     scored_worlds: list[dict[str, object]] = []
     top1_counts = {method: 0 for method in METHODS}

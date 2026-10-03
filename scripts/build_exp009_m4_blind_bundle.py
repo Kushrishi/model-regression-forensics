@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -107,8 +108,8 @@ def _assert_matches_frozen_m3(
 ) -> None:
     if frozen.get("development_partition_sha256") != partition_sha256:
         raise AssertionError("M4 reconstruction differs from frozen M3 development partition")
-    if frozen.get("benchmark_namespace") != MATCHED_BENCHMARK_NAMESPACE:
-        raise AssertionError("M4 reconstruction differs from frozen M3 benchmark namespace")
+    if frozen.get("experiment") != "exp009_structurally_matched_benchmark":
+        raise AssertionError("unexpected frozen M3 record")
     if frozen.get("baseline_release_sha256") != release_sha256(baseline):
         raise AssertionError("M4 reconstruction differs from frozen M3 baseline release")
 
@@ -127,8 +128,17 @@ def _assert_matches_frozen_m3(
         candidate_ids = [
             str(row["candidate_id"]) for row in built.diagnostic_manifest["candidates"]
         ]
-        if expected.get("candidate_ids") != candidate_ids:
+        if expected.get("candidate_ids_sorted") != sorted(candidate_ids):
             raise AssertionError(f"world {definition.world_index}: opaque candidate identity drift")
+        for name, payload in (
+            ("diagnostic_manifest", built.diagnostic_manifest),
+            ("truth_manifest", built.truth_manifest),
+            ("structural_audit", built.structural_audit),
+        ):
+            encoded = (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode()
+            key = f"world_{definition.world_index:02d}/{name}.json"
+            if hashlib.sha256(encoded).hexdigest() != frozen["artifact_sha256"][key]:
+                raise AssertionError(f"M3 artifact identity drift: {key}")
         root_pair = [definition.root_pair.label_a, definition.root_pair.label_b]
         if expected.get("root_pair") != root_pair:
             raise AssertionError(f"world {definition.world_index}: target behavior drift")
