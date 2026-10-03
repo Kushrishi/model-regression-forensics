@@ -4,6 +4,12 @@ A reproducible case study of training-release debugging: given a known model reg
 
 **Status:** the matched localization study is complete. Further certification experiments are paused pending an independent contribution review. The repository remains available for reading and reproduction; it is not a production debugging product or a published paper.
 
+## Experimental comparison utility
+
+An exact-label CLI now validates record alignment, compares declared slices and tolerances, and reports individual regressions. The [external handwritten-digits fixture](docs/external-release-task.md) agrees with an independent NumPy reference. This validates implementation arithmetic, not causal identification or an advantage over existing tools. No package-index release or open-source distribution license is established.
+
+Next: a bounded ambiguity task where distinct interventions both repair performance, before implementing a larger evidence-ledger workflow. See [architecture and acceptance gates](docs/continuation_architecture.md).
+
 ## Main result
 
 Two constructed Banking77 worlds contain five structurally matched label-swap changes each. A pinned DistilBERT classifier was trained across three paired trajectories per world: three shared clean models and six composite models. Rankings were finalized before separate truth scoring.
