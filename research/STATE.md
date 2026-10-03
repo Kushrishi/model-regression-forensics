@@ -1,8 +1,8 @@
 # Current research state
 
 **Updated:** 2026-10-03 UTC
-**Completed study:** Experiment 009 — matched localization case study  
-**Status:** accepted study; further certification research held pending independent review  
+**Completed study:** Experiment 009 — matched localization case study
+**Status:** accepted study; further certification research held pending independent review
 **Evidence class:** development only
 
 This file is the canonical short-form statement of the project's current scientific state. Historical experiment documents remain authoritative for their own frozen protocols and outcomes.
