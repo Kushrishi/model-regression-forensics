@@ -22,6 +22,19 @@ The complete source definitions are in [the M4 protocol](M4_LOCALIZATION_BASELIN
 
 ## Baselines and results
 
+The recorded target-margin regression is the clean mean margin minus the composite mean margin. It is positive in every trajectory. World 00 has 52 target-slice examples; world 01 has 51. These are logit-margin changes, not accuracy percentages or independent world replications.
+
+| World | Trajectory | Clean mean margin | Composite mean margin | Margin regression |
+| --- | ---: | ---: | ---: | ---: |
+| 00 | 0 | 4.015 | 0.607 | 3.408 |
+| 00 | 1 | 3.330 | 0.451 | 2.879 |
+| 00 | 2 | 4.654 | 0.626 | 4.028 |
+| 01 | 0 | 6.221 | 0.964 | 5.257 |
+| 01 | 1 | 6.654 | 0.909 | 5.745 |
+| 01 | 2 | 5.056 | 0.853 | 4.202 |
+
+Values above are rounded to three decimals from the six retained scoring records; the original full-precision values remain in the artifact directory. This table describes the observed behavior change and introduces no new statistical inference.
+
 The comparison includes a deterministic pseudo-random reference, target-label overlap, changed-text lexical Jaccard, final-checkpoint last-layer Grad-Dot, and last-layer checkpoint TracIn using all seven epoch checkpoints. The lexical baseline uses the maximum token-set Jaccard similarity to target-slice evaluation examples for each changed slot. Grad-Dot and TracIn use the prospectively fixed target/sign/layer conventions; neither is retuned after truth scoring.
 
 | Frozen baseline | Root rank, world 00 | Root rank, world 01 | Worlds with root ranked first |
