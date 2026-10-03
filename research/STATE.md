@@ -103,6 +103,8 @@ Simple visible-change baselines localized the root in both constructed worlds. M
 
 The formal continuation gate in `research/M4_CONTINUATION_GATE.md` accepts M4 and holds M5 pending an independent scientific justification. No restoration or official-test access is authorized.
 
+`research/M4_TECHNICAL_REPORT.md` presents the accepted design, all six recorded target-margin changes, world-level rankings, and provenance as a bounded technical report draft. `research/M4_CONTRIBUTION_REVIEW.md` assesses adjacent literature and retains the M5 hold; it is an author-led assessment, not independent continuation approval.
+
 ## Not established
 
 The project does not currently establish:
