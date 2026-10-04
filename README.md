@@ -4,7 +4,7 @@ Model Regression Forensics is a reproducible study of a practical debugging prob
 
 > **When a model regresses after retraining, what evidence is sufficient to identify the training change responsible?**
 
-The completed study focuses on localization. Current work is testing a harder question: when multiple interventions repair the same failed behavior, should a debugger refuse to claim a unique historical cause?
+The completed study focuses on localization. A deterministic follow-up fixture now tests a harder question: when multiple interventions repair the same failed behavior, should a debugger refuse to claim a unique historical cause?
 
 ## Completed localization study
 
@@ -59,11 +59,17 @@ uv run pytest
 
 The retained artifact replay does not retrain the models. Research-only numerical checks have additional optional dependencies documented in the repository.
 
+## Ambiguous repair fixture
+
+A deterministic linear-model fixture now contains one regression and two distinct interventions that both restore the baseline predictions exactly: restoring the original feature order, or keeping reversed inputs while reversing the model weights.
+
+The same release-comparison policy marks both repairs successful. The specificity layer therefore returns `ambiguous_repairs` and leaves the historical cause `not_identified`. The known historical change is not provided to that decision layer.
+
+[Read the fixture](docs/ambiguous-repairs.md)
+
 ## Current direction
 
-The next experiment is deliberately small: construct a deterministic case where two distinct interventions both restore the same regressed predictions. The debugger should report ambiguity when the observed evidence cannot distinguish those histories.
-
-Only if that test exposes a useful, nontrivial decision problem will the project expand into a larger intervention benchmark.
+The ambiguity fixture establishes a failure case for unique attribution; it does not establish a novel causal-debugging method. Before any larger training study, the next step is a contribution review against causal diagnosis, counterfactual debugging, and modern training-data attribution. A larger benchmark is justified only if it tests a distinct ML debugging decision that those methods do not already resolve.
 
 ## Limits
 
