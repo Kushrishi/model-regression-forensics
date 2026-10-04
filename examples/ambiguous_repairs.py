@@ -69,8 +69,11 @@ def comparison(candidate_id, candidate_predictions):
     return compare_releases(Comparison.model_validate(record))
 
 
+def reverse(vector):
+    return tuple(reversed(vector))
+
+
 def run():
-    reverse = lambda vector: tuple(reversed(vector))
     regressed = comparison("regressed-reversed-inputs", predictions(reverse, WEIGHTS))
 
     restore_input_order = comparison(
