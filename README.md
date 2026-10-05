@@ -6,6 +6,10 @@ Model Regression Forensics studies regressions after training-data changes:
 
 The completed study focuses on localization. A deterministic follow-up fixture now tests a harder question: when multiple interventions repair the same failed behavior, should a debugger refuse to claim a unique historical cause?
 
+[Visual study](https://kushrishi.com/research/model-regression-forensics) · [Technical report](research/M4_TECHNICAL_REPORT.md) · [Reproduction](research/REPRODUCE_M4.md)
+
+![Root-candidate ranks in the two constructed Banking77 worlds](docs/assets/ranking-results.svg)
+
 ## Completed localization study
 
 Two constructed Banking77 worlds contain five structurally matched label-swap changes each. A pinned DistilBERT classifier was trained across three paired trajectories per world, and rankings were finalized before truth scoring.
@@ -67,11 +71,11 @@ The same release-comparison policy marks both repairs successful. The specificit
 
 [Read the fixture](docs/ambiguous-repairs.md)
 
-## Current direction
+## Next study
 
-The next research question is whether repair evidence helps distinguish plausible explanations when a simple label-overlap check cannot find the responsible change. That requires a new task design and a comparison with existing debugging methods. The next step is to specify matched, semantically plausible candidates and controlled reversal tests before a larger training run. The completed report and software remain available.
+Build candidate changes with overlapping target labels and plausible semantic alternatives. Test simple visible-change baselines before larger training runs, then compare ranking, recovery, alternative repairs, ambiguity and computational cost.
 
-[Research status](research/STATE.md) · [Next steps](research/ROADMAP.md)
+The follow-up must define a useful debugging decision beyond existing causal diagnosis and training-data attribution. The [continuation criteria](research/M4_CONTINUATION_GATE.md) still apply. The [experiment history](research/EXPERIMENT_HISTORY.md) retains unsuccessful designs and the reasoning behind this direction.
 
 ## Limits
 
