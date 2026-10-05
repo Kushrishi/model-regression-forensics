@@ -66,7 +66,7 @@ def comparison(candidate_id, candidate_predictions):
             }
         ],
     }
-    return compare_releases(Comparison.model_validate(record))
+    return compare_releases(Comparison.model_validate_json(json.dumps(record)))
 
 
 def reverse(vector):
