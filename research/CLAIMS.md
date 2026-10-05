@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-03 UTC
 
-This ledger defines the strongest wording currently supported by the project.
+This table records the evidence supporting the project’s conclusions.
 
 | Claim | Status | Current boundary |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ This ledger defines the strongest wording currently supported by the project.
 | Simple visible-change baselines localized the root in the two M3 matched worlds. | **Development evidence** | M4 B1 target-label overlap and B2 lexical Jaccard each ranked the root first in both worlds after blind finalization. This is not causal certification or general localization evidence. |
 | Model-based M4 methods improve top-1 localization over simple baselines in this design. | **Not supported** | B3 Grad-Dot and B4 checkpoint TracIn each ranked the root first in world 00 and last in world 01. Both simple baselines ranked it first in both worlds. |
 | Exp009 establishes causal specificity for the localized root. | **Not established** | Stage B shows favorable development root-vs-nuisance effect separation, but the old candidate structure and n=3 descriptive evidence are insufficient; the new matched benchmark has not yet produced certification evidence. |
-| Explicit treatment of retraining stochasticity is itself novel. | **Not supported** | Adjacent literature already studies stochastic/distributional training-data attribution. |
+| Accounting for retraining randomness is a new methodological contribution. | **Not supported** | Adjacent literature already studies stochastic/distributional training-data attribution. |
 | MRF provides a distinct useful framework for post-hoc causal certification over versioned release changes. | **Research hypothesis** | Requires competitive matched-benchmark baselines, prospectively frozen certify/abstain rules, and confirmatory evidence. |
 | MRF outperforms modern data-attribution methods. | **Untested** | No broad baseline comparison supports this claim. |
 | Exp009 generalizes beyond Banking77/DistilBERT. | **Untested** | No cross-substrate confirmation exists. |
