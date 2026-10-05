@@ -57,7 +57,7 @@ uv run ruff format --check .
 uv run pytest
 ```
 
-The replay processes retained scoring records without retraining the models. Research-only numerical checks have additional optional dependencies documented in the repository.
+Replaying the saved scoring records does not retrain the models. Research-only numerical checks have additional optional dependencies documented in the repository.
 
 ## Ambiguous repair fixture
 
@@ -69,7 +69,7 @@ The same release-comparison policy marks both repairs successful. The specificit
 
 ## Current direction
 
-The next research question is whether repair evidence helps distinguish plausible explanations when a simple label-overlap check cannot find the responsible change. That requires a new task design and a comparison with existing debugging methods. Further training is paused while that design is assessed; the completed report and software remain available.
+The next research question is whether repair evidence helps distinguish plausible explanations when a simple label-overlap check cannot find the responsible change. That requires a new task design and a comparison with existing debugging methods. The next step is to specify matched, semantically plausible candidates and controlled reversal tests before a larger training run. The completed report and software remain available.
 
 [Research status](research/STATE.md) · [Next steps](research/ROADMAP.md)
 
