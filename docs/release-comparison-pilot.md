@@ -32,13 +32,10 @@ independent observations. Tolerances should be chosen before inspecting results.
 not authenticate a training run, identify its dataset or prove provenance of
 user-supplied predictions. Sorting input records does not change report identity.
 
-## Remaining usefulness gate
+## Current status
 
-This is the first clean-room package task, not an established differentiated
-product. General model comparison already exists in tools such as Deepchecks.
-Before expanding the API, compare an external release task against existing
-tools. Candidate-change manifests and paired intervention evidence may add value,
-but are not implemented here. No causal claim follows from prediction differences.
+The [digits example](external-release-task.md) checks the comparator on external data against a NumPy reference. The [ambiguous-repair example](ambiguous-repairs.md) adds an assessment of competing successful repairs.
 
-This pilot does not add an open-source license or authorize public package-index
-distribution. Reuse/distribution rights must be settled before a reusable release.
+General model comparison already exists in tools such as Deepchecks. The comparator's current purpose is strict record validation and deterministic reporting. A larger package would need evidence that its repair workflow helps users make a debugging decision.
+
+The repository has no open-source license or public package-index release. Distribution rights need to be settled before publishing a reusable package.

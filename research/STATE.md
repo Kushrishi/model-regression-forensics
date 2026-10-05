@@ -1,138 +1,45 @@
-# Current research state
+# Research status
 
-**Updated:** 2026-10-03 UTC
-**Completed study:** Experiment 009 — matched localization case study
-**Status:** accepted study; further certification research held pending independent review
-**Evidence class:** development only
+Updated October 4, 2026.
 
-This file is the canonical short-form statement of the project's current scientific state. Historical experiment documents remain authoritative for their own frozen protocols and outcomes.
+The matched Banking77 localization study is complete. The repository also includes a prediction-comparison utility and an example in which two different repairs recover the same behavior. No paper has been submitted or published.
 
-## Research question
+## Question
 
-Given a known-good release, a regressed release, and a finite set of versioned training changes, can a suspected cause be supported by counterfactual restoration evidence that is distinguishable from plausible non-root interventions and ordinary retraining variability?
+After a model regresses, can controlled retraining distinguish the responsible training-data change from other changes that also improve the failed behavior?
 
-## Completed Exp009 development evidence
+## Completed studies
 
-The Banking77 development substrate uses 8,001 training examples and 1,998 development-evaluation examples across 77 intents with a pinned `distilbert-base-uncased` classifier. The official Banking77 test split remains untouched.
+The earlier Banking77 development study used 8,001 training examples, 1,998 development examples and a pinned DistilBERT classifier. Three paired training runs produced a mean target regression of 0.129289 and a mean protected-behavior regression of 0.002711. Reversing the planted change produced greater recovery than any nuisance restoration in all three runs. However, the root and nuisance changes had different structures, so this was preliminary evidence.
 
-### Stage A
+The matched follow-up used two constructed worlds with five candidates each. Every candidate made symmetric label swaps on 66 records without changing text or total label counts. Three paired training runs were recorded per world; those runs are repetitions within a world, rather than six independent benchmark worlds.
 
-Workflow run `36139384603` completed the authorized Stage-A training siblings.
+| Diagnostic | World 00 root rank | World 01 root rank |
+| --- | ---: | ---: |
+| Deterministic random reference | 3 | 3 |
+| Target-label overlap | 1 | 1 |
+| Lexical Jaccard | 1 | 1 |
+| Final-checkpoint Grad-Dot | 1 | 5 |
+| Seven-checkpoint TracIn | 1 | 5 |
 
-The frozen behavioral gate passed across trajectories 0, 1, and 2:
+Label-overlap and lexical checks found the planted change in both worlds. The evaluated model-based methods provided no top-1 improvement in this setting. Known target labels and disjoint candidate label pairs made the simple checks particularly informative.
 
-- mean target regression: **0.129289**;
-- minimum per-trajectory target regression: **0.091912**;
-- mean protected regression: **0.002711**;
-- maximum per-trajectory protected regression: **0.003602**.
+The matched study measures localization. It does not test whether reversing a matched candidate uniquely explains the regression. The official Banking77 test split has not been used.
 
-The truth-isolated last-layer Grad-Dot baseline ranked the planted root first in all three trajectories. That result is development evidence only because the nuisance-v2 candidate changes were structurally distinguishable from the root.
+See the [technical report](M4_TECHNICAL_REPORT.md), [result record](M4_RESULT.json), [replay instructions](REPRODUCE_M4.md) and [experiment history](EXPERIMENT_HISTORY.md) for the complete evidence.
 
-### Stage B
+## Software
 
-Workflow run `36154597887` completed all 18 frozen Stage-B trainings.
+The exact-label comparator checks record alignment, declared evaluation slices and accuracy-drop tolerances. Its eleven reports on the handwritten-digits example agree with an independent NumPy calculation. The example's input-order bug is supplied by the author; the comparator measures its effect rather than discovering its cause.
 
-Across the three paired trajectories:
+The [ambiguous-repair example](../docs/ambiguous-repairs.md) reverses a linear classifier's input feature order. Restoring the inputs or reversing the weights both recover the original predictions. The assessment reports `ambiguous_repairs` and leaves the historical cause `not_identified`. This demonstrates the difference between a successful repair and evidence for a unique cause.
 
-- mean root target recovery: **+0.124387**;
-- root recovery range: **+0.091912 to +0.163603**;
-- mean root-minus-strongest-nuisance margin: **+0.119485**;
-- minimum root-minus-strongest-nuisance margin: **+0.091912**;
-- root restoration exceeded every nuisance restoration in **3 / 3** trajectories.
+## Next research decision
 
-No confirmatory threshold, p-value, or multiplicity procedure was applied to Stage B.
+A useful follow-up would test situations where several plausible changes or repairs affect the same behavior. It needs a debugging decision that existing attribution and counterfactual methods do not already resolve, with a simple baseline receiving the same evidence.
 
-## M3 structurally matched benchmark
+The [continuation review](M4_CONTRIBUTION_REVIEW.md) explains the overlap with prior work. Further matched-world certification training remains paused under the recorded [M4 continuation requirements](M4_CONTINUATION_GATE.md). An independent scientific assessment is still required before that study resumes. The completed report and software remain available.
 
-**State: complete.**
+## Evidence and limitations
 
-M3 replaced the structurally mismatched nuisance-v2 construction with a prospectively frozen matched candidate benchmark.
-
-The base protocol initially requested three worlds with five globally intent-disjoint candidates per world. Clean-only capacity preflight showed that three complete worlds were impossible under the frozen eligibility rules: the eligible graph had 81 edges over 27 vertices and a maximum matching of 13 disjoint pairs, below the 15 required.
-
-The project did not relax the eligibility rules after observing that failure. Amendment 1 prospectively reduced M3 to **two complete worlds** before any matched-benchmark model training and without accessing the official test split.
-
-The final benchmark contains:
-
-- 2 worlds;
-- 5 candidates per world;
-- 10 candidate changes across 20 unique intents;
-- exactly 66 changed stable slots per candidate;
-- symmetric 33/33 label swaps;
-- zero text changes;
-- preserved aggregate label mass;
-- identical debugger-facing candidate structure;
-- pairwise-disjoint changed-slot sets and intent labels;
-- deterministic opaque candidate IDs;
-- exact standalone restoration to baseline;
-- composite order independence.
-
-The amended hosted structural preflight passed in workflow run `36211417215`. A final post-formatting rerun on the merged implementation also passed. No matched-benchmark model training was performed by M3, and the official Banking77 test split remained embargoed.
-
-Passing M3 establishes **structurally matched candidate construction only**. It does not establish localization success or causal specificity.
-
-## Current decision boundary
-
-M1, M2, and M3 are complete.
-
-**M4 — competitive localization baselines is complete.** Its accepted result and continuation decision are recorded below. Earlier benchmark preparation and baseline requirements are retained as development history.
-
-Before treating localization as scientifically interesting, M4 must compare diagnostics against simple target-compatible references. Because the target behavior is known, a semantic/change-overlap baseline may localize the responsible pair easily. That is a legitimate result and must not trigger post-hoc benchmark redesign.
-
-Required baseline families include:
-
-- seeded random reference;
-- simple semantic/lexical or changed-record overlap where applicable;
-- target-faithful last-layer Grad-Dot;
-- modern influence/data-attribution approaches only where their objective can be implemented faithfully for the frozen target.
-
-TRAK remains feasibility evidence unless its scoring objective becomes genuinely commensurate with the frozen target without redefining that target.
-
-The M4 protocol and Amendment 1 freeze the two-world, three-trajectory localization matrix and B0 through B4 before matched-world training. Execution preparation now reconstructs all frozen M3 identities, trains exactly three clean models and six composite models, captures all seven composite checkpoints, and finalizes blind rankings before a separate truth-scoring job. The initial zero-rate warmup update is permitted; epoch checkpoints record the positive rate of the final producing update. B0 retains unsigned 64-bit integer precision throughout ranking.
-
-M4 completed on 2026-10-03 UTC in source-pinned run `37083633414`. All three clean and six composite trainings, six blind scoring records, complete blind aggregation, and separate truth scoring succeeded. Replay from the retained scoring records reproduced the blind aggregate and truth evaluation byte-for-byte.
-
-Primary world-level root ranks:
-
-- B0 deterministic random: **3, 3**;
-- B1 target-label overlap: **1, 1**;
-- B2 lexical Jaccard: **1, 1**;
-- B3 final-checkpoint Grad-Dot: **1, 5**;
-- B4 seven-checkpoint TracIn: **1, 5**.
-
-Simple visible-change baselines localized the root in both constructed worlds. Model-based methods added no top-1 benefit in this design. These are descriptive development results from two worlds, not causal certification or a general method comparison. Exact records are in `research/M4_RESULT.json` and `research/M4_RESULT_ARTIFACTS/`.
-
-The formal continuation gate in `research/M4_CONTINUATION_GATE.md` accepts M4 and holds M5 pending an independent scientific justification. No restoration or official-test access is authorized.
-
-`research/M4_TECHNICAL_REPORT.md` presents the accepted design, all six recorded target-margin changes, world-level rankings, and provenance as a bounded technical report draft. `research/M4_CONTRIBUTION_REVIEW.md` assesses adjacent literature and retains the M5 hold; it is an author-led assessment, not independent continuation approval.
-
-The [experiment history](EXPERIMENT_HISTORY.md) links the complete development sequence. [Artifact replay](REPRODUCE_M4.md) reproduces the accepted aggregation and truth scoring without training. Neither changes the continuation gate.
-
-## Not established
-
-The project does not currently establish:
-
-- localization success beyond the two evaluated M3 worlds;
-- causal specificity for Exp009;
-- confirmatory causal certification;
-- general training-data root-cause identification;
-- superiority to modern attribution or influence methods;
-- cross-model or cross-dataset generalization; or
-- a completed paper or accepted publication.
-
-## Source-of-truth order
-
-When documents disagree, use this priority:
-
-1. frozen experiment protocol/result files for the experiment they govern;
-2. `research/ATTRIBUTION_TARGET.md` for localization-target semantics;
-3. this file for current project-level state;
-4. `research/CLAIMS.md` for externally safe claim boundaries;
-5. `research/DECISION_LOG.md` for historical decisions;
-6. README and portfolio copy.
-
-Website and LinkedIn text must never outrun this repository state.
-
-## Engineering utility checkpoint
-
-PRs 35 and 36 are merged. The strict exact-label comparator and an external digits fixture are implemented; its eleven slice reports agree with an independent NumPy reference. This is implementation validation, not causal specificity, independent scientific review or a competitor benchmark. Next is a cheap alternative-repair ambiguity task under [the architecture](../docs/continuation_architecture.md). Expensive certification research remains behind the existing scientific gate.
+The results concern the constructed tasks tested here. They do not establish general causal identification, superiority to modern attribution methods or cross-model generalization. Frozen protocols and result records define each study; the [claims summary](CLAIMS.md) and this page describe their current interpretation.

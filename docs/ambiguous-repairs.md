@@ -18,10 +18,9 @@ therefore returns `ambiguous_repairs` and leaves the historical cause
 Run:
 
 ```bash
-python examples/ambiguous_repairs.py
+uv run python examples/ambiguous_repairs.py
 ```
 
-This is a falsification fixture for unique-attribution logic, not evidence that a
-new causal-identification method has been established. The fixture includes the
+This small example checks how the assessment handles competing repairs. The fixture includes the
 known historical change only in its printed truth block; the assessment function
 never receives that truth.

@@ -1,7 +1,7 @@
 # Contribution review after M4
 
 **Date:** 2026-10-03 UTC  
-**Disposition:** retain the M5 hold; prepare a bounded technical report from accepted evidence.  
+**Conclusion:** the localization study is complete; a further certification study needs independent scientific assessment.  
 **Review status:** author-led assessment, not an independent approval of the continuation gate.
 
 ## What M4 establishes
@@ -10,7 +10,7 @@ The accepted source-pinned study contains two constructed Banking77 worlds and t
 
 The engineering result is a reproducible release-debugging experiment with explicit provenance, competitive simple baselines, paired training controls, and separated blind analysis. The scientific result is narrower: the evaluated model-based diagnostics added no top-1 benefit in this design. Three trajectories within a world are not three independent benchmark worlds. These data neither establish general method inferiority nor causal certification.
 
-## Adjacent work limits the novelty claim
+## Related methods
 
 | Primary source | Existing contribution relevant to MRF | Implication |
 | --- | --- | --- |
@@ -28,10 +28,8 @@ These are conceptual failure classes, not new benchmark definitions or authoriza
 
 The appropriate comparator for a proposed certification rule is a simple diagnostic followed by the same paired restoration evidence. A confidence label on that workflow is not automatically a new method. A continuation justification must specify the practical decision improved, the scope of any uniqueness claim, the error controlled, and why the additional compute can establish that benefit. Finite-candidate uniqueness must not be presented as exclusion of every possible cause.
 
-## Efficient next artifact
+## Completed report
 
-Prepare a technical report from the frozen accepted record: problem and intervention scope; candidate construction and its semantic shortcut; target-aligned baseline definitions; paired training and blind-finalization provenance; complete world-level rankings; limitations and retained negative evidence. Keep the old Stage B development evidence separate from the matched M4 study. Neither belongs in a confirmatory-certification table.
+The [technical report](M4_TECHNICAL_REPORT.md) presents the completed study, including the candidate construction, semantic shortcut, baseline definitions and complete rankings. Earlier restoration results are reported separately because their candidate design differed.
 
-Do not choose a favorable score orientation, add a winning method, select certification margins from M4 outcomes, or claim a new causal result. Do not run restoration, new training, or official-test evaluation. M5 remains held under `M4_CONTINUATION_GATE.md`; this author-led assessment does not satisfy its independent-review requirement.
-
-The present evidence supports a strong reproducibility and debugging artifact. It does not yet justify another result-bearing certification study as a novel research contribution. Preserve the project and its evidence rather than extending experiments merely to reach another milestone.
+The current evidence does not demonstrate a new causal-identification method. A follow-up needs a specific decision that controlled repair evidence improves beyond the closest existing work. The [continuation requirements](M4_CONTINUATION_GATE.md) still require independent assessment before further matched-world certification training. No new experiment is approved by this literature review.
