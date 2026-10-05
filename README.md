@@ -1,6 +1,6 @@
 # Model Regression Forensics
 
-Model Regression Forensics is a reproducible study of a practical debugging problem:
+Model Regression Forensics studies regressions after training-data changes:
 
 > **When a model regresses after retraining, what evidence is sufficient to identify the training change responsible?**
 
@@ -32,7 +32,7 @@ The project keeps three questions separate:
 
 The completed matched study evaluates localization. It does not establish general root-cause identification or superiority to modern training-data attribution methods.
 
-The negative result is useful: it motivates a stricter benchmark in which more than one plausible intervention can restore behavior and the correct conclusion may be **ambiguous** rather than a unique cause.
+The follow-up repair example tests this distinction directly: two interventions restore the same predictions, so the assessment reports ambiguity.
 
 ## Comparison utility
 
