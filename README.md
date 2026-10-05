@@ -4,6 +4,10 @@ Model Regression Forensics studies regressions after training-data changes:
 
 > **When a model regresses after retraining, what evidence is sufficient to identify the training change responsible?**
 
+**Current result:** simple label and lexical baselines find the planted change in both Banking77 worlds. Grad-Dot and TracIn do not add consistent top-1 benefit. A separate repair fixture reports ambiguity when two repairs restore the same predictions.
+
+**Status:** matched study complete; selective diagnosis and a stronger modern-model benchmark are research directions, not completed results.
+
 The completed study focuses on localization. A deterministic follow-up fixture now tests a harder question: when multiple interventions repair the same failed behavior, should a debugger refuse to claim a unique historical cause?
 
 [Visual study](https://kushrishi.com/research/model-regression-forensics) · [Technical report](research/M4_TECHNICAL_REPORT.md) · [Reproduction](research/REPRODUCE_M4.md)
