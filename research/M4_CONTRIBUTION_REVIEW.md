@@ -1,7 +1,7 @@
 # Contribution review after M4
 
-**Date:** 2026-10-03 UTC  
-**Conclusion:** the localization study is complete; a further certification study needs independent scientific assessment.  
+**Date:** 2026-10-03 UTC
+**Conclusion:** the localization study is complete; a further certification study needs independent scientific assessment.
 **Review status:** author-led assessment, not an independent approval of the continuation gate.
 
 ## What M4 establishes

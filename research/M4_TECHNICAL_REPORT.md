@@ -1,7 +1,7 @@
 # Locating training-release changes with simple baselines
 
-**A matched Banking77 case study**  
-**Status:** technical report draft; not a submitted or peer-reviewed paper  
+**A matched Banking77 case study**
+**Status:** technical report draft; not a submitted or peer-reviewed paper
 **Evidence:** accepted M4 development study, October 3, 2026
 
 ## Abstract
