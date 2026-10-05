@@ -44,7 +44,7 @@ That checks implementation arithmetic; it does not identify the cause of a regre
 
 - [Technical report](research/M4_TECHNICAL_REPORT.md)
 - [Experiment history](research/EXPERIMENT_HISTORY.md)
-- [Artifact replay](research/REPRODUCE_M4.md)
+- [Reproduce the recorded results](research/REPRODUCE_M4.md)
 - [Accepted result record](research/M4_RESULT.json)
 - [External comparison fixture](docs/external-release-task.md)
 
@@ -57,7 +57,7 @@ uv run ruff format --check .
 uv run pytest
 ```
 
-The retained artifact replay does not retrain the models. Research-only numerical checks have additional optional dependencies documented in the repository.
+The replay processes retained scoring records without retraining the models. Research-only numerical checks have additional optional dependencies documented in the repository.
 
 ## Ambiguous repair fixture
 
@@ -69,7 +69,9 @@ The same release-comparison policy marks both repairs successful. The specificit
 
 ## Current direction
 
-The ambiguity fixture establishes a failure case for unique attribution; it does not establish a novel causal-debugging method. Before any larger training study, the next step is a contribution review against causal diagnosis, counterfactual debugging, and modern training-data attribution. A larger benchmark is justified only if it tests a distinct ML debugging decision that those methods do not already resolve.
+The next research question is whether repair evidence helps distinguish plausible explanations when a simple label-overlap check cannot find the responsible change. That requires a new task design and a comparison with existing debugging methods. Further training is paused while that design is assessed; the completed report and software remain available.
+
+[Research status](research/STATE.md) · [Next steps](research/ROADMAP.md)
 
 ## Limits
 

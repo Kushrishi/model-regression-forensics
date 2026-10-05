@@ -43,15 +43,6 @@ Deepchecks already documents model-performance comparison and segment evaluation
 This was a documentation comparison, not a runtime benchmark or usability study.
 No advantage over Deepchecks or FiftyOne has been demonstrated.
 
-Do not expand into a generic comparison dashboard. The next assessment should
-specify a debugging decision where candidate manifests and controlled restoration
-evidence might help. In particular, distinguish a repair that helps from evidence
-that a change is uniquely responsible within the declared candidate set. A task
-must include plausible alternative repairs or interactions and a simple diagnostic
-plus the same restoration evidence as the comparator. Define erroneous unique
-attribution and useful abstention before running it. No certification experiment,
-official Banking77 test access or additional transformer training is created here.
+The follow-up [ambiguous-repair example](ambiguous-repairs.md) tests whether two different interventions can recover the same behavior. It reports ambiguity when both pass. A broader study would need a task with plausible competing explanations and a comparison against existing methods using the same evidence.
 
-The M4 case study and its scientific continuation gate remain unchanged. This
-fixture supports keeping a small utility pilot; a larger application or new paper
-still requires practical or scientific value beyond the reference workflow.
+The digits example supports the software workflow. It adds no matched-world restoration result or new transformer training; the research decision remains described in [research status](../research/STATE.md).

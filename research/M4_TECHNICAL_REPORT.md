@@ -1,12 +1,12 @@
 # Locating training-release changes with simple baselines
 
-**A matched Banking77 case study**  
-**Status:** technical report draft; not a submitted or peer-reviewed paper  
+**A matched Banking77 case study**
+**Status:** technical report draft; not a submitted or peer-reviewed paper
 **Evidence:** accepted M4 development study, October 3, 2026
 
 ## Abstract
 
-We study a narrow release-debugging problem: given a known model behavior and five visible training-data changes, which change should be investigated first? Two constructed Banking77 worlds contain structurally matched label swaps, with model training repeated over three paired trajectories per world. Target-label overlap and lexical Jaccard rank the planted responsible change first in both worlds. Final-checkpoint Grad-Dot and seven-checkpoint TracIn rank it first in one world and last in the other. Blind ranking artifacts were finalized before separate truth scoring, and replay reproduces the retained outputs byte-for-byte. The study demonstrates a reproducible debugging workflow and the strength of simple baselines under the available target information. It does not establish general attribution-method superiority, difficult root localization, or causal certification.
+We study a narrow release-debugging problem: given a known model behavior and five visible training-data changes, which change should be investigated first? Two constructed Banking77 worlds contain structurally matched label swaps, with model training repeated over three paired trajectories per world. Target-label overlap and lexical Jaccard rank the planted responsible change first in both worlds. Final-checkpoint Grad-Dot and seven-checkpoint TracIn rank it first in one world and last in the other. Blind ranking records were finalized before separate truth scoring, and replay reproduces the retained outputs byte-for-byte. The study demonstrates a reproducible debugging workflow and the strength of simple baselines under the available target information. It does not establish general attribution-method superiority, difficult root localization, or causal certification.
 
 ## Question and experimental design
 
@@ -33,7 +33,7 @@ The recorded target-margin regression is the clean mean margin minus the composi
 | 01 | 1 | 6.654 | 0.909 | 5.745 |
 | 01 | 2 | 5.056 | 0.853 | 4.202 |
 
-Values above are rounded to three decimals from the six retained scoring records; the original full-precision values remain in the artifact directory. This table describes the observed behavior change and introduces no new statistical inference.
+Values above are rounded to three decimals from the six retained scoring records; the original full-precision values remain in the retained-results directory. This table describes the observed behavior change and introduces no new statistical inference.
 
 The comparison includes a deterministic pseudo-random reference, target-label overlap, changed-text lexical Jaccard, final-checkpoint last-layer Grad-Dot, and last-layer checkpoint TracIn using all seven epoch checkpoints. The lexical baseline uses the maximum token-set Jaccard similarity to target-slice evaluation examples for each changed slot. Grad-Dot and TracIn use the prospectively fixed target/sign/layer conventions; neither is retuned after truth scoring.
 
@@ -51,7 +51,7 @@ These are descriptive results from two constructed worlds. Both simple baselines
 
 Source-pinned workflow `37083633414` completed three clean trainings, six composite trainings, six blind scoring records, complete blind aggregation, and separate truth scoring. Execution source is `a5ec718e6081624893fed406eedb1dd5e1405892`; implementation source is `8cc9a3c3175a9e4133bd571b6a8fc140845a764c`. The complete blind aggregate was persisted before truth access. Local replay of the six records reproduced the hosted blind aggregate and truth evaluation byte-for-byte.
 
-[M4_RESULT.json](M4_RESULT.json) records acceptance checks, exact archive identities, retained-file SHA-256 digests, and world-level outcomes. [M4_RESULT_ARTIFACTS](M4_RESULT_ARTIFACTS/) retains the complete scoring records and outputs. Protocols, negative evidence, and the [continuation gate](M4_CONTINUATION_GATE.md) remain public.
+[M4_RESULT.json](M4_RESULT.json) records acceptance checks, exact archive identities, retained-file SHA-256 digests, and world-level outcomes. [M4_RESULT_ARTIFACTS](M4_RESULT_ARTIFACTS/) retains the complete scoring records and outputs. Protocols, negative evidence, and the [continuation requirements](M4_CONTINUATION_GATE.md) remain public.
 
 ## Interpretation and limitations
 
@@ -59,4 +59,4 @@ Success on this task does not establish causal responsibility. Ranking a planted
 
 The known target pair and disjoint candidate intent pairs create a semantic shortcut. There are only two constructed worlds, one model family, one dataset, and a restricted classifier-layer attribution scope. The three paired trajectories quantify repetition within those worlds rather than independent scenario coverage. The evidence cannot support a broad ranking of attribution methods, general root-cause identification, external validity, or statistical superiority across tasks.
 
-The completed artifact is useful for release-debugging reproducibility and for demonstrating why credible baselines and separated blind analysis matter. Whether a distinct causal-certification contribution is worth further computation remains unresolved. The [contribution review](M4_CONTRIBUTION_REVIEW.md) retains the M5 hold; this report introduces no new training or evaluation authorization.
+The study provides a reproducible example of release debugging in which simple visible-change checks outperform the evaluated model-based diagnostics. Whether controlled repair evidence can add useful causal information remains an open question. Further matched-world certification training is paused pending the independent assessment described in the [continuation review](M4_CONTRIBUTION_REVIEW.md).

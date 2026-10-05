@@ -14,7 +14,7 @@ This is a proposed presentation of existing evidence, not a new attribution algo
 
 ## Candidate abstract
 
-Controlled training-change studies can evaluate diagnosis and repair separately. In a two-world synthetic task, a semantic diagnostic uniquely ranks the planted label-corruption change first, and restoring that change fully repairs the target without damaging protected behavior. However, nuisance restorations also improve target accuracy, causing both worlds to fail their prospectively declared unique-certification criteria. In a separate matched Banking77 study, label-overlap and lexical baselines rank the planted change first in both worlds, while evaluated last-layer Grad-Dot and checkpoint TracIn rank it first in one and last in the other. These development studies illustrate pitfalls in interpreting recovery alone and in treating structural matching as evidence of difficult localization. The cohorts are not pooled. Two worlds per study, limited intervention replication, semantic shortcuts, and restricted attribution scope prevent general claims about causal identification or method superiority. Retained matched-study artifacts support byte-identical replay.
+Controlled training-change studies can evaluate diagnosis and repair separately. In a two-world synthetic task, a semantic diagnostic uniquely ranks the planted label-corruption change first, and restoring that change fully repairs the target without damaging protected behavior. However, nuisance restorations also improve target accuracy, causing both worlds to fail their prospectively declared unique-certification criteria. In a separate matched Banking77 study, label-overlap and lexical baselines rank the planted change first in both worlds, while evaluated last-layer Grad-Dot and checkpoint TracIn rank it first in one and last in the other. These development studies illustrate pitfalls in interpreting recovery alone and in treating structural matching as evidence of difficult localization. The cohorts are not pooled. Two worlds per study, limited intervention replication, semantic shortcuts, and restricted attribution scope prevent general claims about causal identification or method superiority. Retained matched-study records support byte-identical replay.
 
 ## Evidence to include
 
@@ -39,7 +39,7 @@ The table below reproduces every primary restoration. Recovery is restoration mi
 
 World 00 candidate target accuracy was 0.0000; world 01 was 0.1875. The frozen rules required root recovery at least 0.15, nuisance recovery at most 0.05, protected drift at most 0.05, and exactly one restoration above the general recovery threshold. Both worlds failed certification.
 
-The world 01 nuisance matches root recovery only on the target metric; it violates the protected-behavior requirement. The root remains the better repair under those two measures. World 00 also has a clearly stronger root repair, despite nuisance recovery exceeding the frozen ceiling. Failure of these particular certification rules must not be presented as proof that no useful repair selection or attribution criterion is possible.
+The world 01 nuisance matches root recovery only on the target metric; it violates the protected-behavior requirement. The root remains the better repair under those two measures. World 00 also has a clearly stronger root repair, despite nuisance recovery exceeding the frozen ceiling. Failure of these particular certification rules does not prove that useful repair selection or attribution is impossible.
 
 There is one primary restoration model per candidate per world. The observations cannot distinguish systematic intervention effects from ordinary retraining variability. The alternative-order control was reserved for a passing primary certification and was not run. Optimization-path explanations remain hypotheses.
 
@@ -72,7 +72,7 @@ The earlier Banking77 [Stage B](../experiments/009_stochastic_counterfactual_cer
 3. **Synthetic case study.** Explain frozen prerequisites and report all ten restorations. Discuss target-only equivalence versus protected-behavior differences.
 4. **Matched localization case study.** Explain the two-world design and complete baseline comparison. Identify the semantic shortcut explicitly.
 5. **Practical implications.** Require simple baselines, report competing repairs, specify the behavior and intervention being evaluated, and preserve failed gates.
-6. **Limitations and reproducibility.** Separate cohorts, identify missing mechanism tests, distinguish artifact replay from model retraining, and state the narrow external validity.
+6. **Limitations and reproducibility.** Separate cohorts, identify missing mechanism tests, distinguish replay of retained results from model retraining, and state the narrow external validity.
 
 The complete restoration table and ranking table are sufficient for a first outline. A later manuscript could use plots generated directly from retained evidence, but cosmetic additions would not strengthen novelty.
 
@@ -93,8 +93,6 @@ This comparison identifies overlap rather than proving exhaustive novelty absenc
 
 The existing evidence supports a useful technical report and an honest project explanation. It does not currently justify a general method paper, causal impossibility claim, or a new certification training campaign.
 
-Retain this outline as the final bounded paper candidate. A workshop case study remains conceivable, but no submission target or independent assessment has established suitability. Publishing a preprint would not confer peer review. Do not advertise a publication until one exists.
+A workshop case study remains possible, but no venue or independent review has established suitability. A preprint could make the report accessible without implying peer review.
 
-The next scientific decision requires a reviewer to identify a specific useful contribution beyond the closest work and explain whether existing evidence suffices. If that contribution cannot be stated, retain the completed report and redirect major effort toward engineering. Additional experiment count alone is not a reason to reopen research.
-
-This assessment does not clear the [M4 continuation gate](M4_CONTINUATION_GATE.md), authorize M5 protocol development, or replace independent review.
+Before further training, a scientific reviewer needs to assess whether the proposed repair-specificity study would add a useful result beyond the closest work. The [continuation requirements](M4_CONTINUATION_GATE.md) remain in effect. The completed evidence and this outline are retained regardless of that decision.
