@@ -34,7 +34,7 @@ The exact-label comparator checks record alignment, declared evaluation slices a
 
 The [ambiguous-repair example](../docs/ambiguous-repairs.md) reverses a linear classifier's input feature order. Restoring the inputs or reversing the weights both recover the original predictions. The assessment reports `ambiguous_repairs` and leaves the historical cause `not_identified`. This demonstrates the difference between a successful repair and evidence for a unique cause.
 
-## Program closure — 7 October
+## Historical v2 closure — 7 October
 
 The owner [amended the governance rule](GOVERNANCE_AMENDMENT_2026_10_07.md) without
 pretending independent review occurred. A development-only SmolLM2-135M-Instruct
@@ -43,8 +43,16 @@ one of two seeds. See [the bounded closure](DEVELOPMENT_CLOSURE_2026_10_07.md).
 No regressed fits, new incidents, interventions or official test access followed.
 This is not confirmatory evidence and does not disprove the general diagnosis
 question. The tested v2 continuation is closed; the completed negative v1 and
-unsuccessful development feasibility record are the program outcome. No v3.
+unsuccessful development feasibility record are preserved. The no-automatic-v3 decision was subsequently amended prospectively by the owner, without reopening v2.
 
 ## Evidence and limitations
 
 The results concern the constructed tasks tested here. They do not establish general causal identification, superiority to modern attribution methods or cross-model generalization. Frozen protocols and result records define each study; the [claims summary](CLAIMS.md) and this page describe their current interpretation.
+
+## Subsequent owner decision: vNext
+
+[The dated amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md) permits a separate
+discovery/infrastructure track. It broadens candidate categories prospectively to
+versioned training-pipeline changes. No new model training, official test access,
+confirmatory protocol, large benchmark or scientific contribution is authorized or
+established. See the current contribution and incident audits.
