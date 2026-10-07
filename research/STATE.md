@@ -1,6 +1,6 @@
 # Research status
 
-Updated October 4, 2026.
+Updated October 7, 2026.
 
 The matched Banking77 localization study is complete. The repository also includes a prediction-comparison utility and an example in which two different repairs recover the same behavior. No paper has been submitted or published.
 
@@ -34,11 +34,16 @@ The exact-label comparator checks record alignment, declared evaluation slices a
 
 The [ambiguous-repair example](../docs/ambiguous-repairs.md) reverses a linear classifier's input feature order. Restoring the inputs or reversing the weights both recover the original predictions. The assessment reports `ambiguous_repairs` and leaves the historical cause `not_identified`. This demonstrates the difference between a successful repair and evidence for a unique cause.
 
-## Next research decision
+## Program closure — 7 October
 
-A useful follow-up would test situations where several plausible changes or repairs affect the same behavior. It needs a debugging decision that existing attribution and counterfactual methods do not already resolve, with a simple baseline receiving the same evidence.
-
-The [continuation review](M4_CONTRIBUTION_REVIEW.md) explains the overlap with prior work. Further matched-world certification training remains paused under the recorded [M4 continuation requirements](M4_CONTINUATION_GATE.md). An independent scientific assessment is still required before that study resumes. The completed report and software remain available.
+The owner [amended the governance rule](GOVERNANCE_AMENDMENT_2026_10_07.md) without
+pretending independent review occurred. A development-only SmolLM2-135M-Instruct
+feasibility attempt then failed its declared clean protected-behavior floor in
+one of two seeds. See [the bounded closure](DEVELOPMENT_CLOSURE_2026_10_07.md).
+No regressed fits, new incidents, interventions or official test access followed.
+This is not confirmatory evidence and does not disprove the general diagnosis
+question. The tested v2 continuation is closed; the completed negative v1 and
+unsuccessful development feasibility record are the program outcome. No v3.
 
 ## Evidence and limitations
 

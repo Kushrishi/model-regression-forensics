@@ -1,0 +1,47 @@
+{
+  "schema": "mrf-development-feasibility-summary-v1",
+  "date": "2026-10-07",
+  "confirmatory": false,
+  "official_test_accessed": false,
+  "independent_review_occurred": false,
+  "model_revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+  "train_sha256": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+  "runs": [
+    {
+      "seed": 11,
+      "release": "clean",
+      "updates": 48,
+      "fit_seconds": 89.29157252201003,
+      "wall_seconds": 106.81162190599935,
+      "peak_rss_kib": 1808972,
+      "accuracy": {
+        "all": 0.625,
+        "target": 0.8125,
+        "protected": 0.4375
+      },
+      "valid_outputs": 32,
+      "source_result_sha256": "5550c1e76c4e795264087d4fd1414d0a33d5241b2f4fac1e06db853e9ac853a1"
+    },
+    {
+      "seed": 23,
+      "release": "clean",
+      "updates": 48,
+      "fit_seconds": 79.15163643800588,
+      "wall_seconds": 93.0169152769995,
+      "peak_rss_kib": 1802180,
+      "accuracy": {
+        "all": 0.75,
+        "target": 0.5625,
+        "protected": 0.9375
+      },
+      "valid_outputs": 32,
+      "source_result_sha256": "d43065d72136ebbd90ecb5bcb46136656d940df0b1dae437cd923a3af110fd77"
+    }
+  ],
+  "decision": "STOP: declared protected-behavior clean feasibility floor failed in seed 11",
+  "incidents": 0,
+  "regressed_fits": 0,
+  "interventions": 0,
+  "accelerator_hours": 0,
+  "diagnosis_metrics_evaluated": false
+}

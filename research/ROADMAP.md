@@ -1,6 +1,6 @@
 # Research direction
 
-Updated October 4, 2026.
+Updated October 7, 2026.
 
 ## Completed
 
@@ -11,7 +11,7 @@ Updated October 4, 2026.
 
 The [experiment history](EXPERIMENT_HISTORY.md) records how the design developed. The [technical report](M4_TECHNICAL_REPORT.md) presents the matched study.
 
-## Next
+## Historical continuation requirements
 
 The next research question is whether controlled repair evidence can improve a specific debugging decision when several changes are plausible. A follow-up design needs:
 
@@ -21,7 +21,7 @@ The next research question is whether controlled repair evidence can improve a s
 4. A defined measure of incorrect unique attribution and useful abstention.
 5. A comparison with the closest existing methods.
 
-These are design requirements, not an approved experiment. Further matched-world certification training remains paused under the [continuation requirements](M4_CONTINUATION_GATE.md), which require independent scientific review.
+These are design requirements, not an approved experiment. Further matched-world certification training remains paused under the [continuation requirements](M4_CONTINUATION_GATE.md), which historically required independent scientific review. The [7 October owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) allows a small development-only falsification pilot before review. No independent review occurred; the pilot cannot become confirmatory evidence, and a failed pilot closes v2.
 
 ## Possible outputs
 
@@ -30,3 +30,10 @@ The completed evidence already supports a technical report and a reproducible ca
 The comparator could become a small maintained package if external users find its record validation and repair reporting useful. General prediction comparison alone is already available elsewhere; a package release needs a clear purpose and settled licensing.
 
 If a follow-up cannot establish a useful research question, the completed report and software remain the project's outcome. More training runs alone would not resolve that issue.
+
+## 7 October program closure
+
+The owner-authorized development attempt stopped at its predeclared Stage-1
+feasibility gate. See [the negative closure](DEVELOPMENT_CLOSURE_2026_10_07.md).
+No new benchmark, confirmatory M5, larger substrate or MRF v3 is planned. The
+completed v1 case study/software and development failure remain reproducible.
