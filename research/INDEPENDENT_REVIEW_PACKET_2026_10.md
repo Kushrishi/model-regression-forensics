@@ -1,5 +1,7 @@
 # Independent contribution review packet
 
+**Current governance:** the [7 October owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) permits a small development-only falsification pilot. No independent review occurred; M5 confirmatory work and official test access remain held. The earlier decision below is preserved as history.
+
 Status: author-side request for assessment, not independent approval. The M4 continuation gate remains active. No M5 protocol, training, or untouched test access is authorized by this packet.
 
 ## Question and existing evidence
@@ -37,3 +39,10 @@ Illustration, not an approved cohort: S paired seeds and K interventions require
 ## Recommendation and kill criteria
 
 NO-GO for M5 training and protocol execution pending genuinely independent assessment. Close continuation if its benefit reduces to known attribution, confidence thresholding, obvious diff inspection, or is matched by the equal-evidence baseline; also close if realistic ambiguity or proportionate compute cannot be established. This author-side packet does not satisfy the independent gate.
+
+## 7 October owner governance amendment
+
+The gate above records the historical decision. No independent review occurred.
+The [dated owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) now permits a small
+development-only falsification pilot, never retrospective confirmatory evidence.
+M5 confirmatory work and official test outcomes remain held.

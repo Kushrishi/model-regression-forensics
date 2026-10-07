@@ -1,5 +1,7 @@
 # Continuation dossier — October 2026
 
+**Current governance:** the [7 October owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) permits a small development-only falsification pilot. No independent review occurred; M5 confirmatory work and official test access remain held. The earlier decision below is preserved as history.
+
 **Review date:** 2026-10-06. **Status:** author-side decision support, NOT independent approval.
 **Recommendation:** NO-GO for result-bearing continuation now; conditional case for independent review of a distinct decision problem.
 
@@ -106,3 +108,10 @@ A newer close anchor is Jiao and Xiong, [*Effective Synthetic Data Curation Requ
 Primary author documentation for [mlwhatif](https://stefan-grafberger.com/publications/mlwhatif-what-if-you-could-stop-re-implementing-your-machine-learning-pipeline-analyses-over-and-over/) also establishes existing pipeline-variant generation/execution for data-error, cleaning and preprocessing what-if analyses. Generic intervention scheduling and pipeline debugging are not new merely because they are applied to a release diff.
 
 A private reviewer shortlist and unsent outreach draft were prepared outside public Git. No researcher was contacted; no independent assessment has occurred. **Both M5 execution and M5 protocol development remain held.** No training, official test-outcome access, intervention or model-weight acquisition occurred.
+
+## 7 October owner governance amendment
+
+The gate above records the historical decision. No independent review occurred.
+The [dated owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) now permits a small
+development-only falsification pilot, never retrospective confirmatory evidence.
+M5 confirmatory work and official test outcomes remain held.

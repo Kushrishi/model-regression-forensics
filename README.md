@@ -84,3 +84,11 @@ The follow-up must define a useful debugging decision beyond existing causal dia
 ## Limits
 
 MRF does not currently establish causal attribution, generalization beyond the evaluated setting, superiority to attribution methods, or a published paper.
+
+## October 7 development closure
+
+A transparently owner-authorized, non-confirmatory SmolLM2 feasibility attempt
+failed its declared stable clean-baseline gate before regression incidents or
+interventions. [The record](research/DEVELOPMENT_CLOSURE_2026_10_07.md) closes that
+v2 attempt. It does not establish that release diagnosis is impossible. The
+completed bounded negative v1 and its software remain the project outcome.

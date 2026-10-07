@@ -1,5 +1,7 @@
 # M4 continuation gate
 
+**Current governance:** the [7 October owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) permits a small development-only falsification pilot. No independent review occurred; M5 confirmatory work and official test access remain held. The earlier decision below is preserved as history.
+
 **Date:** 2026-10-03 UTC  
 **Decision:** accept M4; hold M5 execution and protocol development pending a focused contribution review.
 
@@ -30,3 +32,10 @@ M5 should proceed only if an independent contribution review identifies a useful
 M4 outcomes must not be used to redesign these worlds, select a favorable scoring orientation, add winning methods, choose certification margins, or claim confirmatory evidence. No new training, restoration, official-test access, or cross-substrate experiment is authorized by this gate.
 
 If that justification fails, close the project as a bounded reproducible technical report covering the distinction between localization and certification and the failure of model-based diagnostics to improve on simple baselines in this design. Preserve all negative evidence.
+
+## 7 October owner governance amendment
+
+The gate above records the historical decision. No independent review occurred.
+The [dated owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) now permits a small
+development-only falsification pilot, never retrospective confirmatory evidence.
+M5 confirmatory work and official test outcomes remain held.
