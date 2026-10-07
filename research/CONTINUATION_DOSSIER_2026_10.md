@@ -1,6 +1,6 @@
 # Continuation dossier — October 2026
 
-**Current governance:** the [7 October owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) permits a small development-only falsification pilot. No independent review occurred; M5 confirmatory work and official test access remain held. The earlier decision below is preserved as history.
+**Current governance:** the subsequent [vNext owner amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md) authorizes discovery/infrastructure only. The earlier development exception ended at its failed gate; v2 stays closed. No independent review occurred. M5, new training and official test access remain held. The review text below is historical, not current experiment authorization.
 
 **Review date:** 2026-10-06. **Status:** author-side decision support, NOT independent approval.
 **Recommendation:** NO-GO for result-bearing continuation now; conditional case for independent review of a distinct decision problem.

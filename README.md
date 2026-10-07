@@ -1,12 +1,13 @@
 # Model Regression Forensics
 
-Model Regression Forensics studies regressions after training-data changes:
+The completed Model Regression Forensics study concerns training-data changes;
+the current discovery track screens versioned training-pipeline regressions:
 
 > **When a model regresses after retraining, what evidence is sufficient to identify the training change responsible?**
 
 **Current result:** simple label and lexical baselines find the planted change in both Banking77 worlds. Grad-Dot and TracIn do not add consistent top-1 benefit. A separate repair fixture reports ambiguity when two repairs restore the same predictions.
 
-**Status:** matched study complete; selective diagnosis and a stronger modern-model benchmark are research directions, not completed results.
+**Status:** v1/M4 is a completed bounded negative study. The failed SmolLM2 v2 development attempt is permanently closed. A separately owner-authorized vNext track is screening external release-regression cases and building minimal infrastructure; no new training or confirmatory study is approved.
 
 The completed study focuses on localization. A deterministic follow-up fixture now tests a harder question: when multiple interventions repair the same failed behavior, should a debugger refuse to claim a unique historical cause?
 
@@ -75,11 +76,18 @@ The same release-comparison policy marks both repairs successful. The specificit
 
 [Read the fixture](docs/ambiguous-repairs.md)
 
-## Next study
+## Current discovery track
 
-Build candidate changes with overlapping target labels and plausible semantic alternatives. Test simple visible-change baselines before larger training runs, then compare ranking, recovery, alternative repairs, ambiguity and computational cost.
+[The subsequent owner amendment](research/VNEXT_OWNER_AMENDMENT_2026_10_07.md)
+authorizes public incident discovery and software work for versioned training-pipeline
+regressions. Historical cause and responsibility under a specified intervention
+process remain different targets. Set-valued/selective diagnosis is an open question,
+not a solved method. Complete visible diffs and strong cheap intervention baselines
+must be included; the official Banking77 test split remains unopened.
 
-The follow-up must define a useful debugging decision beyond existing causal diagnosis and training-data attribution. The [continuation criteria](research/M4_CONTINUATION_GATE.md) still apply. The [experiment history](research/EXPERIMENT_HISTORY.md) retains unsuccessful designs and the reasoning behind this direction.
+[Contribution audit](research/VNEXT_CONTRIBUTION_AUDIT_2026_10_07.md) ·
+[Incident screen](research/VNEXT_INCIDENT_AUDIT_2026_10_07.md) ·
+[Incident records](docs/incident-records.md) · [Submit a public case](CONTRIBUTING.md)
 
 ## Limits
 
@@ -91,4 +99,4 @@ A transparently owner-authorized, non-confirmatory SmolLM2 feasibility attempt
 failed its declared stable clean-baseline gate before regression incidents or
 interventions. [The record](research/DEVELOPMENT_CLOSURE_2026_10_07.md) closes that
 v2 attempt. It does not establish that release diagnosis is impossible. The
-completed bounded negative v1 and its software remain the project outcome.
+completed bounded negative v1 and its software remain intact. The separately authorized vNext discovery track does not reopen this failed attempt.

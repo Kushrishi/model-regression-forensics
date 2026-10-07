@@ -31,9 +31,18 @@ The comparator could become a small maintained package if external users find it
 
 If a follow-up cannot establish a useful research question, the completed report and software remain the project's outcome. More training runs alone would not resolve that issue.
 
-## 7 October program closure
+## Historical 7 October v2 closure
 
 The owner-authorized development attempt stopped at its predeclared Stage-1
 feasibility gate. See [the negative closure](DEVELOPMENT_CLOSURE_2026_10_07.md).
 No new benchmark, confirmatory M5, larger substrate or MRF v3 is planned. The
 completed v1 case study/software and development failure remain reproducible.
+
+## Subsequent vNext discovery authorization
+
+The [new owner amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md) authorizes a distinct
+non-training track: bounded prior-art audit, external case screening, incident
+manifests and retrospective software tests. v2 stays closed. A future experimental
+proposal requires a useful externally grounded decision problem surviving complete
+diff inspection and strong cheap baselines; no modern-model training is next by
+default. No large benchmark or confirmatory study is currently approved.
