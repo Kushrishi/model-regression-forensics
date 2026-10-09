@@ -101,3 +101,14 @@ exception and the follow-up repair's agreement with a direct numerical oracle.
 Twelve CPU checks use zero trainable parameters and zero optimizer updates. This
 adds executable software evidence, not trained-task restoration or a qualified
 release-regression incident. No new training is authorized by this result.
+
+## Saved-prediction import — 2026-10-09
+
+The installed `mrf-import` command accepts a declared evaluation policy and a
+long-form prediction CSV. It validates identical case sets before creating output,
+retains exact source bytes and hashes, and builds a self-contained inspection
+report. Costs remain unknown for imported records. Reimporting the retained
+Banking77 example reproduced all 11,814 predictions and the complete recomputed
+assessment without additional fits. Independent human first use and comparative
+advantage over ordinary rollback remain unmeasured. See
+[the user walkthrough](../docs/import-predictions.md).

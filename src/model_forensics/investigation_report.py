@@ -175,12 +175,17 @@ historical cause. Slice results may overlap and are not statistical significance
         "<noscript>Filtering requires JavaScript; all case records are shown.</noscript></section>"
     )
     page += (
-        "<h2>Measured execution cost</h2><p>Supplied function calls only; "
-        "loading or training inside a call is included. "
-        "Preparation outside those calls is excluded. CPU covers the current process, "
-        "not external workers.</p>"
-        f"<pre>{esc(json.dumps(costs, indent=2))}</pre>"
-        "<details><summary>Declared changes (caller supplied)</summary>"
+        (
+            "<h2>Execution cost</h2><p>Unknown: these predictions were imported. "
+            "No models were executed, and no training or inference time was measured.</p>"
+            if plan.get("record_origin") == "imported_predictions"
+            else "<h2>Measured execution cost</h2><p>Supplied function calls only; "
+            "loading or training inside a call is included. "
+            "Preparation outside those calls is excluded. CPU covers the current process, "
+            "not external workers.</p>"
+            f"<pre>{esc(json.dumps(costs, indent=2))}</pre>"
+        )
+        + "<details><summary>Declared changes (caller supplied)</summary>"
         f"<pre>{esc(json.dumps(plan['declared_changes'], indent=2))}</pre></details></html>"
     )
     attribution = directory / "input_attribution.txt"

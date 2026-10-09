@@ -9,6 +9,9 @@ dependencies = [
     "pyyaml>=6.0",
 ]
 
+[project.scripts]
+mrf-import = "model_forensics.import_predictions:main"
+
 [project.optional-dependencies]
 research = [
     "accelerate>=1.2",
