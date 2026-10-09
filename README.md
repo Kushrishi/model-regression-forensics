@@ -49,6 +49,11 @@ The repository also contains an experimental exact-label release comparison util
 
 That checks implementation arithmetic; it does not identify the cause of a regression.
 
+The [saved-repair workflow](docs/ambiguous-repairs.md#evaluate-saved-repair-predictions)
+evaluates supplied regression and repair predictions under an identical, verified
+evaluation-policy identity. It rejects different cases or labels even when summary
+counts match, and reports multiple successful repairs as ambiguous.
+
 ## Read and reproduce
 
 - [Technical report](research/M4_TECHNICAL_REPORT.md)
