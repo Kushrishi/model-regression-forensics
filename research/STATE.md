@@ -69,3 +69,9 @@ Two remain provenance leads only; none qualifies for a new training study. Their
 compiler numerical checks must not be presented as task-performance evidence.
 The ledger now offers opt-in bounded local payload hashing, which checks byte
 identity rather than run authenticity or scientific responsibility.
+
+The [ten-lead pipeline screen](VNEXT_PIPELINE_SCREEN_2026_10_09.md) is now complete:
+zero additional qualified incidents, two provenance leads only, and no new
+training. Several reported defects have direct code-level oracles; none supplied
+the required repeated good-versus-regressed task evidence. Further expansion is
+paused pending concrete new qualification evidence rather than an unbounded search.
