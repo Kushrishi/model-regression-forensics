@@ -110,3 +110,7 @@ failed its declared stable clean-baseline gate before regression incidents or
 interventions. [The record](research/DEVELOPMENT_CLOSURE_2026_10_07.md) closes that
 v2 attempt. It does not establish that release diagnosis is impossible. The
 completed bounded negative v1 and its software remain intact. The separately authorized vNext discovery track does not reopen this failed attempt.
+
+### Run a release investigation
+
+Execute baseline, candidate and repair functions, then reopen their retained predictions in a portable browser report. The [handwritten-digit walkthrough](docs/investigation-workflow.md) demonstrates an actual model and a disclosed preprocessing fault. This is an application integration example, not a causal-discovery benchmark.

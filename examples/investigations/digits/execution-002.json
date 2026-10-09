@@ -1,0 +1,2170 @@
+{
+  "cpu_scope": "current_process_only",
+  "current_process_cpu_seconds": 0.000937328000000015,
+  "release": {
+    "predictions": [
+      {
+        "case_id": "digits-1008",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-83",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1752",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-781",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1105",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1382",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-996",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1139",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-320",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1324",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1074",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-608",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1304",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-983",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-734",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-991",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-618",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1145",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1378",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1246",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1412",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-394",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-633",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1699",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-817",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1171",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-149",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-259",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1270",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-835",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1673",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1739",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1679",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-564",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-790",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1755",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1250",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1271",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-365",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-930",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1241",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-190",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1457",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-705",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1102",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1421",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1162",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-554",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-275",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1519",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1768",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-121",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-598",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-33",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1621",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-532",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1252",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1762",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-470",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1566",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-952",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-306",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-805",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-641",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-909",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1222",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1213",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-302",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1493",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-161",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-139",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1544",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-356",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-273",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-568",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-5",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-571",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-328",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1788",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-220",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-358",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-844",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1242",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1736",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1307",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1592",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1322",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-360",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-201",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1657",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1090",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1319",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1477",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1668",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1461",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-125",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1465",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-489",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-807",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-86",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1137",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1078",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1579",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1262",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-528",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-216",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-399",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-221",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1536",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-287",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-838",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-482",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-927",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-25",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-493",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1747",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-741",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-795",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1791",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1376",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1036",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-958",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-122",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1256",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-765",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1174",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1446",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1620",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1300",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1499",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-44",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-533",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1744",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-966",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-130",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1233",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1022",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-129",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1292",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1009",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1530",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1244",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-648",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-944",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-102",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-751",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-651",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-998",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-297",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1528",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-441",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1089",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-484",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-173",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-75",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1098",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1688",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-671",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1112",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1077",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1035",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1373",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1627",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-561",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-502",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-269",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-688",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-72",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-698",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-59",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1342",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-819",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1777",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-585",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1780",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-893",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-62",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-925",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-877",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-993",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-562",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1264",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-754",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-290",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1713",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1690",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-919",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-453",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-55",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1441",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1094",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-103",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1439",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-362",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-632",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1626",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-492",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1554",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-342",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-486",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-175",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1661",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1051",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1539",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-760",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-536",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1758",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-363",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1014",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1411",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-597",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-629",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1002",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-352",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1047",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-989",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1678",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-684",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-840",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1312",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1585",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1516",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-142",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-955",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-743",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1017",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-140",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-797",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-402",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-28",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-899",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-937",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-643",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-614",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1126",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1176",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1663",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1384",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-468",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-977",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1100",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-713",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-870",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1522",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-464",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1328",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1725",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-701",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-158",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1593",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1529",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1296",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1500",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-51",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1418",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1562",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-780",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1201",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-748",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-43",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1084",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1507",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-757",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-16",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-340",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1695",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1209",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-246",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-852",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-284",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-202",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-965",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-538",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1630",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-693",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1742",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-550",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-170",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-763",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1159",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-38",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1125",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-818",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-821",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-915",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1101",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1602",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-586",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1501",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1531",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1212",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-667",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-617",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-685",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-137",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-395",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1362",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1087",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1524",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1216",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-855",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-54",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1574",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1158",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-921",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1514",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1155",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1517",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1535",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-373",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1387",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-403",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1587",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1249",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-301",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1063",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-845",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-660",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-882",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-861",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1340",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1672",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1460",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1200",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-772",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1783",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-567",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-412",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-4",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-639",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1694",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1454",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-461",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-695",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1720",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-530",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-234",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-758",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1438",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-606",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-176",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-510",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1072",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-310",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-540",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-677",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-520",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1143",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-11",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1127",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-308",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-527",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-112",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-499",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-325",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-907",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1131",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-995",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1624",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1079",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-964",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-116",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-478",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-329",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1781",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1279",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-924",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-390",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-485",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-240",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-203",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1731",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1383",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-69",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-509",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1103",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1573",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1000",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-279",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-796",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1177",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-854",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1188",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-344",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1433",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-239",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-299",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-516",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-413",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-359",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1634",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1619",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1231",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-857",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-166",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1379",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1656",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1703",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1732",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1484",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1023",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1509",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1333",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-680",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1357",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-32",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-669",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-507",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1480",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1682",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1288",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1354",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-253",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1748",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1049",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-997",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1639",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1391",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1692",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1039",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-226",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-501",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-729",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1489",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-620",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1708",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-419",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-851",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1743",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-321",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-584",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-21",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1794",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1321",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-95",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-570",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-457",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1660",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1414",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1792",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-875",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1459",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-599",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-187",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1004",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-873",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-236",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1599",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-355",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-41",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1553",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-123",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-6",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-979",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1390",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-581",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1372",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-368",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-148",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1284",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1114",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-565",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1773",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-654",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-541",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-697",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1202",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-591",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-31",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-10",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-391",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1642",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-380",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1088",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-99",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-289",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-487",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1437",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1191",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1545",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-724",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-709",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-517",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1538",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1683",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-862",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-191",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1093",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1700",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-824",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1227",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-933",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-217",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1210",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-381",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1704",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1189",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1218",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-638",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-735",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1186",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1275",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1347",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-379",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1055",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-976",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-35",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1062",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1427",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-511",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-1707",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-185",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1616",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-357",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-24",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1399",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-1774",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1666",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1323",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-343",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-518",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-1392",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-972",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1317",
+        "observed": "0"
+      },
+      {
+        "case_id": "digits-1053",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-1163",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1370",
+        "observed": "3"
+      },
+      {
+        "case_id": "digits-1648",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-1345",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-679",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1651",
+        "observed": "4"
+      },
+      {
+        "case_id": "digits-165",
+        "observed": "5"
+      },
+      {
+        "case_id": "digits-1790",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-775",
+        "observed": "8"
+      },
+      {
+        "case_id": "digits-1169",
+        "observed": "2"
+      },
+      {
+        "case_id": "digits-429",
+        "observed": "7"
+      },
+      {
+        "case_id": "digits-265",
+        "observed": "9"
+      },
+      {
+        "case_id": "digits-223",
+        "observed": "6"
+      },
+      {
+        "case_id": "digits-1426",
+        "observed": "1"
+      },
+      {
+        "case_id": "digits-916",
+        "observed": "1"
+      }
+    ],
+    "release_id": "invert_reversal"
+  },
+  "wall_seconds": 0.0009397390094818547
+}
