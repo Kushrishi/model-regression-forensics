@@ -86,7 +86,8 @@ def check(module, fixture: dict, masked: bool) -> dict:
     # The training flag selects the auxiliary-loss branch, not a fit. This LFQ
     # configuration has no trainable parameters and no optimizer is constructed.
     lfq.train()
-    assert sum(parameter.numel() for parameter in lfq.parameters()) == 0
+    if sum(parameter.numel() for parameter in lfq.parameters()) != 0:
+        raise ValueError("The fixed-tensor replay requires zero trainable parameters")
     result = {"masked": masked, "oracle_commitment": oracle_loss.item()}
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -117,24 +118,63 @@ def check(module, fixture: dict, masked: bool) -> dict:
 
 
 def validate(rows: list[dict]) -> None:
+    expected = {
+        (version, fixture, masked)
+        for version in SOURCES
+        for fixture in FIXTURES
+        for masked in (False, True)
+    }
+    actual = [(row.get("version"), row.get("fixture"), row.get("masked")) for row in rows]
+    if len(actual) != len(expected) or set(actual) != expected:
+        raise ValueError("Replay requires exactly the twelve declared checks without duplicates")
     for row in rows:
         if row["version"] == "followup_repair":
-            assert row["status"] == "returned"
-            assert row["loss_matches_oracle"] and row["gradient_matches_oracle"]
-            assert row["quantized_matches_oracle"] and row["gradient_finite"]
+            valid = (
+                row.get("status") == "returned"
+                and row.get("loss_matches_oracle") is True
+                and row.get("gradient_matches_oracle") is True
+            )
         elif row["version"] == "first_repair":
             if row["masked"]:
-                assert row["status"] == "returned"
-                assert row["loss_matches_oracle"] and row["gradient_matches_oracle"]
+                valid = (
+                    row.get("status") == "returned"
+                    and row.get("loss_matches_oracle") is True
+                    and row.get("gradient_matches_oracle") is True
+                )
             else:
-                assert row["exception_type"] == "UnboundLocalError"
+                valid = (
+                    row.get("status") == "exception"
+                    and row.get("exception_type") == "UnboundLocalError"
+                )
         elif row["masked"]:
-            assert row["status"] == "returned"
-            assert not row["loss_matches_oracle"] and not row["gradient_matches_oracle"]
+            valid = (
+                row.get("status") == "returned"
+                and row.get("loss_matches_oracle") is False
+                and row.get("gradient_matches_oracle") is False
+            )
         elif row["fixture"] == "single_batch":
-            assert row["loss_matches_oracle"] and row["gradient_matches_oracle"]
+            valid = (
+                row.get("status") == "returned"
+                and row.get("loss_matches_oracle") is True
+                and row.get("gradient_matches_oracle") is True
+            )
         else:
-            assert row["exception_type"] == "RuntimeError"
+            valid = row.get("status") == "exception" and row.get("exception_type") == "RuntimeError"
+        if row.get("status") == "returned":
+            valid = valid and row.get("quantized_matches_oracle") is True
+            valid = valid and row.get("gradient_finite") is True
+        if not valid:
+            raise ValueError(
+                f"Unexpected replay outcome: {row['version']}/{row['fixture']}/{row['masked']}"
+            )
+
+
+def write_report(path: Path, result: dict) -> None:
+    """Never replace an accepted report, including a collision after preflight."""
+    encoded = json.dumps(result, indent=2, allow_nan=False) + "\n"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as target:
+        target.write(encoded)
 
 
 def main() -> None:
@@ -142,6 +182,8 @@ def main() -> None:
     parser.add_argument("--source-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.output.exists() or args.output.is_symlink():
+        parser.error("Output already exists; use a new report path")
     if torch.__version__ != "2.5.1+cpu" or einops.__version__ != "0.8.0":
         parser.error("Use the pinned CPU dependencies in the replay README")
     torch.set_num_threads(1)
@@ -197,8 +239,10 @@ def main() -> None:
             "note": "Replay times exclude imports; RSS includes interpreter/imports",
         },
     }
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
+    try:
+        write_report(args.output, result)
+    except FileExistsError:
+        parser.error("Output already exists; use a new report path")
     print(f"Validated {len(rows)} fixed-tensor checks; optimizer updates: 0")
 
 

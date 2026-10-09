@@ -10,7 +10,7 @@ The [retained JSON](LFQ_FIXED_TENSOR_REPLAY_2026_10_09.json) records twelve chec
 three immutable source versions, two fixed float32 tensors, each with and without
 a mask. The [runner](../scripts/replay_lfq_defect.py) verifies source SHA-256 before
 import, compares commitment loss and input gradients with a direct squared-error
-oracle, and asserts the observed repair sequence. Successful checks mean the
+oracle, and validates the observed repair sequence. Successful checks mean the
 expected defect or repair was reproduced, not that every source version worked.
 
 | Source version | Single batch, no mask | Single batch, mask | Two batches, no mask | Two batches, mask |
@@ -55,6 +55,10 @@ The upstream modules were inspected before execution. They remain external MIT
 licensed sources by Phil Wang; no upstream module is vendored in this repository.
 The commands download only the three pinned module files and their license.
 Outputs go to a new local file rather than replacing the accepted record.
+The runner now enforces that rule with exclusive creation, rejects incomplete or
+duplicate check sets, and keeps validation active under optimized Python. The
+retained JSON and its original runner hash/timings remain unchanged; these are
+software safeguards, not additional training or task-performance evidence.
 
 ```bash
 python3.12 -m venv /tmp/lfq-replay-env
