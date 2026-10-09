@@ -40,8 +40,8 @@ The current evidence does not demonstrate a new causal-identification method. A 
 Do not submit it as a general comparison of attribution methods or start additional
 training solely to enlarge its result table.** The new retained-score stability
 analysis adds a useful observation: the second world's TracIn root ranks are 1,
-5 and 5 across trajectories, with a primary average rank of 5. It supplies no new
-independent worlds and no explanation for that variation.
+5 and 5 across trajectories, with a primary average rank of 5. It supplies no additional
+benchmark worlds and no explanation for that variation.
 
 Negative results do not require a novel algorithm to be valuable. TMLR's current
 [acceptance criteria](https://jmlr.org/tmlr/acceptance-criteria.html) emphasize

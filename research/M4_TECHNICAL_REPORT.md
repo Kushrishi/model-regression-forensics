@@ -82,7 +82,9 @@ TracIn scores over trajectory pairs (0,1), (0,2) and (1,2) gives root ranks 5, 1
 and 5 respectively. Its primary three-trajectory average remains rank 5. The
 simple baselines remain rank 1 for every pair in both worlds; their scores do not
 depend on model training. These overlapping pair analyses are descriptive
-sensitivity checks, not independent replications or significance tests.
+sensitivity checks, not independent replications or significance tests. The two
+constructed worlds share the dataset and clean-model trajectories; they are not
+independent draws from a population of real incidents.
 
 The saved records therefore show within-world variation for TracIn as well as
 between-world variation. They do not identify its mechanism. The records declare

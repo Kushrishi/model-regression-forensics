@@ -1,6 +1,6 @@
 {
   "analysis": "descriptive retained-score rank stability",
-  "independent_world_count": 2,
+  "benchmark_world_count": 2,
   "new_training_or_scoring": false,
   "paired_trajectories_per_world": 3,
   "post_outcome_analysis": true,

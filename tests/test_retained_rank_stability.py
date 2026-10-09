@@ -16,7 +16,7 @@ spec.loader.exec_module(analysis)
 def test_retained_analysis_reproduces_accepted_output():
     expected = json.loads((ROOT / "research/retained-rank-stability.json").read_text())
     assert analysis.analyze() == expected
-    assert expected["independent_world_count"] == 2
+    assert expected["benchmark_world_count"] == 2
     assert expected["new_training_or_scoring"] is False
 
 

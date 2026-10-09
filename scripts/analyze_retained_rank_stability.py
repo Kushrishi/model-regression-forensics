@@ -90,7 +90,7 @@ def analyze():
         "analysis": "descriptive retained-score rank stability",
         "post_outcome_analysis": True,
         "new_training_or_scoring": False,
-        "independent_world_count": 2,
+        "benchmark_world_count": 2,
         "paired_trajectories_per_world": 3,
         "statistical_significance": "not_assessed",
         "worlds": worlds,
