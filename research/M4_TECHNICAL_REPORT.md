@@ -60,3 +60,32 @@ Success on this task does not establish causal responsibility. Ranking a planted
 The known target pair and disjoint candidate intent pairs create a semantic shortcut. There are only two constructed worlds, one model family, one dataset, and a restricted classifier-layer attribution scope. The three paired trajectories quantify repetition within those worlds rather than independent scenario coverage. The evidence cannot support a broad ranking of attribution methods, general root-cause identification, external validity, or statistical superiority across tasks.
 
 The study provides a reproducible example of release debugging in which simple visible-change checks outperform the evaluated model-based diagnostics. Whether controlled repair evidence can add useful causal information remains an open question. Further matched-world certification training is paused pending the independent assessment described in the [continuation review](M4_CONTRIBUTION_REVIEW.md).
+
+## Descriptive trajectory stability check, 9 October 2026
+
+A post-outcome analysis of the accepted score records checks what the primary
+average hides. This does not change the frozen rankings, select a new method,
+retune signs or access new outcomes. Input hashes are checked against the acceptance
+record before analysis. Run `python scripts/analyze_retained_rank_stability.py`;
+the retained output is [retained-rank-stability.json](retained-rank-stability.json).
+
+| Diagnostic | World 00: trajectory 0 / 1 / 2 | World 01: trajectory 0 / 1 / 2 |
+| --- | --- | --- |
+| Deterministic random reference | 3 / 3 / 3 | 3 / 3 / 3 |
+| Target-label overlap | 1 / 1 / 1 | 1 / 1 / 1 |
+| Lexical Jaccard | 1 / 1 / 1 | 1 / 1 / 1 |
+| Final-checkpoint Grad-Dot | 1 / 1 / 1 | 5 / 5 / 5 |
+| Seven-checkpoint TracIn | 1 / 1 / 1 | 1 / 5 / 5 |
+
+Entries are planted-change ranks among five candidates. In world 01, averaging
+TracIn scores over trajectory pairs (0,1), (0,2) and (1,2) gives root ranks 5, 1
+and 5 respectively. Its primary three-trajectory average remains rank 5. The
+simple baselines remain rank 1 for every pair in both worlds; their scores do not
+depend on model training. These overlapping pair analyses are descriptive
+sensitivity checks, not independent replications or significance tests.
+
+The saved records therefore show within-world variation for TracIn as well as
+between-world variation. They do not identify its mechanism. The records declare
+that model checkpoint bytes were not retained; hashes are not executable weights.
+Fresh gradient/target/layer ablations cannot be reconstructed from these score
+records alone. No such ablation or new training was performed.

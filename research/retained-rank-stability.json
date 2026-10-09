@@ -1,0 +1,354 @@
+{
+  "analysis": "descriptive retained-score rank stability",
+  "independent_world_count": 2,
+  "new_training_or_scoring": false,
+  "paired_trajectories_per_world": 3,
+  "post_outcome_analysis": true,
+  "schema_version": 1,
+  "source_artifact_sha256": {
+    "research/M4_RESULT_ARTIFACTS/blind_aggregate.json": "364ef75ba5d2d3b36106ef06dcaad50ecc3f3abceea8753a18cbf218814d4927",
+    "research/M4_RESULT_ARTIFACTS/truth_world_00.json": "a6fa60dda60a6dfa2d106c97c3e8446049ead57272bb01bd7caef53072562522",
+    "research/M4_RESULT_ARTIFACTS/truth_world_01.json": "ad90eff14ee6c650c083eccc8c2387bfb210fb42e54994d7d1b3a0fa51ecdf92",
+    "research/M4_RESULT_ARTIFACTS/world_00_t0.json": "39b97e6049c68733ef0435c01ece6d09f4f772e80f991f6a6b45956a40443f36",
+    "research/M4_RESULT_ARTIFACTS/world_00_t1.json": "4c1552f72a38f10d46d0c744d18d2f1463f8ab01b7f9d05ebff30476d8d5f25e",
+    "research/M4_RESULT_ARTIFACTS/world_00_t2.json": "bde3745e4e1c045cc24668e525af7b3cd9794e0457d4066d2d2ff43acf6c5f5a",
+    "research/M4_RESULT_ARTIFACTS/world_01_t0.json": "58db15e9e76f2c0dcd878c1b94f47d60c1f6ba2f8d914dc5bfb2ec791748c8a7",
+    "research/M4_RESULT_ARTIFACTS/world_01_t1.json": "2e1c5e1c47e8f29953707221483ac30b81bb09f08f8ae07b040a9912bfe406ab",
+    "research/M4_RESULT_ARTIFACTS/world_01_t2.json": "aff98ed62de290bc03e18934a772cb9b703fcc0b0ba8760e94fdeba4c45bc627"
+  },
+  "statistical_significance": "not_assessed",
+  "worlds": [
+    {
+      "checkpoint_bytes_retained": false,
+      "methods": [
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 3
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 3
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 3
+            }
+          ],
+          "method": "Deterministic random reference",
+          "primary_root_rank": 3,
+          "trajectory_root_ranks": [
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 1
+            }
+          ],
+          "method": "Target-label overlap",
+          "primary_root_rank": 1,
+          "trajectory_root_ranks": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 1
+            }
+          ],
+          "method": "Lexical Jaccard",
+          "primary_root_rank": 1,
+          "trajectory_root_ranks": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 1
+            }
+          ],
+          "method": "Final-checkpoint Grad-Dot",
+          "primary_root_rank": 1,
+          "trajectory_root_ranks": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 1
+            }
+          ],
+          "method": "Seven-checkpoint TracIn",
+          "primary_root_rank": 1,
+          "trajectory_root_ranks": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "world": "world_00"
+    },
+    {
+      "checkpoint_bytes_retained": false,
+      "methods": [
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 3
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 3
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 3
+            }
+          ],
+          "method": "Deterministic random reference",
+          "primary_root_rank": 3,
+          "trajectory_root_ranks": [
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 1
+            }
+          ],
+          "method": "Target-label overlap",
+          "primary_root_rank": 1,
+          "trajectory_root_ranks": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 1
+            }
+          ],
+          "method": "Lexical Jaccard",
+          "primary_root_rank": 1,
+          "trajectory_root_ranks": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 5
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 5
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 5
+            }
+          ],
+          "method": "Final-checkpoint Grad-Dot",
+          "primary_root_rank": 5,
+          "trajectory_root_ranks": [
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "leave_one_trajectory_out": [
+            {
+              "included_trajectories": [
+                0,
+                1
+              ],
+              "root_rank": 5
+            },
+            {
+              "included_trajectories": [
+                0,
+                2
+              ],
+              "root_rank": 1
+            },
+            {
+              "included_trajectories": [
+                1,
+                2
+              ],
+              "root_rank": 5
+            }
+          ],
+          "method": "Seven-checkpoint TracIn",
+          "primary_root_rank": 5,
+          "trajectory_root_ranks": [
+            1,
+            5,
+            5
+          ]
+        }
+      ],
+      "world": "world_01"
+    }
+  ]
+}
