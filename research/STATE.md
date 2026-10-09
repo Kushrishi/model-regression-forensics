@@ -8,7 +8,13 @@ predictions/costs, repair assessment and portable input-level inspection.
 The [real-text training-release example](../docs/banking-investigation.md) is
 complete: five fits, 1,969 development cases, and 11,814 independently reproduced
 predictions across six executions. Only the combined rollback met the declared
-policy. Next: independent first use and a separate comparative evaluation design.
+policy. The [incremental intent release](../docs/incremental-intent-release.md)
+also completed: 15 fits across three fixed CLINC150 development scenarios.
+Ordinary full-data retraining was the only acceptable repair in each scenario;
+partial rollbacks failed. These constructed, overlapping scenarios establish
+application behavior, not a novel diagnostic advantage. Next: independent first
+use with an engineer's own saved predictions and, separately, qualified real
+incidents for a comparative research design.
 That prospective engineering scope follows the owner's continuation decision;
 no new confirmatory study or official-test access follows. No paper is published.
 
