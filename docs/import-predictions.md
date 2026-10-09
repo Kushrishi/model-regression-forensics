@@ -100,3 +100,7 @@ recomputed assessment and every release record matched the original investigatio
 Only restoring both changed components passed its policy. No additional model
 fits were performed. This verifies data interchange on that known example; it
 is not independent first-use validation or evidence of comparative research value.
+
+For releases that must retain a new capability, slices can also declare
+`minimum_accuracy`. See [release acceptance requirements](release-acceptance.md)
+for the combined policy, a runnable file-only example and fair-comparison limits.

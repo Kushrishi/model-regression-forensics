@@ -1,0 +1,18 @@
+{
+  "cases": [
+    {"case_id": "existing-1", "expected": "old"},
+    {"case_id": "existing-2", "expected": "old"},
+    {"case_id": "new-1", "expected": "new"},
+    {"case_id": "new-2", "expected": "new"}
+  ],
+  "slices": [
+    {"name": "Existing capability", "case_ids": ["existing-1", "existing-2"], "maximum_accuracy_drop": 0.0},
+    {"name": "Required new capability", "case_ids": ["new-1", "new-2"], "maximum_accuracy_drop": 0.0, "minimum_accuracy": 1.0}
+  ],
+  "declared_changes": {
+    "scope": "Hand-authored software fixture, not model predictions or research evidence",
+    "candidate": "Illustrates a new capability alongside an old-capability regression",
+    "complete_rollback": "Reuses baseline predictions; loses the required new capability",
+    "targeted_repair": "Illustrates a repair satisfying both requirements"
+  }
+}

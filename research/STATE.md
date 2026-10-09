@@ -112,3 +112,15 @@ Banking77 example reproduced all 11,814 predictions and the complete recomputed
 assessment without additional fits. Independent human first use and comparative
 advantage over ordinary rollback remain unmeasured. See
 [the user walkthrough](../docs/import-predictions.md).
+
+## Release acceptance requirements — 2026-10-09
+
+A slice can now require `minimum_accuracy` as well as a maximum baseline-relative
+accuracy drop. Both conditions are enforced and included in policy identity. This
+allows a real new-capability requirement to disqualify complete rollback when it
+removes that capability. The four-case hand-authored fixture verifies this
+contract; it is not trained-model or research evidence. Requirements must precede
+outcome inspection, and ordinary complete/targeted rollback remain mandatory
+comparators. Existing Banking77 assessments and digests remain unchanged. No
+new fit or comparative study was executed. See
+[release acceptance](../docs/release-acceptance.md).

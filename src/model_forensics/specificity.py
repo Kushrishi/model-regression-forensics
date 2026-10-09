@@ -34,6 +34,7 @@ def _policy_signature(report: dict) -> tuple:
                     row["count"],
                     row["maximum_accuracy_drop"],
                     row["baseline_accuracy"],
+                    row.get("minimum_accuracy"),
                 )
             )
         except KeyError as error:
