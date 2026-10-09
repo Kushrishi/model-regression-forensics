@@ -75,3 +75,28 @@ validation is not confirmatory scientific evidence or future threshold selection
 
 The example writes zero cost placeholders because its retained arithmetic evidence
 did not measure worker timing. These zeros are not performance observations.
+
+## Optional local payload verification
+
+The replay command can additionally check bytes using both `--artifact-map paths.json`
+and `--artifact-root evidence`. The map is an explicit JSON object from artifact
+identity to a canonical relative POSIX path, for example `{"release-good":"good.json"}`.
+Supply every referenced identity exactly once and no unrelated entries. Identities
+are never interpreted as paths or download URLs. A conflicting hash for the same
+identity is rejected. Evaluator provenance is included only when `--truth` is
+explicitly supplied; this option does not discover or unseal evaluator records.
+
+Checks use bounded streaming SHA-256 over regular local files only: 64 MiB per
+artifact, 256 MiB aggregate, and 8 MiB for the map. Absolute paths, traversal,
+symlinks, nonregular files, missing files, mismatches and observed in-read changes
+fail closed. Descriptor-based traversal requires POSIX support; unsupported
+platforms fail rather than silently using a weaker fallback. The root's parent
+directories are trusted. This is not protection against arbitrary hostile
+concurrent filesystem mutation. Do not map protected outcomes into a debugging
+manifest. Nothing extracts archives, previews contents, downloads or trains.
+
+The optional `payload_verification/0.1` report records identities, digests and byte
+counts, not local paths or payload contents. It certifies only that the bytes read
+matched the references, not that a run actually occurred, an artifact is authentic,
+a diff is complete, or a diagnosis is scientifically justified. Without these flags,
+the original report and digest semantics are unchanged. Output remains non-clobbering.

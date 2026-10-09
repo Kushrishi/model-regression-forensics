@@ -62,3 +62,10 @@ traced the two DeepFD leads to their original reports and found additional sourc
 reconstruction differences. Neither qualifies as a release-regression incident;
 the screened set still contains zero qualified cases. This does not close the
 maintained discovery/software track or authorize a new training study.
+
+A [bounded compiler-incident screen](VNEXT_COMPILER_INCIDENT_SCREEN_2026_10_09.md)
+adds three public leads, including reported masking and multi-change repairs.
+Two remain provenance leads only; none qualifies for a new training study. Their
+compiler numerical checks must not be presented as task-performance evidence.
+The ledger now offers opt-in bounded local payload hashing, which checks byte
+identity rather than run authenticity or scientific responsibility.
