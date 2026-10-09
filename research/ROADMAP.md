@@ -1,48 +1,30 @@
-# Research direction
+# Project direction
 
-Updated October 7, 2026.
+Updated 9 October 2026. [Current status](STATE.md) records completed evidence.
 
-## Completed
+## Deliverable
 
-- Development retraining and restoration studies, including negative results.
-- Structurally matched Banking77 candidates and a two-world localization comparison.
-- A technical report with complete rankings and reproducible aggregation.
-- An exact-label prediction comparator, an external digits example and an ambiguous-repair example.
+A local classification-release investigation application: run baseline and
+candidate models, inspect actual failed examples and complete changes, execute
+repairs, assess collateral regressions, and reopen/export the result.
 
-The [experiment history](EXPERIMENT_HISTORY.md) records how the design developed. The [technical report](M4_TECHNICAL_REPORT.md) presents the matched study.
+## Current sequence
 
-## Historical continuation requirements
+1. Completed: the [real-text training-release workflow](../docs/banking-investigation.md), building on the digit workflow.
+2. Make supported installation, model/data recovery and input-level inspection reproducible outside the implementation environment.
+3. Evaluate practical diagnosis/repair decisions against full-diff inspection, targeted rollback and suitable intervention policies at matched cost.
+4. Release a focused package after licensing and independent first-use acceptance. Decide on a paper from comparative evidence, not feature count.
 
-The next research question is whether controlled repair evidence can improve a specific debugging decision when several changes are plausible. A follow-up design needs:
+## Scientific boundary
 
-1. A task where target-label overlap does not immediately reveal the planted change.
-2. Alternative repairs or interactions that make explanation different from recovery.
-3. A simple baseline using the same prediction and intervention evidence.
-4. A defined measure of incorrect unique attribution and useful abstention.
-5. A comparison with the closest existing methods.
+The matched study and [experiment history](EXPERIMENT_HISTORY.md) remain intact.
+Ranking, successful repair and unique historical causation are different claims.
+Seeds are repetitions, not independent incidents. Official Banking77 test data
+remain unopened. Constructed engineering examples cannot establish broad diagnosis
+quality or novelty; simple methods and easy cases remain in any comparison.
 
-These are design requirements, not an approved experiment. Further matched-world certification training remains paused under the [continuation requirements](M4_CONTINUATION_GATE.md), which historically required independent scientific review. The [7 October owner amendment](GOVERNANCE_AMENDMENT_2026_10_07.md) allows a small development-only falsification pilot before review. No independent review occurred; the pilot cannot become confirmatory evidence, and a failed pilot closes v2.
-
-## Possible outputs
-
-The completed evidence already supports a technical report and a reproducible case study. A workshop paper would require a suitable venue and an assessment of what the case study adds. A broader method paper would require a distinct method and stronger evidence across tasks.
-
-The comparator could become a small maintained package if external users find its record validation and repair reporting useful. General prediction comparison alone is already available elsewhere; a package release needs a clear purpose and settled licensing.
-
-If a follow-up cannot establish a useful research question, the completed report and software remain the project's outcome. More training runs alone would not resolve that issue.
-
-## Historical 7 October v2 closure
-
-The owner-authorized development attempt stopped at its predeclared Stage-1
-feasibility gate. See [the negative closure](DEVELOPMENT_CLOSURE_2026_10_07.md).
-No new benchmark, confirmatory M5, larger substrate or MRF v3 is planned. The
-completed v1 case study/software and development failure remain reproducible.
-
-## Subsequent vNext discovery authorization
-
-The [new owner amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md) authorizes a distinct
-non-training track: bounded prior-art audit, external case screening, incident
-manifests and retrospective software tests. v2 stays closed. A future experimental
-proposal requires a useful externally grounded decision problem surviving complete
-diff inspection and strong cheap baselines; no modern-model training is next by
-default. No large benchmark or confirmatory study is currently approved.
+The [7 October closure](DEVELOPMENT_CLOSURE_2026_10_07.md) closes the tested small
+SmolLM2 recipe. The [later discovery amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md)
+and incident audits retain their dated scope. The subsequent owner-approved
+application direction permits the separately specified development workflow;
+no independent review is implied and the closed experiment is not retuned.

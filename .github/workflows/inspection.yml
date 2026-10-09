@@ -4,6 +4,7 @@ on:
     paths:
       - 'src/model_forensics/**'
       - 'examples/investigations/**'
+      - 'examples/banking_investigation.py'
       - 'tests/browser/**'
       - '.github/workflows/inspection.yml'
   workflow_dispatch:
@@ -18,9 +19,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e .
+      - run: python -m model_forensics.investigation_report examples/investigations/digits examples/investigations/digits/current.html
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps chromium --only-shell
       - run: node tests/browser/investigation.cjs
+        env:
+          MRF_REPORT_HTML: current.html
       - uses: actions/upload-artifact@v4
         with:
           name: investigation-browser-views

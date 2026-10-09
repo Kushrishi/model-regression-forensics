@@ -97,12 +97,18 @@ def render(directory: Path, output: Path) -> None:
         values = (key, expected[key], *(p[key] for p in predictions))
         rows.append(
             f'<tr data-state="{state}"><td>{inputs.get(key, "Not supplied")}</td>'
-            + "".join(f"<td>{esc(v)}</td>" for v in values)
+            + "".join(
+                f'<td><span class="case-id" title="{esc(v)}">{esc(v)}</span></td>'
+                if index == 0
+                else f'<td title="{esc(v)}">{esc(v.replace(chr(95), chr(32)))}</td>'
+                for index, v in enumerate(values)
+            )
             + "</tr>"
         )
     case_rows = "".join(rows)
     headers = "".join(
-        f"<th>{esc(v)}</th>" for v in ("Input", "Case", "Expected", *plan["execution_order"])
+        f"<th>{esc(v.replace(chr(95), chr(32)))}</th>"
+        for v in ("Input", "Case", "Expected", *plan["execution_order"])
     )
     costs = [
         {
@@ -115,7 +121,7 @@ def render(directory: Path, output: Path) -> None:
     page = """<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Model release investigation</title>
-<style>body{font:16px system-ui;max-width:1200px;margin:40px auto;padding:0 24px;
+<style>body{font:16px system-ui;max-width:1400px;margin:40px auto;padding:0 24px;
 color:#17212b}
 table{border-collapse:collapse;width:100%;margin:20px 0;display:block;
 overflow:auto}
@@ -130,6 +136,13 @@ tr[hidden]{display:none}
 details{margin:12px 0}
 label{display:inline-flex;flex-direction:column;margin-right:12px}
 
+.case-scroll{overflow:auto}
+#cases{display:table;table-layout:fixed;width:100%;min-width:1280px;font-size:14px}
+#cases th:first-child{width:24%}
+#cases th:nth-child(2){width:9%}
+#cases td,#cases th{overflow-wrap:anywhere}
+.case-id{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+font:12px ui-monospace,monospace}
 summary{cursor:pointer;font-weight:600}
 h1,h2{line-height:1.2}
 </style>
@@ -157,12 +170,15 @@ historical cause. Slice results may overlap and are not statistical significance
         '<option value="unchanged">Unchanged prediction</option></select></label> '
         '<button id="export-cases" type="button">Export visible case IDs</button>'
         f'<p id="case-count" role="status">{len(expected)} cases</p>'
-        f'<table id="cases"><thead><tr>{headers}</tr></thead><tbody>{case_rows}</tbody></table>'
+        f'<div class="case-scroll"><table id="cases"><thead><tr>{headers}</tr></thead>'
+        f"<tbody>{case_rows}</tbody></table></div>"
         "<noscript>Filtering requires JavaScript; all case records are shown.</noscript></section>"
     )
     page += (
-        "<h2>Measured execution cost</h2><p>Function calls only; model setup is excluded. "
-        "CPU covers the current process, not external workers.</p>"
+        "<h2>Measured execution cost</h2><p>Supplied function calls only; "
+        "loading or training inside a call is included. "
+        "Preparation outside those calls is excluded. CPU covers the current process, "
+        "not external workers.</p>"
         f"<pre>{esc(json.dumps(costs, indent=2))}</pre>"
         "<details><summary>Declared changes (caller supplied)</summary>"
         f"<pre>{esc(json.dumps(plan['declared_changes'], indent=2))}</pre></details></html>"
@@ -182,11 +198,11 @@ const rows = [...document.querySelectorAll('#cases tbody tr')];
 const search = document.getElementById('case-search');
 const state = document.getElementById('case-state');
 function filterCases() {
-  const query = search.value.toLowerCase();
+  const query = search.value.toLowerCase().replaceAll('_', ' ');
   for (const row of rows) {
     const match = state.value === 'all' || row.dataset.state === state.value ||
       (state.value === 'different' && row.dataset.state !== 'unchanged');
-    row.hidden = !match || !row.textContent.toLowerCase().includes(query);
+    row.hidden = !match || !row.textContent.toLowerCase().replaceAll('_', ' ').includes(query);
   }
   document.getElementById('case-count').textContent =
     `${rows.filter(row => !row.hidden).length} of ${rows.length} cases`;

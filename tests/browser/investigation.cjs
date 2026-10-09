@@ -10,16 +10,23 @@ const {chromium} = require('playwright');
     const page = await browser.newPage({viewport: {width: 1440, height: 1000}});
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    const root = path.resolve('examples/investigations/digits');
+    const root = path.resolve(process.env.MRF_REPORT_DIR || 'examples/investigations/digits');
     const report = JSON.parse(fs.readFileSync(path.join(root, 'report.json')));
     const plan = JSON.parse(fs.readFileSync(path.join(root, 'plan.json')));
     const all = report.regressed.slices.find(row => row.name === 'all');
-    await page.goto(pathToFileURL(path.join(root, 'index.html')).href);
+    await page.goto(pathToFileURL(path.join(root, process.env.MRF_REPORT_HTML || 'index.html')).href);
     const visible = page.locator('#cases tbody tr:visible');
-    assert.equal(await visible.count(), 540);
-    assert.equal(await page.locator('#cases img').count(), 540);
-    assert(await page.locator('#cases img').evaluateAll(images =>
-      images.every(image => image.complete && image.naturalWidth === 8 && image.naturalHeight === 8)));
+    assert.equal(await visible.count(), plan.cases.length);
+    const images = page.locator('#cases img');
+    if (await images.count()) {
+      assert.equal(await images.count(), plan.cases.length);
+      assert(await images.evaluateAll(items => items.every(image =>
+        image.complete && image.naturalWidth === 8 && image.naturalHeight === 8)));
+    } else {
+      const inputs = JSON.parse(fs.readFileSync(path.join(root, 'case_inputs.json')));
+      const example = Object.values(inputs)[0].text;
+      assert((await page.locator('#cases').textContent()).includes(example));
+    }
     await page.selectOption('#case-state', 'regressed');
     assert.equal(await visible.count(), all.regressed_case_ids.length);
     const target = all.regressed_case_ids[0];
@@ -34,7 +41,7 @@ const {chromium} = require('playwright');
     assert(ids.every(id => all.regressed_case_ids.includes(id) && id.includes(target)));
     await page.fill('#case-search', 'no-such-case');
     assert.equal(await visible.count(), 0);
-    assert.match(await page.locator('#case-count').textContent(), /^0 of 540 cases$/);
+    assert.equal(await page.locator('#case-count').textContent(), `0 of ${plan.cases.length} cases`);
     await page.fill('#case-search', '');
     await page.selectOption('#case-state', 'all');
     assert.equal(await visible.count(), plan.cases.length);
@@ -44,7 +51,7 @@ const {chromium} = require('playwright');
     await page.locator('#case-inspection').evaluate(element => element.scrollIntoView());
     await page.screenshot({path: 'inspection-mobile.png'});
     assert.deepEqual(errors, []);
-    console.log('540 previews, outcome filters, search, empty state and JSON export passed');
+    console.log(`${plan.cases.length} cases: previews, filters, search, empty state and JSON export passed`);
   } finally {
     await browser.close();
   }
