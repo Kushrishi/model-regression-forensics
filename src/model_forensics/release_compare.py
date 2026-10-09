@@ -84,6 +84,10 @@ def compare_releases(spec: Comparison) -> dict:
     for item in canonical["slices"]:
         item["case_ids"].sort()
     encoded = json.dumps(canonical, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    # Repairs must share the actual cases, labels, baseline predictions and slice
+    # membership. Equal counts and baseline accuracy cannot establish this.
+    policy = {key: canonical[key] for key in ("cases", "baseline", "slices")}
+    policy_encoded = json.dumps(policy, sort_keys=True, separators=(",", ":"), allow_nan=False)
     rows = []
     for item in sorted(spec.slices, key=lambda item: item.name):
         ids = sorted(item.case_ids)
@@ -104,8 +108,9 @@ def compare_releases(spec: Comparison) -> dict:
             }
         )
     return {
-        "schema_version": "release-comparison-pilot/0.1",
+        "schema_version": "release-comparison-pilot/0.2",
         "input_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
+        "evaluation_policy_sha256": hashlib.sha256(policy_encoded.encode()).hexdigest(),
         "baseline_release_id": spec.baseline.release_id,
         "candidate_release_id": spec.candidate.release_id,
         "passed": all(item["passed"] for item in rows),

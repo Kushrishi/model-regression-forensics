@@ -5,6 +5,7 @@ from model_forensics.specificity import assess_repairs
 
 def report(*, passed, baseline="v1", candidate="v2", baseline_accuracy=1.0):
     return {
+        "evaluation_policy_sha256": "a" * 64,
         "baseline_release_id": baseline,
         "candidate_release_id": candidate,
         "passed": passed,

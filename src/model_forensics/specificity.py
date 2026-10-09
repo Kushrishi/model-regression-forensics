@@ -7,6 +7,7 @@ interventions under the same evaluation policy.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 
 
@@ -15,11 +16,14 @@ def _policy_signature(report: dict) -> tuple:
     try:
         rows = report["slices"]
         baseline_id = report["baseline_release_id"]
+        policy_digest = report["evaluation_policy_sha256"]
     except KeyError as error:
         raise ValueError(f"missing comparison field: {error.args[0]}") from error
 
     if not isinstance(rows, list) or not rows:
         raise ValueError("comparison report must contain nonempty slices")
+    if not isinstance(policy_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", policy_digest):
+        raise ValueError("comparison report requires an evaluation policy SHA-256")
 
     signature = []
     for row in rows:
@@ -34,7 +38,7 @@ def _policy_signature(report: dict) -> tuple:
             )
         except KeyError as error:
             raise ValueError(f"missing slice field: {error.args[0]}") from error
-    return baseline_id, tuple(sorted(signature))
+    return baseline_id, policy_digest, tuple(sorted(signature))
 
 
 def assess_repairs(regressed_report: dict, repair_reports: Mapping[str, dict]) -> dict:
