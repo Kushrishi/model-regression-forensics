@@ -11,7 +11,7 @@ import pytest
 from pydantic import ValidationError
 
 from model_forensics.artifact_verify import read_map, references, verify_payloads
-from model_forensics.incidents import Ledger, Truth, decision_metrics, digest, summarize
+from model_forensics.incidents import Incident, Ledger, Truth, decision_metrics, digest, summarize
 
 
 def artifact(name):
@@ -186,6 +186,29 @@ def test_truth_identity_and_unscored_ledger():
     record["incident_sha256"] = "b" * 64
     with pytest.raises(ValueError, match="different incident"):
         summarize(ledger, Truth.model_validate_json(json.dumps(record)))
+
+
+@pytest.mark.parametrize("location", ["incident", "run", "policy"])
+def test_conflicting_artifact_identity_without_payload_verification(location):
+    p = payload()
+    conflict = {"identity": "good", "sha256": "b" * 64}
+    if location == "incident":
+        p["incident"]["environment"] = conflict
+        with pytest.raises(ValidationError, match="conflicting hashes"):
+            Incident.model_validate_json(json.dumps(p["incident"]))
+    elif location == "run":
+        p["runs"][0]["artifact"] = conflict
+    else:
+        p["decision"]["policy"] = conflict
+    with pytest.raises(ValidationError, match="conflicting hashes"):
+        load(p)
+
+
+def test_reusing_one_consistent_artifact_identity_is_allowed():
+    p = payload()
+    p["decision"]["policy"] = copy.deepcopy(p["incident"]["environment"])
+    ledger = load(p)
+    assert summarize(ledger)["attempts"] == 2
 
 
 def test_cli_no_clobber_and_replay(tmp_path):

@@ -27,6 +27,14 @@ class Artifact(StrictRecord):
     sha256: Digest
 
 
+def validate_artifact_identities(artifacts: list[Artifact]) -> None:
+    hashes = {}
+    for artifact in artifacts:
+        previous = hashes.setdefault(artifact.identity, artifact.sha256)
+        if previous != artifact.sha256:
+            raise ValueError("conflicting hashes for one artifact identity")
+
+
 class Candidate(StrictRecord):
     candidate_id: Identifier
     category: Literal[
@@ -69,6 +77,16 @@ class Incident(StrictRecord):
             raise ValueError("candidate IDs must be unique")
         if self.good_release == self.bad_release:
             raise ValueError("good and bad release identities must differ")
+        validate_artifact_identities(
+            [
+                self.good_release,
+                self.bad_release,
+                self.environment,
+                self.evaluation,
+                *(c.visible_diff for c in self.candidates),
+                *self.engineer_visible_evidence,
+            ]
+        )
         return self
 
 
@@ -144,6 +162,18 @@ class Ledger(StrictRecord):
             raise ValueError("unknown candidate in run or decision")
         if not set(self.decision.evidence_run_ids) <= set(ids):
             raise ValueError("decision refers to unknown intervention evidence")
+        validate_artifact_identities(
+            [
+                self.incident.good_release,
+                self.incident.bad_release,
+                self.incident.environment,
+                self.incident.evaluation,
+                *(c.visible_diff for c in self.incident.candidates),
+                *self.incident.engineer_visible_evidence,
+                *(r.artifact for r in self.runs),
+                self.decision.policy,
+            ]
+        )
         return self
 
 
