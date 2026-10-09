@@ -48,17 +48,18 @@ jobs:
 
       - name: Required numerical checks (no skips)
         run: |
-          uv run --with captum==0.9.0 pytest \
+          uv run --with captum==0.9.0 --with einops==0.8.0 pytest \
             tests/test_exp009_graddot.py \
             tests/test_exp009_tracin.py \
             tests/test_exp009_epoch_checkpoints.py \
+            tests/test_lfq_replay_contract.py \
             --junitxml=numerical-results.xml
           python - <<'PY'
           import xml.etree.ElementTree as ET
 
           root = ET.parse("numerical-results.xml").getroot()
           cases = list(root.iter("testcase"))
-          assert len(cases) >= 11, "Required numerical tests were not collected"
+          assert len(cases) >= 25, "Required numerical and replay tests were not collected"
           skipped = [case.attrib.get("name") for case in cases if case.find("skipped") is not None]
           assert not skipped, f"Required numerical tests skipped: {skipped}"
           PY
