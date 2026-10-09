@@ -1,6 +1,6 @@
 # Research status
 
-Updated October 9, 2026 (bounded provenance follow-up; no new training).
+Updated October 9, 2026 (LFQ fixed-tensor reproduction; no new training).
 
 The matched Banking77 localization study is complete. The repository also includes a prediction-comparison utility and an example in which two different repairs recover the same behavior. No paper has been submitted or published.
 
@@ -80,3 +80,10 @@ A source-only follow-up now pins both masked-LFQ maintainer repairs and the
 DeepSpeed merge parent/complete fix scope. Repair provenance improved; neither
 lead supplies a reconstructed repeated training-task regression. Qualification
 remains zero and the bounded follow-up is closed without training.
+
+A [fixed-tensor LFQ replay](LFQ_FIXED_TENSOR_REPLAY_2026_10_09.md) now independently
+reproduces incorrect commitment losses/gradients, the first repair's unmasked
+exception and the follow-up repair's agreement with a direct numerical oracle.
+Twelve CPU checks use zero trainable parameters and zero optimizer updates. This
+adds executable software evidence, not trained-task restoration or a qualified
+release-regression incident. No new training is authorized by this result.
