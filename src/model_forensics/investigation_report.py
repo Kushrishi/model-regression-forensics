@@ -1,4 +1,4 @@
-"""Recompute saved investigations and render a portable, non-executable HTML report."""
+"""Recompute saved investigations and render a portable HTML inspection report."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import html
 import json
 from pathlib import Path
 
+from model_forensics.case_previews import previews
 from model_forensics.release_compare import Comparison, Release
 from model_forensics.repair_compare import RepairComparison, compare_repairs
 
@@ -46,7 +47,7 @@ def reopen(directory: Path) -> tuple[dict, dict, list[dict]]:
 
 
 def render(directory: Path, output: Path) -> None:
-    """Create a self-contained report with escaped text and no scripts or requests."""
+    """Render escaped inputs and local filtering without network requests."""
     plan, report, records = reopen(directory)
     esc = lambda value: html.escape(str(value), quote=True)  # noqa: E731
     sections = []
@@ -69,28 +70,40 @@ def render(directory: Path, output: Path) -> None:
             for row in comparison["slices"]
         )
         sections.append(
-            f"<h2>{esc(name)}</h2><table><thead><tr>"
+            f"<details><summary>{esc(name.replace(chr(95), chr(32)))}: slice results</summary>"
+            "<table><thead><tr>"
             "<th>Slice</th><th>Cases</th><th>Baseline accuracy</th>"
             "<th>Release accuracy</th><th>Policy result</th>"
-            f"<th>Regressed cases</th></tr></thead><tbody>{rows}</tbody></table>"
+            f"<th>Regressed cases</th></tr></thead><tbody>{rows}</tbody></table></details>"
         )
     expected = {case["case_id"]: case["expected"] for case in plan["cases"]}
     predictions = [
         {p["case_id"]: p["observed"] for p in record["release"]["predictions"]}
         for record in records
     ]
-    changed = [
-        key for key in expected if any(p[key] != predictions[0][key] for p in predictions[1:])
-    ]
-    case_rows = "".join(
-        "<tr>"
-        + "".join(
-            f"<td>{esc(v)}</td>" for v in (key, expected[key], *(p[key] for p in predictions))
+    inputs = previews(directory, set(expected))
+    rows = []
+    for key in expected:
+        before, after = predictions[0][key], predictions[1][key]
+        state = (
+            "regressed"
+            if before == expected[key] and after != expected[key]
+            else "improved"
+            if before != expected[key] and after == expected[key]
+            else "changed"
+            if before != after
+            else "unchanged"
         )
-        + "</tr>"
-        for key in changed
+        values = (key, expected[key], *(p[key] for p in predictions))
+        rows.append(
+            f'<tr data-state="{state}"><td>{inputs.get(key, "Not supplied")}</td>'
+            + "".join(f"<td>{esc(v)}</td>" for v in values)
+            + "</tr>"
+        )
+    case_rows = "".join(rows)
+    headers = "".join(
+        f"<th>{esc(v)}</th>" for v in ("Input", "Case", "Expected", *plan["execution_order"])
     )
-    headers = "".join(f"<th>{esc(v)}</th>" for v in ("Case", "Expected", *plan["execution_order"]))
     costs = [
         {
             "release": r["release"]["release_id"],
@@ -103,10 +116,23 @@ def render(directory: Path, output: Path) -> None:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Model release investigation</title>
 <style>body{font:16px system-ui;max-width:1200px;margin:40px auto;padding:0 24px;
-color:#17212b}table{border-collapse:collapse;width:100%;margin:20px 0;display:block;
-overflow:auto}th,td{padding:10px;border:1px solid #ccd3da;text-align:left;
-vertical-align:top}th{background:#edf2f6}pre{white-space:pre-wrap;overflow-wrap:anywhere}
-summary{cursor:pointer;font-weight:600}h1,h2{line-height:1.2}</style>
+color:#17212b}
+table{border-collapse:collapse;width:100%;margin:20px 0;display:block;
+overflow:auto}
+th,td{padding:10px;border:1px solid #ccd3da;text-align:left;
+vertical-align:top}
+th{background:#edf2f6}
+pre{white-space:pre-wrap;overflow-wrap:anywhere}
+
+input,select,button{font:inherit;padding:8px;margin:4px}
+tr[hidden]{display:none}
+
+details{margin:12px 0}
+label{display:inline-flex;flex-direction:column;margin-right:12px}
+
+summary{cursor:pointer;font-weight:600}
+h1,h2{line-height:1.2}
+</style>
 <h1>Model release investigation</h1>
 <p>Recomputed from saved predictions. Repair success does not identify a unique
 historical cause. Slice results may overlap and are not statistical significance tests.</p>
@@ -120,8 +146,19 @@ historical cause. Slice results may overlap and are not statistical significance
     )
     page += "".join(sections)
     page += (
-        f"<details><summary>Changed predictions ({len(changed)} cases)</summary>"
-        f"<table><thead><tr>{headers}</tr></thead><tbody>{case_rows}</tbody></table></details>"
+        '<section id="case-inspection"><h2>Inspect cases</h2>'
+        "<p>Outcome filters compare the candidate with the baseline. "
+        "Repair predictions appear alongside them. Previews are caller-supplied inputs.</p>"
+        '<label>Search cases or labels <input id="case-search" type="search"></label> '
+        '<label>Candidate outcome <select id="case-state"><option value="all">All cases</option>'
+        '<option value="different">Changed prediction</option>'
+        '<option value="regressed">Correct → incorrect</option>'
+        '<option value="improved">Incorrect → correct</option>'
+        '<option value="unchanged">Unchanged prediction</option></select></label> '
+        '<button id="export-cases" type="button">Export visible case IDs</button>'
+        f'<p id="case-count" role="status">{len(expected)} cases</p>'
+        f'<table id="cases"><thead><tr>{headers}</tr></thead><tbody>{case_rows}</tbody></table>'
+        "<noscript>Filtering requires JavaScript; all case records are shown.</noscript></section>"
     )
     page += (
         "<h2>Measured execution cost</h2><p>Function calls only; model setup is excluded. "
@@ -129,6 +166,42 @@ historical cause. Slice results may overlap and are not statistical significance
         f"<pre>{esc(json.dumps(costs, indent=2))}</pre>"
         "<details><summary>Declared changes (caller supplied)</summary>"
         f"<pre>{esc(json.dumps(plan['declared_changes'], indent=2))}</pre></details></html>"
+    )
+    attribution = directory / "input_attribution.txt"
+    if attribution.exists():
+        with attribution.open(encoding="utf-8") as stream:
+            notice = stream.read(10001)
+        if len(notice) > 10000:
+            raise ValueError("input attribution exceeds 10000 characters")
+        page = page.replace("</html>", "") + f"<h2>Input attribution</h2><p>{esc(notice)}</p>"
+    page = (
+        page.replace("</html>", "")
+        + """
+<script>
+const rows = [...document.querySelectorAll('#cases tbody tr')];
+const search = document.getElementById('case-search');
+const state = document.getElementById('case-state');
+function filterCases() {
+  const query = search.value.toLowerCase();
+  for (const row of rows) {
+    const match = state.value === 'all' || row.dataset.state === state.value ||
+      (state.value === 'different' && row.dataset.state !== 'unchanged');
+    row.hidden = !match || !row.textContent.toLowerCase().includes(query);
+  }
+  document.getElementById('case-count').textContent =
+    `${rows.filter(row => !row.hidden).length} of ${rows.length} cases`;
+}
+search.addEventListener('input', filterCases);
+state.addEventListener('change', filterCases);
+document.getElementById('export-cases').addEventListener('click', () => {
+  const ids = rows.filter(row => !row.hidden).map(row => row.cells[1].textContent);
+  const url = URL.createObjectURL(new Blob([JSON.stringify(ids, null, 2)],
+    {type: 'application/json'}));
+  const link = document.createElement('a');
+  link.href = url; link.download = 'case-ids.json'; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+</script></html>"""
     )
     with output.open("x", encoding="utf-8") as stream:
         stream.write(page)

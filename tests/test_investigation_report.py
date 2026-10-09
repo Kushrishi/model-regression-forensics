@@ -30,7 +30,7 @@ def test_recomputes_instead_of_trusting_saved_report(tmp_path):
     assert report["repairs"]["restore"]["passed"]
     render(tmp_path / "run", tmp_path / "report.html")
     page = (tmp_path / "report.html").read_text()
-    assert "<script>" not in page
+    assert "<script>alert(1)</script>" not in page
     assert "&lt;script&gt;" in page
     with pytest.raises(FileExistsError):
         render(tmp_path / "run", tmp_path / "report.html")
@@ -44,3 +44,28 @@ def test_rejects_identity_swap(tmp_path):
     path.write_text(json.dumps(record))
     with pytest.raises(ValueError, match="identity"):
         reopen(tmp_path / "run")
+
+
+def test_previews_are_escaped_and_case_outcomes_are_explicit(tmp_path):
+    attempt(tmp_path / "run")
+    key = "<script>alert(1)</script>"
+    (tmp_path / "run/case_inputs.json").write_text(json.dumps({key: {"text": "<img onerror=bad>"}}))
+    render(tmp_path / "run", tmp_path / "report.html")
+    page = (tmp_path / "report.html").read_text()
+    assert "&lt;img onerror=bad&gt;" in page
+    assert "<img onerror=bad>" not in page
+    assert 'data-state="regressed"' in page
+    assert 'id="case-search"' in page
+
+
+def test_unknown_preview_case_and_invalid_pixels_rejected(tmp_path):
+    from model_forensics.case_previews import previews
+
+    path = tmp_path / "case_inputs.json"
+    path.write_text(json.dumps({"unknown": {"text": "x"}}))
+    with pytest.raises(ValueError, match="unknown"):
+        previews(tmp_path, {"a"})
+    for pixels in ([256], [float("nan")], [], [True]):
+        path.write_text(json.dumps({"a": {"width": 1, "height": 1, "pixels": pixels}}))
+        with pytest.raises(ValueError, match="grayscale"):
+            previews(tmp_path, {"a"})

@@ -63,6 +63,23 @@ predict exactly the same case IDs. Completed execution files remain available if
 a later function fails; the exception is propagated and `failed.json` records
 which release failed. The report renderer currently requires a complete attempt.
 
-This version provides a portable inspection report. Interactive filtering,
-input previews, pretrained-model integration and a comparative training-regression
-study remain development work. No human usability or time-saving claim is made.
+This version provides a portable inspection report. Pretrained-model integration and a comparative training-regression study remain
+development work. No human usability or time-saving claim is made.
+
+## Inspect inputs and select cases
+
+The report now shows all cases with baseline, candidate and repair predictions.
+Use **Candidate outcome** to select changed predictions, regressions or
+improvements; use search to narrow case IDs or labels. **Export visible case IDs**
+downloads the current selection as JSON. Filtering operates entirely in the
+browser and makes no network requests. Without JavaScript, all records remain
+visible.
+
+Optional `case_inputs.json` maps known case IDs to either `{"text": "..."}` or
+`{"width": 8, "height": 8, "pixels": [...]}`. Grayscale pixels are row-major values
+from 0 to 255, with dimensions at most 64 by 64. The complete preview file is
+limited to 8 MB. Previews are supplied by the caller, not verified model inputs;
+the digit example derives them directly from its evaluation arrays. The report
+embeds the inputs: share it only when sharing those inputs is appropriate.
+
+Digit inputs: E. Alpaydin and C. Kaynak (1998), [Optical Recognition of Handwritten Digits](https://doi.org/10.24432/C50P49), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The standalone report retains attribution and identifies display scaling. Other integrations may supply `input_attribution.txt`, which is escaped and embedded.
