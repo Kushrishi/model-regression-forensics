@@ -36,6 +36,7 @@ class Slice(StrictRecord):
     name: Identifier
     case_ids: Annotated[tuple[Identifier, ...], Field(min_length=1)]
     maximum_accuracy_drop: float = Field(default=0.0, ge=0.0, le=1.0, allow_inf_nan=False)
+    minimum_accuracy: float | None = Field(default=None, ge=0.0, le=1.0, allow_inf_nan=False)
 
 
 class Comparison(StrictRecord):
@@ -76,7 +77,7 @@ def compare_releases(spec: Comparison) -> dict:
     expected = {case.case_id: case.expected for case in spec.cases}
     baseline = {item.case_id: item.observed for item in spec.baseline.predictions}
     candidate = {item.case_id: item.observed for item in spec.candidate.predictions}
-    canonical = spec.model_dump(mode="json")
+    canonical = spec.model_dump(mode="json", exclude_none=True)
     canonical["cases"].sort(key=lambda item: item["case_id"])
     for role in ("baseline", "candidate"):
         canonical[role]["predictions"].sort(key=lambda item: item["case_id"])
@@ -93,22 +94,34 @@ def compare_releases(spec: Comparison) -> dict:
         ids = sorted(item.case_ids)
         before = {key: baseline[key] == expected[key] for key in ids}
         after = {key: candidate[key] == expected[key] for key in ids}
+        candidate_accuracy = sum(after.values()) / len(ids)
         drop = (sum(before.values()) - sum(after.values())) / len(ids)
+        floor_passed = item.minimum_accuracy is None or candidate_accuracy >= item.minimum_accuracy
         rows.append(
             {
                 "name": item.name,
                 "count": len(ids),
                 "baseline_accuracy": sum(before.values()) / len(ids),
-                "candidate_accuracy": sum(after.values()) / len(ids),
+                "candidate_accuracy": candidate_accuracy,
                 "accuracy_drop": drop,
                 "maximum_accuracy_drop": item.maximum_accuracy_drop,
-                "passed": drop <= item.maximum_accuracy_drop,
+                "passed": drop <= item.maximum_accuracy_drop and floor_passed,
                 "regressed_case_ids": [key for key in ids if before[key] and not after[key]],
                 "improved_case_ids": [key for key in ids if not before[key] and after[key]],
             }
         )
+        if item.minimum_accuracy is not None:
+            rows[-1].update(
+                minimum_accuracy=item.minimum_accuracy,
+                minimum_accuracy_passed=floor_passed,
+                maximum_accuracy_drop_passed=drop <= item.maximum_accuracy_drop,
+            )
     return {
-        "schema_version": "release-comparison-pilot/0.2",
+        "schema_version": (
+            "release-comparison-pilot/0.3"
+            if any(item.minimum_accuracy is not None for item in spec.slices)
+            else "release-comparison-pilot/0.2"
+        ),
         "input_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
         "evaluation_policy_sha256": hashlib.sha256(policy_encoded.encode()).hexdigest(),
         "baseline_release_id": spec.baseline.release_id,

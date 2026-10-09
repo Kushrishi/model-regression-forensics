@@ -1,0 +1,17 @@
+release_id,case_id,observed
+baseline,existing-1,old
+baseline,existing-2,old
+baseline,new-1,old
+baseline,new-2,old
+candidate,existing-1,new
+candidate,existing-2,old
+candidate,new-1,new
+candidate,new-2,new
+complete_rollback,existing-1,old
+complete_rollback,existing-2,old
+complete_rollback,new-1,old
+complete_rollback,new-2,old
+targeted_repair,existing-1,old
+targeted_repair,existing-2,old
+targeted_repair,new-1,new
+targeted_repair,new-2,new

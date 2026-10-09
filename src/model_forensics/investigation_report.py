@@ -52,6 +52,7 @@ def render(directory: Path, output: Path) -> None:
     esc = lambda value: html.escape(str(value), quote=True)  # noqa: E731
     sections = []
     comparisons = {"candidate": report["regressed"], **report["repairs"]}
+    has_floors = any("minimum_accuracy" in row for row in report["regressed"]["slices"])
     for name, comparison in comparisons.items():
         rows = "".join(
             "<tr>"
@@ -62,6 +63,21 @@ def render(directory: Path, output: Path) -> None:
                     row["count"],
                     f"{row['baseline_accuracy']:.2%}",
                     f"{row['candidate_accuracy']:.2%}",
+                    *(
+                        (
+                            f"{row['maximum_accuracy_drop']:.2%}",
+                            f"{row['minimum_accuracy']:.2%}"
+                            if "minimum_accuracy" in row
+                            else "Not set",
+                            "Pass"
+                            if row.get("minimum_accuracy_passed")
+                            else "Fail"
+                            if "minimum_accuracy" in row
+                            else "Not set",
+                        )
+                        if has_floors
+                        else ()
+                    ),
                     "Pass" if row["passed"] else "Fail",
                     len(row["regressed_case_ids"]),
                 )
@@ -73,7 +89,13 @@ def render(directory: Path, output: Path) -> None:
             f"<details><summary>{esc(name.replace(chr(95), chr(32)))}: slice results</summary>"
             "<table><thead><tr>"
             "<th>Slice</th><th>Cases</th><th>Baseline accuracy</th>"
-            "<th>Release accuracy</th><th>Policy result</th>"
+            "<th>Release accuracy</th>"
+            + (
+                "<th>Maximum drop</th><th>Minimum accuracy</th><th>Minimum met</th>"
+                if has_floors
+                else ""
+            )
+            + "<th>Policy result</th>"
             f"<th>Regressed cases</th></tr></thead><tbody>{rows}</tbody></table></details>"
         )
     expected = {case["case_id"]: case["expected"] for case in plan["cases"]}
