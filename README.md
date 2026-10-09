@@ -1,15 +1,22 @@
 # Model Regression Forensics
 
-The completed Model Regression Forensics study concerns training-data changes;
-the current discovery track screens versioned training-pipeline regressions:
+Model Regression Forensics compares classification releases, executes declared
+repairs and lets an engineer inspect the affected examples and retained evidence.
+Its research asks what distinguishes a successful repair from a uniquely
+responsible training change.
 
-> **When a model regresses after retraining, what evidence is sufficient to identify the training change responsible?**
+**Current software:** explicit baseline/candidate/repair execution, identical-case
+comparison, portable HTML inspection, input previews, filtering and selection
+export. The [digit walkthrough](docs/investigation-workflow.md) is executable.
+A [bounded real-text training-release workflow](research/CLASSIFICATION_WORKFLOW_DEVELOPMENT_2026_10_09.md)
+is now in development.
 
-**Current result:** simple label and lexical baselines find the planted change in both Banking77 worlds. Grad-Dot and TracIn do not add consistent top-1 benefit. A separate repair fixture reports ambiguity when two repairs restore the same predictions.
+**Completed research:** simple label and lexical baselines found the planted
+change in both Banking77 worlds; Grad-Dot and TracIn added no consistent top-1
+benefit. The separate small SmolLM2 feasibility attempt remains closed. These
+findings are preserved; application development does not relabel them as success.
 
-**Status:** the two-case Banking77 localization study is complete. A later SmolLM2 feasibility attempt failed its clean-baseline check and is closed. Current research screens documented training-pipeline regressions for a follow-up study; none yet meets the required evidence standard, and no new training is approved.
-
-The completed study focuses on localization. A deterministic follow-up fixture now tests a harder question: when multiple interventions repair the same failed behavior, should a debugger refuse to claim a unique historical cause?
+[Current status](research/STATE.md) · [Direction and milestones](research/ROADMAP.md)
 
 [Visual study](https://kushrishi.com/research/model-regression-forensics) · [Technical report](research/M4_TECHNICAL_REPORT.md) · [Reproduction](research/REPRODUCE_M4.md)
 
@@ -86,7 +93,7 @@ The same release-comparison policy marks both repairs successful. The specificit
 
 The next research question is whether a debugger can reduce incorrect, overly specific diagnoses without simply refusing to diagnose everything. It would have to beat ordinary diff inspection and targeted reversions at a comparable testing cost, using real incidents with known-good and regressed versions. Current incident screens have found software defects and useful repair examples, but no qualified training-release case with the required outcome and provenance evidence. The existing ambiguous-repair example demonstrates intended software behavior; it does not establish research novelty.
 
-## Current discovery track
+## Historical incident-discovery track
 
 [The subsequent owner amendment](research/VNEXT_OWNER_AMENDMENT_2026_10_07.md)
 authorizes public incident discovery and software work for versioned training-pipeline
@@ -109,7 +116,7 @@ A transparently owner-authorized, non-confirmatory SmolLM2 feasibility attempt
 failed its declared stable clean-baseline gate before regression incidents or
 interventions. [The record](research/DEVELOPMENT_CLOSURE_2026_10_07.md) closes that
 v2 attempt. It does not establish that release diagnosis is impossible. The
-completed bounded negative v1 and its software remain intact. The separately authorized vNext discovery track does not reopen this failed attempt.
+completed bounded negative v1 and its software remain intact. The current classification-workflow development is a separate engineering task; it does not reopen this failed attempt.
 
 ### Run a release investigation
 

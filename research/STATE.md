@@ -1,8 +1,13 @@
 # Research status
 
-Updated October 9, 2026 (LFQ fixed-tensor reproduction; no new training).
+Updated October 9, 2026. This page is the current status; dated records below describe their original scopes.
 
-The matched Banking77 localization study is complete. The repository also includes a prediction-comparison utility and an example in which two different repairs recover the same behavior. No paper has been submitted or published.
+The matched Banking77 localization study is complete. The repository also has an
+executable classification investigation workflow: model callbacks, retained
+predictions/costs, repair assessment and portable input-level inspection.
+The next task is the [bounded real-text training-release example](CLASSIFICATION_WORKFLOW_DEVELOPMENT_2026_10_09.md).
+That prospective engineering scope follows the owner's continuation decision;
+no new confirmatory study or official-test access follows. No paper is published.
 
 ## Question
 
@@ -30,6 +35,12 @@ See the [technical report](M4_TECHNICAL_REPORT.md), [result record](M4_RESULT.js
 
 ## Software
 
+PR63/64 added actual release/repair execution and interactive inspection. The
+digit walkthrough retains 540 evaluation cases, model parameters and five
+executions. Two repairs restore its disclosed input-order fault; ambiguity is
+reported. This is application evidence, not a new diagnosis result.
+
+
 The exact-label comparator checks record alignment, declared evaluation slices and accuracy-drop tolerances. Its eleven reports on the handwritten-digits example agree with an independent NumPy calculation. The example's input-order bug is supplied by the author; the comparator measures its effect rather than discovering its cause.
 
 The [ambiguous-repair example](../docs/ambiguous-repairs.md) reverses a linear classifier's input feature order. Restoring the inputs or reversing the weights both recover the original predictions. The assessment reports `ambiguous_repairs` and leaves the historical cause `not_identified`. This demonstrates the difference between a successful repair and evidence for a unique cause.
@@ -49,7 +60,7 @@ unsuccessful development feasibility record are preserved. The no-automatic-v3 d
 
 The results concern the constructed tasks tested here. They do not establish general causal identification, superiority to modern attribution methods or cross-model generalization. Frozen protocols and result records define each study; the [claims summary](CLAIMS.md) and this page describe their current interpretation.
 
-## Subsequent owner decision: vNext
+## Historical discovery decision — 7 October
 
 [The dated amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md) permits a separate
 discovery/infrastructure track. It broadens candidate categories prospectively to
