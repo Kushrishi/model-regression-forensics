@@ -1,0 +1,299 @@
+{
+  "schema": "lfq-fixed-tensor-replay-v1",
+  "scope": "CPU commitment-loss unit reproduction; no historical task claim",
+  "environment": {
+    "python": "3.12.14",
+    "torch": "2.5.1+cpu",
+    "einops": "0.8.0",
+    "numpy": "2.1.3",
+    "platform": "Linux",
+    "device": "cpu",
+    "threads": 1
+  },
+  "runner_sha256": "6fed551d364188cacb1ad47286cf851876b090a9cba50620ede30f4ea8d2546a",
+  "sources": {
+    "reported": {
+      "commit": "59a30b68a83be710638184764c025b54693c82cc",
+      "file_sha256": "9c1e6aad8a007aa7055ad50dee5a0b09ead2a2bf48d27508d64549741a640411"
+    },
+    "first_repair": {
+      "commit": "ec2f4f610515c2b063442f6b725c8233e9ec700e",
+      "file_sha256": "6edc22f4cc271ce50c25049c2c02a914a1ec32369bfc3c17a4b292e4f175368d"
+    },
+    "followup_repair": {
+      "commit": "ac5d63174dd234ab75259a68a4ab246774863f6e",
+      "file_sha256": "d50257c10506aea87569625206f27f5fcc83ad6df16cbb36e2554de625410abf"
+    }
+  },
+  "fixtures": {
+    "single_batch": {
+      "values": [
+        [
+          [
+            0.2,
+            -0.3,
+            0.4
+          ],
+          [
+            0.5,
+            -0.6,
+            0.7
+          ],
+          [
+            -0.8,
+            0.9,
+            -0.2
+          ],
+          [
+            0.3,
+            -0.4,
+            0.5
+          ]
+        ]
+      ],
+      "mask": [
+        [
+          true,
+          false,
+          true,
+          true
+        ]
+      ]
+    },
+    "two_batches": {
+      "values": [
+        [
+          [
+            0.2,
+            -0.3,
+            0.4
+          ],
+          [
+            0.5,
+            -0.6,
+            0.7
+          ],
+          [
+            -0.8,
+            0.9,
+            -0.2
+          ]
+        ],
+        [
+          [
+            0.3,
+            -0.4,
+            0.5
+          ],
+          [
+            -0.6,
+            0.7,
+            -0.8
+          ],
+          [
+            0.9,
+            -0.2,
+            0.3
+          ]
+        ]
+      ],
+      "mask": [
+        [
+          true,
+          false,
+          true
+        ],
+        [
+          false,
+          true,
+          false
+        ]
+      ]
+    }
+  },
+  "configuration": {
+    "dim": 3,
+    "codebook_size": 8,
+    "has_projections": false,
+    "commitment_loss_weight": 1.0,
+    "entropy_loss_weight": 0.0,
+    "frac_per_sample_entropy": 1.0,
+    "inverse_temperature": 1.0
+  },
+  "optimizer_updates": 0,
+  "trainable_parameters": 0,
+  "rows": [
+    {
+      "version": "reported",
+      "fixture": "single_batch",
+      "masked": false,
+      "oracle_commitment": 0.3149999976158142,
+      "status": "returned",
+      "commitment": 0.3149999976158142,
+      "loss_matches_oracle": true,
+      "gradient_matches_oracle": true,
+      "max_gradient_error": 0.0,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": [
+        "Using a target size (torch.Size([1, 4, 1, 3])) that is different to the input size (torch.Size([4, 1, 3])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size."
+      ]
+    },
+    {
+      "version": "reported",
+      "fixture": "single_batch",
+      "masked": true,
+      "oracle_commitment": 0.36444446444511414,
+      "status": "returned",
+      "commitment": 1.238518476486206,
+      "loss_matches_oracle": false,
+      "gradient_matches_oracle": false,
+      "max_gradient_error": 0.29629629850387573,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": [
+        "Using a target size (torch.Size([1, 4, 1, 3])) that is different to the input size (torch.Size([3, 3])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size."
+      ]
+    },
+    {
+      "version": "reported",
+      "fixture": "two_batches",
+      "masked": false,
+      "oracle_commitment": 0.2894444465637207,
+      "status": "exception",
+      "exception_type": "RuntimeError",
+      "exception": "The size of tensor a (6) must match the size of tensor b (3) at non-singleton dimension 1",
+      "warnings": [
+        "Using a target size (torch.Size([2, 3, 1, 3])) that is different to the input size (torch.Size([6, 1, 3])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size."
+      ]
+    },
+    {
+      "version": "reported",
+      "fixture": "two_batches",
+      "masked": true,
+      "oracle_commitment": 0.27444446086883545,
+      "status": "returned",
+      "commitment": 1.1337037086486816,
+      "loss_matches_oracle": false,
+      "gradient_matches_oracle": false,
+      "max_gradient_error": 0.29629629850387573,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": [
+        "Using a target size (torch.Size([2, 3, 1, 3])) that is different to the input size (torch.Size([3, 3])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size."
+      ]
+    },
+    {
+      "version": "first_repair",
+      "fixture": "single_batch",
+      "masked": false,
+      "oracle_commitment": 0.3149999976158142,
+      "status": "exception",
+      "exception_type": "UnboundLocalError",
+      "exception": "cannot access local variable 'input_for_entropy' where it is not associated with a value",
+      "warnings": []
+    },
+    {
+      "version": "first_repair",
+      "fixture": "single_batch",
+      "masked": true,
+      "oracle_commitment": 0.36444446444511414,
+      "status": "returned",
+      "commitment": 0.36444446444511414,
+      "loss_matches_oracle": true,
+      "gradient_matches_oracle": true,
+      "max_gradient_error": 0.0,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": []
+    },
+    {
+      "version": "first_repair",
+      "fixture": "two_batches",
+      "masked": false,
+      "oracle_commitment": 0.2894444465637207,
+      "status": "exception",
+      "exception_type": "UnboundLocalError",
+      "exception": "cannot access local variable 'input_for_entropy' where it is not associated with a value",
+      "warnings": []
+    },
+    {
+      "version": "first_repair",
+      "fixture": "two_batches",
+      "masked": true,
+      "oracle_commitment": 0.27444446086883545,
+      "status": "returned",
+      "commitment": 0.27444446086883545,
+      "loss_matches_oracle": true,
+      "gradient_matches_oracle": true,
+      "max_gradient_error": 0.0,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": []
+    },
+    {
+      "version": "followup_repair",
+      "fixture": "single_batch",
+      "masked": false,
+      "oracle_commitment": 0.3149999976158142,
+      "status": "returned",
+      "commitment": 0.3149999976158142,
+      "loss_matches_oracle": true,
+      "gradient_matches_oracle": true,
+      "max_gradient_error": 0.0,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": []
+    },
+    {
+      "version": "followup_repair",
+      "fixture": "single_batch",
+      "masked": true,
+      "oracle_commitment": 0.36444446444511414,
+      "status": "returned",
+      "commitment": 0.36444446444511414,
+      "loss_matches_oracle": true,
+      "gradient_matches_oracle": true,
+      "max_gradient_error": 0.0,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": []
+    },
+    {
+      "version": "followup_repair",
+      "fixture": "two_batches",
+      "masked": false,
+      "oracle_commitment": 0.2894444465637207,
+      "status": "returned",
+      "commitment": 0.2894444465637207,
+      "loss_matches_oracle": true,
+      "gradient_matches_oracle": true,
+      "max_gradient_error": 0.0,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": []
+    },
+    {
+      "version": "followup_repair",
+      "fixture": "two_batches",
+      "masked": true,
+      "oracle_commitment": 0.27444446086883545,
+      "status": "returned",
+      "commitment": 0.27444446086883545,
+      "loss_matches_oracle": true,
+      "gradient_matches_oracle": true,
+      "max_gradient_error": 0.0,
+      "quantized_matches_oracle": true,
+      "gradient_finite": true,
+      "warnings": []
+    }
+  ],
+  "checks_passed": true,
+  "resources": {
+    "replay_wall_seconds": 0.5701911729993299,
+    "replay_cpu_seconds": 0.5700555560000002,
+    "process_peak_rss": 308804,
+    "rss_units": "KiB",
+    "note": "Replay times exclude imports; RSS includes interpreter/imports"
+  }
+}
