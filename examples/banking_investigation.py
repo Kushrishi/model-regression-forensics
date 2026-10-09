@@ -227,6 +227,12 @@ def worker(csv_path, output):
             "changes": "development split; disclosed target-label swap in candidate training",
         },
     )
+    (output / "input_attribution.txt").write_text(
+        "Banking77, Casanueva et al. (2020), Efficient Intent Detection with Dual Sentence "
+        "Encoders. CC BY 4.0. Source: https://github.com/PolyAI-LDN/task-specific-datasets. "
+        "Training-only development split; candidate training labels were deliberately swapped.\n",
+        encoding="utf-8",
+    )
     render(output, output / "index.html")
     write(
         output / "summary.json",

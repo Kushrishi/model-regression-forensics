@@ -8,8 +8,10 @@ responsible training change.
 **Current software:** explicit baseline/candidate/repair execution, identical-case
 comparison, portable HTML inspection, input previews, filtering and selection
 export. The [digit walkthrough](docs/investigation-workflow.md) is executable.
-A [bounded real-text training-release workflow](research/CLASSIFICATION_WORKFLOW_DEVELOPMENT_2026_10_09.md)
-is now in development.
+The [real-text training-release walkthrough](docs/banking-investigation.md)
+executes two visible training changes and their separate rollbacks on 1,969
+development cases. Five CPU fits completed; only the combined rollback passed
+the declared repair policy.
 
 **Completed research:** simple label and lexical baselines found the planted
 change in both Banking77 worlds; Grad-Dot and TracIn added no consistent top-1

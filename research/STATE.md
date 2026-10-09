@@ -5,7 +5,10 @@ Updated October 9, 2026. This page is the current status; dated records below de
 The matched Banking77 localization study is complete. The repository also has an
 executable classification investigation workflow: model callbacks, retained
 predictions/costs, repair assessment and portable input-level inspection.
-The next task is the [bounded real-text training-release example](CLASSIFICATION_WORKFLOW_DEVELOPMENT_2026_10_09.md).
+The [real-text training-release example](../docs/banking-investigation.md) is
+complete: five fits, 1,969 development cases, and 11,814 independently reproduced
+predictions across six executions. Only the combined rollback met the declared
+policy. Next: independent first use and a separate comparative evaluation design.
 That prospective engineering scope follows the owner's continuation decision;
 no new confirmatory study or official-test access follows. No paper is published.
 

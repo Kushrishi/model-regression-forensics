@@ -10,7 +10,7 @@ repairs, assess collateral regressions, and reopen/export the result.
 
 ## Current sequence
 
-1. Complete the [bounded real-text training-release workflow](CLASSIFICATION_WORKFLOW_DEVELOPMENT_2026_10_09.md), building on the existing digit workflow.
+1. Completed: the [real-text training-release workflow](../docs/banking-investigation.md), building on the digit workflow.
 2. Make supported installation, model/data recovery and input-level inspection reproducible outside the implementation environment.
 3. Evaluate practical diagnosis/repair decisions against full-diff inspection, targeted rollback and suitable intervention policies at matched cost.
 4. Release a focused package after licensing and independent first-use acceptance. Decide on a paper from comparative evidence, not feature count.
