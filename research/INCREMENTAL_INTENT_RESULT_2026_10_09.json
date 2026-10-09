@@ -1,0 +1,292 @@
+{
+  "scope": "three constructed, overlapping CLINC150 training-only development scenarios; not independent confirmatory evidence",
+  "terminal": {
+    "child_process_cpu_seconds": 52.445028,
+    "peak_child_rss_bytes": 624295936,
+    "resource_scope": "single supervised worker, includes loading, fits and persistence",
+    "returncode": 0,
+    "status": "completed",
+    "wall_seconds": 52.50388767500408
+  },
+  "data_counts": {
+    "conflicting_texts_excluded": 0,
+    "duplicate_rows_collapsed": 0,
+    "raw_rows": 15000,
+    "unique_normalized_texts": 15000
+  },
+  "scenarios": [
+    {
+      "assessment": {
+        "evaluated_repairs": [
+          "full_rollback",
+          "restore_both_full_retrain",
+          "restore_data_retention",
+          "restore_regularization",
+          "unchanged_control"
+        ],
+        "historical_cause": "not_identified",
+        "reason": "One declared intervention restored the required behavior, but repair alone does not identify the historical cause.",
+        "schema_version": "repair-specificity/0.1",
+        "status": "single_supported_repair",
+        "successful_repairs": [
+          "restore_both_full_retrain"
+        ]
+      },
+      "evaluation_count": 3000,
+      "existing_evaluation_count": 2400,
+      "feature_count": 8693,
+      "new_evaluation_count": 600,
+      "seed": 0,
+      "train_count": 12000,
+      "metrics": {
+        "baseline": {
+          "existing_intent_accuracy": 0.9533333333333334,
+          "fit_process_cpu_seconds": 3.0870478949999995,
+          "fit_wall_seconds": 3.088144376000855,
+          "iterations": [
+            28
+          ],
+          "new_intent_accuracy": 0.0,
+          "overall_accuracy": 0.7626666666666667,
+          "parameters_sha256": "47bea091f0e0828edb80e0d64971df6ae4e2339ed7579cc64aa747b15aea6437",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 9600
+        },
+        "candidate": {
+          "existing_intent_accuracy": 0.0004166666666666667,
+          "fit_process_cpu_seconds": 1.2172705950000005,
+          "fit_wall_seconds": 1.217789137008367,
+          "iterations": [
+            12
+          ],
+          "new_intent_accuracy": 0.89,
+          "overall_accuracy": 0.17833333333333334,
+          "parameters_sha256": "920d30d1534f2a9209a0e5df6aa4c5539a5b062bd8f250403438ef8721df6554",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 4320
+        },
+        "restore_both_full_retrain": {
+          "existing_intent_accuracy": 0.9433333333333334,
+          "fit_process_cpu_seconds": 3.632577059,
+          "fit_wall_seconds": 3.6332941770087928,
+          "iterations": [
+            29
+          ],
+          "new_intent_accuracy": 0.8883333333333333,
+          "overall_accuracy": 0.9323333333333333,
+          "parameters_sha256": "2e1d9b200db5b62f7781d2ca3a05241e39d3059be96c326988c3402fe50e9cb9",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 12000
+        },
+        "restore_data_retention": {
+          "existing_intent_accuracy": 0.8733333333333333,
+          "fit_process_cpu_seconds": 1.7602393770000013,
+          "fit_wall_seconds": 1.7604071969981305,
+          "iterations": [
+            14
+          ],
+          "new_intent_accuracy": 0.8033333333333333,
+          "overall_accuracy": 0.8593333333333333,
+          "parameters_sha256": "5f133b2b897050212463439a9b593885ad06887f285a29886fd0ad3d81bfb888",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 12000
+        },
+        "restore_regularization": {
+          "existing_intent_accuracy": 0.7404166666666666,
+          "fit_process_cpu_seconds": 3.7653207659999985,
+          "fit_wall_seconds": 3.765796875988599,
+          "iterations": [
+            38
+          ],
+          "new_intent_accuracy": 0.9266666666666666,
+          "overall_accuracy": 0.7776666666666666,
+          "parameters_sha256": "fcd586149e3a9c9eb71fc0b7cd00272caea26e879f1db76443386cdf32a0cfa3",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 4320
+        }
+      }
+    },
+    {
+      "assessment": {
+        "evaluated_repairs": [
+          "full_rollback",
+          "restore_both_full_retrain",
+          "restore_data_retention",
+          "restore_regularization",
+          "unchanged_control"
+        ],
+        "historical_cause": "not_identified",
+        "reason": "One declared intervention restored the required behavior, but repair alone does not identify the historical cause.",
+        "schema_version": "repair-specificity/0.1",
+        "status": "single_supported_repair",
+        "successful_repairs": [
+          "restore_both_full_retrain"
+        ]
+      },
+      "evaluation_count": 3000,
+      "existing_evaluation_count": 2400,
+      "feature_count": 8581,
+      "new_evaluation_count": 600,
+      "seed": 1,
+      "train_count": 12000,
+      "metrics": {
+        "baseline": {
+          "existing_intent_accuracy": 0.9545833333333333,
+          "fit_process_cpu_seconds": 2.694986709000002,
+          "fit_wall_seconds": 2.695485190997715,
+          "iterations": [
+            28
+          ],
+          "new_intent_accuracy": 0.0,
+          "overall_accuracy": 0.7636666666666667,
+          "parameters_sha256": "e5bfc07b28dcf2403d30d913c8cf8436ecec18d58a3d9aa9b915d13fdb44845b",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 9600
+        },
+        "candidate": {
+          "existing_intent_accuracy": 0.0004166666666666667,
+          "fit_process_cpu_seconds": 1.3167892559999999,
+          "fit_wall_seconds": 1.3170477430103347,
+          "iterations": [
+            14
+          ],
+          "new_intent_accuracy": 0.8883333333333333,
+          "overall_accuracy": 0.178,
+          "parameters_sha256": "ea15c82febf0c7ba2cbc87c6e847f0f75096ee89eb91122ed9da077c9958debb",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 4320
+        },
+        "restore_both_full_retrain": {
+          "existing_intent_accuracy": 0.94375,
+          "fit_process_cpu_seconds": 4.729092153,
+          "fit_wall_seconds": 4.7299995080102235,
+          "iterations": [
+            36
+          ],
+          "new_intent_accuracy": 0.8833333333333333,
+          "overall_accuracy": 0.9316666666666666,
+          "parameters_sha256": "612945af05fa16ba72acaf4dba8f025b34b23f540805c01a0f2fd5c98edae610",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 12000
+        },
+        "restore_data_retention": {
+          "existing_intent_accuracy": 0.86625,
+          "fit_process_cpu_seconds": 1.9559964559999976,
+          "fit_wall_seconds": 1.9563803390046814,
+          "iterations": [
+            15
+          ],
+          "new_intent_accuracy": 0.7866666666666666,
+          "overall_accuracy": 0.8503333333333334,
+          "parameters_sha256": "327733ae5288ce4e13ebea8f21fff28375a2616d67a8108e1d40d73ee138e570",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 12000
+        },
+        "restore_regularization": {
+          "existing_intent_accuracy": 0.7425,
+          "fit_process_cpu_seconds": 3.8405372890000002,
+          "fit_wall_seconds": 3.841162953991443,
+          "iterations": [
+            39
+          ],
+          "new_intent_accuracy": 0.915,
+          "overall_accuracy": 0.777,
+          "parameters_sha256": "cb5e53f8c3a4edf59499144d2fd91f2f1567396c6a9435492f6827ac42d5c57d",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 4320
+        }
+      }
+    },
+    {
+      "assessment": {
+        "evaluated_repairs": [
+          "full_rollback",
+          "restore_both_full_retrain",
+          "restore_data_retention",
+          "restore_regularization",
+          "unchanged_control"
+        ],
+        "historical_cause": "not_identified",
+        "reason": "One declared intervention restored the required behavior, but repair alone does not identify the historical cause.",
+        "schema_version": "repair-specificity/0.1",
+        "status": "single_supported_repair",
+        "successful_repairs": [
+          "restore_both_full_retrain"
+        ]
+      },
+      "evaluation_count": 3000,
+      "existing_evaluation_count": 2400,
+      "feature_count": 8481,
+      "new_evaluation_count": 600,
+      "seed": 2,
+      "train_count": 12000,
+      "metrics": {
+        "baseline": {
+          "existing_intent_accuracy": 0.95,
+          "fit_process_cpu_seconds": 3.5260255270000016,
+          "fit_wall_seconds": 3.5265852110023843,
+          "iterations": [
+            36
+          ],
+          "new_intent_accuracy": 0.0,
+          "overall_accuracy": 0.76,
+          "parameters_sha256": "a3802b294f71772b30a8212f22d9ed20a0a1e6fd69673f7db27fe9e93850e2d8",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 9600
+        },
+        "candidate": {
+          "existing_intent_accuracy": 0.0008333333333333334,
+          "fit_process_cpu_seconds": 1.1768620920000004,
+          "fit_wall_seconds": 1.1771928659873083,
+          "iterations": [
+            13
+          ],
+          "new_intent_accuracy": 0.9183333333333333,
+          "overall_accuracy": 0.18433333333333332,
+          "parameters_sha256": "042d0b4ed22297c976ebfa6fecc3c8925e845614babdf01552a1172be6b4f157",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 4320
+        },
+        "restore_both_full_retrain": {
+          "existing_intent_accuracy": 0.94,
+          "fit_process_cpu_seconds": 5.0540465740000045,
+          "fit_wall_seconds": 5.056239731013193,
+          "iterations": [
+            39
+          ],
+          "new_intent_accuracy": 0.9,
+          "overall_accuracy": 0.932,
+          "parameters_sha256": "37a60dc67e8797a974c8c82514fb85f81b49d4402c2982e5fbeae12dd396cac7",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 12000
+        },
+        "restore_data_retention": {
+          "existing_intent_accuracy": 0.8654166666666666,
+          "fit_process_cpu_seconds": 1.5358429449999988,
+          "fit_wall_seconds": 1.535984305999591,
+          "iterations": [
+            12
+          ],
+          "new_intent_accuracy": 0.82,
+          "overall_accuracy": 0.8563333333333333,
+          "parameters_sha256": "7aa307edd2cf4a61d1907dd036b32a10890f6c41567bd853f79c0d1177d9e082",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 12000
+        },
+        "restore_regularization": {
+          "existing_intent_accuracy": 0.76,
+          "fit_process_cpu_seconds": 3.5000943530000015,
+          "fit_wall_seconds": 3.5007432990096277,
+          "iterations": [
+            35
+          ],
+          "new_intent_accuracy": 0.9383333333333334,
+          "overall_accuracy": 0.7956666666666666,
+          "parameters_sha256": "7455f3690b20ea047f1cf008e1f14989d6a54fb17412b7a0a1c3f76de82f14e1",
+          "saved_parameter_prediction_readback": "exact",
+          "training_count": 4320
+        }
+      }
+    }
+  ]
+}

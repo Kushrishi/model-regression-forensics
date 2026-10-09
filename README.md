@@ -13,6 +13,12 @@ executes two visible training changes and their separate rollbacks on 1,969
 development cases. Five CPU fits completed; only the combined rollback passed
 the declared repair policy.
 
+The [incremental intent-release experiment](docs/incremental-intent-release.md)
+adds 30 intents while protecting 120 existing ones. Fifteen actual fits across
+three fixed development scenarios found that ordinary full-data retraining was
+the only acceptable repair; both partial rollbacks failed. Saved predictions and
+portable reports support inspection, not a claim of diagnostic superiority.
+
 **Completed research:** simple label and lexical baselines found the planted
 change in both Banking77 worlds; Grad-Dot and TracIn added no consistent top-1
 benefit. The separate small SmolLM2 feasibility attempt remains closed. These
