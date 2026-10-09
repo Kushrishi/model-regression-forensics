@@ -56,6 +56,7 @@ That checks implementation arithmetic; it does not identify the cause of a regre
 - [Reproduce the recorded results](research/REPRODUCE_M4.md)
 - [Accepted result record](research/M4_RESULT.json)
 - [External comparison fixture](docs/external-release-task.md)
+- [LFQ software-defect replay: fixed tensors, no training](research/LFQ_FIXED_TENSOR_REPLAY_2026_10_09.md)
 
 With Python 3.12 or later and `uv`:
 
