@@ -81,3 +81,5 @@ from 0 to 255, with dimensions at most 64 by 64. The complete preview file is
 limited to 8 MB. Previews are supplied by the caller, not verified model inputs;
 the digit example derives them directly from its evaluation arrays. The report
 embeds the inputs: share it only when sharing those inputs is appropriate.
+
+Digit inputs: E. Alpaydin and C. Kaynak (1998), [Optical Recognition of Handwritten Digits](https://doi.org/10.24432/C50P49), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The standalone report retains attribution and identifies display scaling. Other integrations may supply `input_attribution.txt`, which is escaped and embedded.

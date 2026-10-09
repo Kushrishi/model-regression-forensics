@@ -119,6 +119,14 @@ def run(output: Path):
         for key, image in zip(ids, inputs, strict=True)
     }
     (output / "case_inputs.json").write_text(json.dumps(previews) + "\n")
+    (output / "input_attribution.txt").write_text(
+        "Digit inputs: E. Alpaydin and C. Kaynak (1998), Optical Recognition of "
+        "Handwritten Digits, UCI Machine Learning Repository, "
+        "https://doi.org/10.24432/C50P49. Licensed CC BY 4.0: "
+        "https://creativecommons.org/licenses/by/4.0/. Obtained through scikit-learn "
+        "load_digits; this example selects 540 images and scales their original 0–16 "
+        "values to 0–255 for grayscale display. No endorsement is implied.\n"
+    )
     render(output, output / "index.html")
     overall = next(r for r in report["regressed"]["slices"] if r["name"] == "all")
     print(

@@ -166,6 +166,13 @@ historical cause. Slice results may overlap and are not statistical significance
         "<details><summary>Declared changes (caller supplied)</summary>"
         f"<pre>{esc(json.dumps(plan['declared_changes'], indent=2))}</pre></details></html>"
     )
+    attribution = directory / "input_attribution.txt"
+    if attribution.exists():
+        with attribution.open(encoding="utf-8") as stream:
+            notice = stream.read(10001)
+        if len(notice) > 10000:
+            raise ValueError("input attribution exceeds 10000 characters")
+        page = page.replace("</html>", "") + f"<h2>Input attribution</h2><p>{esc(notice)}</p>"
     page = (
         page.replace("</html>", "")
         + """
