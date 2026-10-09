@@ -4,6 +4,10 @@ Discovery only; no new training/retraining, model acquisition, official test acc
 or diagnosis benchmark execution. **Zero qualified incidents.** Two source leads
 remain useful for future provenance inspection, not an approved experiment.
 
+Subsequent [October 9 provenance inspection](VNEXT_PROVENANCE_FOLLOWUP_2026_10_09.md)
+resolved original reports and additional source differences for both leads.
+Neither qualifies; the historical screen and its original decisions remain below.
+
 ## Method and source identities
 
 Use the owner's A–L screen: reproducible good/bad versions; behavioral regression;

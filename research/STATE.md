@@ -1,6 +1,6 @@
 # Research status
 
-Updated October 7, 2026.
+Updated October 9, 2026 (bounded provenance follow-up; no new training).
 
 The matched Banking77 localization study is complete. The repository also includes a prediction-comparison utility and an example in which two different repairs recover the same behavior. No paper has been submitted or published.
 
@@ -56,3 +56,9 @@ discovery/infrastructure track. It broadens candidate categories prospectively t
 versioned training-pipeline changes. No new model training, official test access,
 confirmatory protocol, large benchmark or scientific contribution is authorized or
 established. See the current contribution and incident audits.
+
+The [October 9 provenance follow-up](VNEXT_PROVENANCE_FOLLOWUP_2026_10_09.md)
+traced the two DeepFD leads to their original reports and found additional source
+reconstruction differences. Neither qualifies as a release-regression incident;
+the screened set still contains zero qualified cases. This does not close the
+maintained discovery/software track or authorize a new training study.
