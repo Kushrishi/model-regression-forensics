@@ -29,13 +29,18 @@
       "index_id": "103",
       "repository": "lucidrains/vector-quantize-pytorch",
       "issue_url": "https://github.com/lucidrains/vector-quantize-pytorch/issues/188",
-      "index_source_commit": "59a30b68a83be710638184764c025b54693c82cc"
+      "index_source_commit": "59a30b68a83be710638184764c025b54693c82cc",
+      "maintainer_repairs": ["ec2f4f610515c2b063442f6b725c8233e9ec700e", "ac5d63174dd234ab75259a68a4ab246774863f6e"],
+      "qualification": "repair_provenance_resolved_task_evidence_missing"
     },
     {
       "index_id": "394",
       "repository": "deepspeedai/DeepSpeed",
       "issue_url": "https://github.com/deepspeedai/DeepSpeed/issues/7837",
-      "index_source_commit": "a44fb58f134afc5399b29c154a5502e14272774c"
+      "index_source_commit": "a44fb58f134afc5399b29c154a5502e14272774c",
+      "repair_merge_commit": "1752c2ab64e789341af6a15bb4af8466edad7c22",
+      "repair_merge_parent": "2c362837b0ef906ea7e7506bab3a625faa945cdd",
+      "qualification": "repair_provenance_resolved_task_evidence_missing"
     },
     {
       "index_id": "478",
