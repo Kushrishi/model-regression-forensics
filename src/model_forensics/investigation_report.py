@@ -146,7 +146,8 @@ historical cause. Slice results may overlap and are not statistical significance
     )
     page += "".join(sections)
     page += (
-        "<h2>Inspect cases</h2><p>Outcome filters compare the candidate with the baseline. "
+        '<section id="case-inspection"><h2>Inspect cases</h2>'
+        "<p>Outcome filters compare the candidate with the baseline. "
         "Repair predictions appear alongside them. Previews are caller-supplied inputs.</p>"
         '<label>Search cases or labels <input id="case-search" type="search"></label> '
         '<label>Candidate outcome <select id="case-state"><option value="all">All cases</option>'
@@ -157,7 +158,7 @@ historical cause. Slice results may overlap and are not statistical significance
         '<button id="export-cases" type="button">Export visible case IDs</button>'
         f'<p id="case-count" role="status">{len(expected)} cases</p>'
         f'<table id="cases"><thead><tr>{headers}</tr></thead><tbody>{case_rows}</tbody></table>'
-        "<noscript>Filtering requires JavaScript; all case records are shown.</noscript>"
+        "<noscript>Filtering requires JavaScript; all case records are shown.</noscript></section>"
     )
     page += (
         "<h2>Measured execution cost</h2><p>Function calls only; model setup is excluded. "
