@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
+import os
 import subprocess
 import sys
 
 import pytest
 from pydantic import ValidationError
 
+from model_forensics.artifact_verify import read_map, references, verify_payloads
 from model_forensics.incidents import Ledger, Truth, decision_metrics, digest, summarize
 
 
@@ -198,3 +201,146 @@ def test_cli_no_clobber_and_replay(tmp_path):
     cmd[-1] = str(second)
     assert subprocess.run(cmd, capture_output=True).returncode == 0
     assert second.read_bytes() == first
+
+
+def payload_files(tmp_path):
+    p = payload()
+    paths = {}
+
+    def visit(item):
+        if isinstance(item, dict):
+            if set(item) == {"identity", "sha256"}:
+                name = item["identity"]
+                data = name.encode()
+                item["sha256"] = hashlib.sha256(data).hexdigest()
+                paths[name] = name + ".txt"
+                (tmp_path / paths[name]).write_bytes(data)
+            else:
+                for value in item.values():
+                    visit(value)
+        elif isinstance(item, list):
+            for value in item:
+                visit(value)
+
+    visit(p)
+    return load(p), paths
+
+
+def test_payload_identity_and_cli(tmp_path):
+    ledger, paths = payload_files(tmp_path)
+    report = verify_payloads(ledger, tmp_path, paths)
+    assert report["total_bytes"] == sum(len(x.encode()) for x in paths)
+    assert str(tmp_path) not in json.dumps(report)
+    source, mapping, out = (tmp_path / x for x in ("ledger.json", "map.json", "report.json"))
+    source.write_text(ledger.model_dump_json())
+    mapping.write_text(json.dumps(paths))
+    command = [
+        sys.executable,
+        "-m",
+        "model_forensics.incidents",
+        str(source),
+        "--artifact-map",
+        str(mapping),
+        "--artifact-root",
+        str(tmp_path),
+        "--out",
+        str(out),
+    ]
+    assert subprocess.run(command, capture_output=True).returncode == 0
+    assert json.loads(out.read_text())["payload_verification"] == report
+    first = out.read_bytes()
+    assert subprocess.run(command, capture_output=True).returncode == 2
+    assert out.read_bytes() == first
+    (tmp_path / paths["good"]).write_bytes(b"changed")
+    command[-1] = str(tmp_path / "failed.json")
+    assert subprocess.run(command, capture_output=True).returncode == 2
+    assert not (tmp_path / "failed.json").exists()
+
+
+@pytest.mark.parametrize(
+    "path",
+    ["/absolute", "../escape", "a/../b", "a//b", "./a", "a/", "a\\b", "https://example.org/a", ""],
+)
+def test_payload_paths_rejected(tmp_path, path):
+    ledger, paths = payload_files(tmp_path)
+    paths["good"] = path
+    with pytest.raises(ValueError, match="relative POSIX"):
+        verify_payloads(ledger, tmp_path, paths)
+
+
+def test_payload_missing_extra_conflict_and_truth(tmp_path):
+    ledger, paths = payload_files(tmp_path)
+    with pytest.raises(ValueError, match="exactly cover"):
+        verify_payloads(ledger, tmp_path, {**paths, "unused": "unused.txt"})
+    with pytest.raises(ValueError, match="exactly cover"):
+        verify_payloads(ledger, tmp_path, {k: v for k, v in paths.items() if k != "good"})
+    p = ledger.model_dump(mode="json")
+    p["decision"]["policy"] = {"identity": "good", "sha256": "0" * 64}
+    with pytest.raises(ValueError, match="conflicting"):
+        references(load(p))
+    evaluator = truth(ledger, [["a"], ["b"]])
+    assert "evaluator-only" not in references(ledger)
+    assert "evaluator-only" in references(ledger, evaluator)
+    with pytest.raises(ValueError, match="exactly cover"):
+        verify_payloads(ledger, tmp_path, paths, evaluator)
+    truth_data = b"evaluator provenance"
+    evaluator = evaluator.model_copy(
+        update={
+            "provenance": evaluator.provenance.model_copy(
+                update={"sha256": hashlib.sha256(truth_data).hexdigest()}
+            )
+        }
+    )
+    (tmp_path / "truth-evidence.json").write_bytes(truth_data)
+    with_truth = verify_payloads(
+        ledger, tmp_path, {**paths, "evaluator-only": "truth-evidence.json"}, evaluator
+    )
+    assert len(with_truth["artifacts"]) == len(paths) + 1
+    (tmp_path / paths["good"]).unlink()
+    with pytest.raises(ValueError, match="inaccessible"):
+        verify_payloads(ledger, tmp_path, paths)
+
+
+def test_payload_symlink_and_fifo(tmp_path):
+    ledger, paths = payload_files(tmp_path)
+    good = tmp_path / paths["good"]
+    good.unlink()
+    good.symlink_to(tmp_path / paths["bad"])
+    with pytest.raises(ValueError, match="symlinked"):
+        verify_payloads(ledger, tmp_path, paths)
+    good.unlink()
+    os.mkfifo(good)
+    with pytest.raises(ValueError, match="regular file"):
+        verify_payloads(ledger, tmp_path, paths)
+    link = tmp_path / "root-link"
+    link.symlink_to(tmp_path, target_is_directory=True)
+    with pytest.raises(ValueError, match="symlinked"):
+        verify_payloads(ledger, link, paths)
+    folder = tmp_path / "directory-link"
+    folder.symlink_to(tmp_path, target_is_directory=True)
+    paths["good"] = "directory-link/bad.txt"
+    with pytest.raises(ValueError, match="symlinked"):
+        verify_payloads(ledger, tmp_path, paths)
+
+
+def test_payload_budgets_and_map(tmp_path, monkeypatch):
+    import model_forensics.artifact_verify as verifier
+
+    ledger, paths = payload_files(tmp_path)
+    monkeypatch.setattr(verifier, "MAX_FILE_BYTES", 1)
+    with pytest.raises(ValueError, match="byte budget"):
+        verify_payloads(ledger, tmp_path, paths)
+    monkeypatch.setattr(verifier, "MAX_FILE_BYTES", 1000)
+    monkeypatch.setattr(verifier, "MAX_TOTAL_BYTES", 1)
+    with pytest.raises(ValueError, match="byte budget"):
+        verify_payloads(ledger, tmp_path, paths)
+    mapping = tmp_path / "map.json"
+    mapping.write_text('{"a":"x", "a":"y"}')
+    with pytest.raises(ValueError, match="duplicate"):
+        read_map(mapping)
+    mapping.write_text('["x"]')
+    with pytest.raises(ValueError, match="strings"):
+        read_map(mapping)
+    monkeypatch.setattr(verifier, "MAX_MAP_BYTES", 1)
+    with pytest.raises(ValueError, match="input bound"):
+        read_map(mapping)

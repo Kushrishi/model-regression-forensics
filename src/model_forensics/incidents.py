@@ -248,12 +248,22 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("ledger", type=Path)
     parser.add_argument("--truth", type=Path, help="separate evaluator-only record")
+    parser.add_argument("--artifact-map", type=Path, help="explicit identity-to-relative-path JSON")
+    parser.add_argument("--artifact-root", type=Path, help="trusted local payload root")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     try:
+        if bool(args.artifact_map) != bool(args.artifact_root):
+            raise ValueError("artifact-map and artifact-root must be supplied together")
         ledger = read_record(args.ledger, Ledger)
         truth = read_record(args.truth, Truth) if args.truth else None
         result = summarize(ledger, truth)
+        if args.artifact_map:
+            from model_forensics.artifact_verify import read_map, verify_payloads
+
+            result["payload_verification"] = verify_payloads(
+                ledger, args.artifact_root, read_map(args.artifact_map), truth
+            )
         with args.out.open("x", encoding="utf-8") as out:
             out.write(json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n")
     except (ValueError, OSError) as error:
