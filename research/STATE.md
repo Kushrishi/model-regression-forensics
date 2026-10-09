@@ -75,3 +75,8 @@ zero additional qualified incidents, two provenance leads only, and no new
 training. Several reported defects have direct code-level oracles; none supplied
 the required repeated good-versus-regressed task evidence. Further expansion is
 paused pending concrete new qualification evidence rather than an unbounded search.
+
+A source-only follow-up now pins both masked-LFQ maintainer repairs and the
+DeepSpeed merge parent/complete fix scope. Repair provenance improved; neither
+lead supplies a reconstructed repeated training-task regression. Qualification
+remains zero and the bounded follow-up is closed without training.
