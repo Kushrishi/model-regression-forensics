@@ -30,7 +30,7 @@ random_state=0, one CPU thread. No hyperparameter search.
 | Execution | Training labels | C |
 | --- | --- | ---: |
 | Baseline | Original | 4.0 |
-| Candidate | Swap card_arrival and card_delivery_tracking | 0.25 |
+| Candidate | Swap card_arrival and card_delivery_estimate | 0.25 |
 | Restore labels | Original | 0.25 |
 | Restore regularization | Swapped | 4.0 |
 | Restore both | Original | 4.0 |
@@ -70,3 +70,11 @@ study requires its own prospective incidents, baselines and evaluation design.
 Data attribution: Casanueva et al., *Efficient Intent Detection with Dual Sentence
 Encoders*, NLP for ConvAI/ACL 2020. Banking77 is distributed under CC BY 4.0;
 the retained example must identify its source and the disclosed modifications.
+
+## Pre-fit metadata correction
+
+The first invocation rejected the provisional label name card_delivery_tracking
+before vectorization or any model fit. The pinned CSV uses card_delivery_estimate.
+Source and specification were corrected before observing training outcomes; all
+other settings remain fixed. The failed setup log and resource record are retained
+in the original attempt directory. A separately named attempt executes the fits.

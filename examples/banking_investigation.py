@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 DATA_SHA = "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b"
-TARGETS = ("card_arrival", "card_delivery_tracking")
+TARGETS = ("card_arrival", "card_delivery_estimate")
 DESIGN = "research/CLASSIFICATION_WORKFLOW_DEVELOPMENT_2026_10_09.md"
 
 
