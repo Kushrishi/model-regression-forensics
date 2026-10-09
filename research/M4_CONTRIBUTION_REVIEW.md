@@ -33,3 +33,52 @@ The appropriate comparator for a proposed certification rule is a simple diagnos
 The [technical report](M4_TECHNICAL_REPORT.md) presents the completed study, including the candidate construction, semantic shortcut, baseline definitions and complete rankings. Earlier restoration results are reported separately because their candidate design differed.
 
 The current evidence does not demonstrate a new causal-identification method. A follow-up needs a specific decision that controlled repair evidence improves beyond the closest existing work. The [continuation requirements](M4_CONTINUATION_GATE.md) still require independent assessment before further matched-world certification training. No new experiment is approved by this literature review.
+
+## Publication and continuation decision, 9 October 2026
+
+**Keep the completed study as a bounded technical report and reproducible artifact.
+Do not submit it as a general comparison of attribution methods or start additional
+training solely to enlarge its result table.** The new retained-score stability
+analysis adds a useful observation: the second world's TracIn root ranks are 1,
+5 and 5 across trajectories, with a primary average rank of 5. It supplies no additional
+benchmark worlds and no explanation for that variation.
+
+Negative results do not require a novel algorithm to be valuable. TMLR's current
+[acceptance criteria](https://jmlr.org/tmlr/acceptance-criteria.html) emphasize
+supported claims, clear communication and something an audience can learn; they
+explicitly do not require novelty of the studied method. The ICML 2024 position
+paper [Embracing Negative Results](https://proceedings.mlr.press/v235/karl24a.html)
+argues for preserving such evidence. Neither source implies this particular report
+is submission-ready. Here, the known-label semantic shortcut and only two worlds
+leave the broader practical lesson under-supported. The legitimate current lesson
+is to include engineer-visible semantic baselines and inspect trajectory variation
+before interpreting a composite ranking.
+
+A software paper is not an automatic alternative. Current
+[JOSS requirements](https://joss.readthedocs.io/en/latest/submitting.html) include
+sustained public development, demonstrated research use and substantial maintained
+software. The comparison utility's strict record handling is useful, but no broad
+adoption or advantage over established evaluation/debugging tools is demonstrated.
+This review does not claim that a venue would accept or reject the work.
+
+### One concrete follow-up decision
+
+The next eligible empirical question is: **does explicitly checking alternative
+repairs change a real repair-acceptance or diagnosis decision beyond ordinary diff
+inspection and targeted regression tests, at the same test budget?**
+
+The named LFQ first-fix/follow-up sequence has already been evaluated against this
+question. The incomplete first fix fails ordinary unmasked-branch tests; the
+follow-up passes the declared fixed-tensor checks. It demonstrates useful repair
+testing but supplies no extra MRF diagnosis benefit. Do not retrain a model to
+manufacture ambiguity in this already-resolved decision.
+
+Reopening requires a different documented workflow containing a known-good and
+regressed task result, complete visible changes, pinned/licensed runnable artifacts,
+and plausible interventions that leave a decision unresolved after the ordinary
+checks. Before execution, specify the decision, independent incident unit, baseline
+test budget and what observation would falsify added value. Do not hide visible
+evidence or introduce distractors simply to defeat cheap baselines. Until a concrete
+workflow meets those conditions, preserve the public report, accept grounded case
+submissions, and allocate substantial experiment effort to TrueMargin. This closes
+the present assessment; it does not assert that ML regression diagnosis is solved.
