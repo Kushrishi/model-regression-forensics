@@ -123,3 +123,9 @@ completed bounded negative v1 and its software remain intact. The current classi
 ### Run a release investigation
 
 Execute baseline, candidate and repair functions, then reopen their retained predictions in a portable browser report. The [handwritten-digit walkthrough](docs/investigation-workflow.md) demonstrates an actual model and a disclosed preprocessing fault. This is an application integration example, not a causal-discovery benchmark.
+
+### Use your own saved predictions
+
+Install the package and run `mrf-import policy.json predictions.csv investigation`
+to build a portable classification-release report without loading or training
+models. See the [input contract and walkthrough](docs/import-predictions.md).
