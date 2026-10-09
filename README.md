@@ -7,7 +7,7 @@ the current discovery track screens versioned training-pipeline regressions:
 
 **Current result:** simple label and lexical baselines find the planted change in both Banking77 worlds. Grad-Dot and TracIn do not add consistent top-1 benefit. A separate repair fixture reports ambiguity when two repairs restore the same predictions.
 
-**Status:** v1/M4 is a completed bounded negative study. The failed SmolLM2 v2 development attempt is permanently closed. A separately owner-authorized vNext track is screening external release-regression cases and building minimal infrastructure; no new training or confirmatory study is approved.
+**Status:** the two-case Banking77 localization study is complete. A later SmolLM2 feasibility attempt failed its clean-baseline check and is closed. Current research screens documented training-pipeline regressions for a follow-up study; none yet meets the required evidence standard, and no new training is approved.
 
 The completed study focuses on localization. A deterministic follow-up fixture now tests a harder question: when multiple interventions repair the same failed behavior, should a debugger refuse to claim a unique historical cause?
 
@@ -76,6 +76,10 @@ A deterministic linear-model fixture now contains one regression and two distinc
 The same release-comparison policy marks both repairs successful. The specificity layer therefore returns `ambiguous_repairs` and leaves the historical cause `not_identified`. The known historical change is not provided to that decision layer.
 
 [Read the fixture](docs/ambiguous-repairs.md)
+
+## Proposed follow-up: avoiding unjustified root-cause claims
+
+The next research question is whether a debugger can reduce incorrect, overly specific diagnoses without simply refusing to diagnose everything. It would have to beat ordinary diff inspection and targeted reversions at a comparable testing cost, using real incidents with known-good and regressed versions. Current incident screens have found software defects and useful repair examples, but no qualified training-release case with the required outcome and provenance evidence. The existing ambiguous-repair example demonstrates intended software behavior; it does not establish research novelty.
 
 ## Current discovery track
 
