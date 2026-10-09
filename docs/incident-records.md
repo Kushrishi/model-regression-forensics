@@ -19,6 +19,10 @@ completed attempt has finite target measurements; failures retain evidence and
 cannot masquerade as usable scores. Group interventions are explicit change sets.
 Duplicate run IDs, duplicate intervention/randomness pairs, unknown candidates,
 unknown evidence references, nonfinite values and budget overruns are rejected.
+One artifact identity must have one SHA-256 throughout the incident and ledger,
+including run evidence and the decision policy. Conflicts fail validation even
+without optional payload verification; repeated references to identical artifacts
+remain valid. This checks reference consistency, not payload authenticity.
 A retry must have a distinct randomness/execution identity and consume budget;
 there is no executor or automatic retry here.
 
