@@ -70,10 +70,11 @@ def render(directory: Path, output: Path) -> None:
             for row in comparison["slices"]
         )
         sections.append(
-            f"<h2>{esc(name)}</h2><table><thead><tr>"
+            f"<details><summary>{esc(name.replace(chr(95), chr(32)))}: slice results</summary>"
+            "<table><thead><tr>"
             "<th>Slice</th><th>Cases</th><th>Baseline accuracy</th>"
             "<th>Release accuracy</th><th>Policy result</th>"
-            f"<th>Regressed cases</th></tr></thead><tbody>{rows}</tbody></table>"
+            f"<th>Regressed cases</th></tr></thead><tbody>{rows}</tbody></table></details>"
         )
     expected = {case["case_id"]: case["expected"] for case in plan["cases"]}
     predictions = [
@@ -115,10 +116,23 @@ def render(directory: Path, output: Path) -> None:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Model release investigation</title>
 <style>body{font:16px system-ui;max-width:1200px;margin:40px auto;padding:0 24px;
-color:#17212b}table{border-collapse:collapse;width:100%;margin:20px 0;display:block;
-overflow:auto}th,td{padding:10px;border:1px solid #ccd3da;text-align:left;
-vertical-align:top}th{background:#edf2f6}pre{white-space:pre-wrap;overflow-wrap:anywhere}
-input,select,button{font:inherit;padding:8px;margin:4px}tr[hidden]{display:none}\nsummary{cursor:pointer;font-weight:600}h1,h2{line-height:1.2}</style>
+color:#17212b}
+table{border-collapse:collapse;width:100%;margin:20px 0;display:block;
+overflow:auto}
+th,td{padding:10px;border:1px solid #ccd3da;text-align:left;
+vertical-align:top}
+th{background:#edf2f6}
+pre{white-space:pre-wrap;overflow-wrap:anywhere}
+
+input,select,button{font:inherit;padding:8px;margin:4px}
+tr[hidden]{display:none}
+
+details{margin:12px 0}
+label{display:inline-flex;flex-direction:column;margin-right:12px}
+
+summary{cursor:pointer;font-weight:600}
+h1,h2{line-height:1.2}
+</style>
 <h1>Model release investigation</h1>
 <p>Recomputed from saved predictions. Repair success does not identify a unique
 historical cause. Slice results may overlap and are not statistical significance tests.</p>
