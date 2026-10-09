@@ -1,0 +1,71 @@
+{
+  "screen_date": "2026-10-09",
+  "index_url": "https://huggingface.co/datasets/mehilshah/AIFaultBench/resolve/62e11d6dfe4b1637f38a45d8fbc1c2b9c3c971ff/index.json",
+  "index_bytes": 2666853,
+  "index_sha256": "9c1c86018d9098f1a22b27bb232d092d6e05fa0f91a7aa6a27080d3849dba95a",
+  "selection": "Ten previously unreviewed metadata leads manually selected for training-pipeline relevance; not exhaustive or representative.",
+  "qualified_count": 0,
+  "training_started": false,
+  "leads": [
+    {
+      "index_id": "022",
+      "repository": "tensorflow/models",
+      "issue_url": "https://github.com/tensorflow/models/issues/10980",
+      "index_source_commit": "5d10b3bca66a2a1acc01099ba6af420ca77fd7be"
+    },
+    {
+      "index_id": "067",
+      "repository": "keras-team/keras-io",
+      "issue_url": "https://github.com/keras-team/keras-io/issues/1147",
+      "index_source_commit": "54392950c4142c96ccc0f8dfd4a9a586edbe5cf2"
+    },
+    {
+      "index_id": "074",
+      "repository": "deepspeedai/DeepSpeedExamples",
+      "issue_url": "https://github.com/deepspeedai/DeepSpeedExamples/issues/888",
+      "index_source_commit": "df7119ed264bfac747969f9bb5bed8a61aed5e5d"
+    },
+    {
+      "index_id": "103",
+      "repository": "lucidrains/vector-quantize-pytorch",
+      "issue_url": "https://github.com/lucidrains/vector-quantize-pytorch/issues/188",
+      "index_source_commit": "59a30b68a83be710638184764c025b54693c82cc"
+    },
+    {
+      "index_id": "394",
+      "repository": "deepspeedai/DeepSpeed",
+      "issue_url": "https://github.com/deepspeedai/DeepSpeed/issues/7837",
+      "index_source_commit": "a44fb58f134afc5399b29c154a5502e14272774c"
+    },
+    {
+      "index_id": "478",
+      "repository": "huggingface/transformers",
+      "issue_url": "https://github.com/huggingface/transformers/issues/46897",
+      "index_source_commit": "c96378c4136f5882fee50d8ff8ee1e9588a17eb6"
+    },
+    {
+      "index_id": "538",
+      "repository": "pytorch/rl",
+      "issue_url": "https://github.com/pytorch/rl/issues/3291",
+      "index_source_commit": "ab35c364cbebea9267bbe50b6e6cafab0768b249"
+    },
+    {
+      "index_id": "559",
+      "repository": "huggingface/accelerate",
+      "issue_url": "https://github.com/huggingface/accelerate/issues/1112",
+      "index_source_commit": "f054799e7fb74554591a6085ca3b920e0b10f923"
+    },
+    {
+      "index_id": "584",
+      "repository": "Lightning-AI/pytorch-lightning",
+      "issue_url": "https://github.com/Lightning-AI/pytorch-lightning/issues/21454",
+      "index_source_commit": "027455bcd9433f201b1136f68d54b1a07588abe3"
+    },
+    {
+      "index_id": "640",
+      "repository": "huggingface/pytorch-image-models",
+      "issue_url": "https://github.com/huggingface/pytorch-image-models/issues/2392",
+      "index_source_commit": "131518c15cef20aa6cfe3c6831af3a1d0637e3d1"
+    }
+  ]
+}
