@@ -81,3 +81,28 @@ Source-access note: the old mlwhatif author PDF URL returned404; the coauthor
 PDF and pinned artifact provide the current route. The classical delta-debugging
 author landing page was verified through search after a direct fetch timeout.
 No inaccessible page is treated as a newly reproduced result.
+
+## 9 October: retained real-defect workflow decision
+
+This assessment uses the accepted [LFQ fixed-tensor record](LFQ_FIXED_TENSOR_REPLAY_2026_10_09.json), its [scope and reproduction instructions](LFQ_FIXED_TENSOR_REPLAY_2026_10_09.md), the three source versions and the explicit squared-error/gradient oracle. It does not rerun models or turn this software case into a trained-task incident.
+
+The engineer decision is whether a candidate commitment-loss repair preserves both masked and unmasked behavior on the declared tensors. Evidence is available to all workflows: complete pinned source files/history, both input tensors, masks, exact configuration and the oracle. No changes are concealed.
+
+| Candidate/action | Evidence from the retained replay | Ordinary baseline action | Decision supported |
+| --- | --- | --- | --- |
+| Reported source | Masked loss and gradients disagree with the oracle; two-batch unmasked call raises RuntimeError | Direct squared-error/gradient checks and basic shape tests | Reproduce the defect; no training required to establish this local failure |
+| First repair | Both masked fixtures match the oracle; both unmasked fixtures raise UnboundLocalError | Test mask=None in addition to the repaired branch; inspect initialization of input_for_entropy | Reject this candidate as a complete repair of the declared paths |
+| Follow-up repair | All four declared fixtures return and match the loss/gradient oracle | Run the same four checks against the candidate | Accept these exercised paths only; broader correctness and trained-task restoration remain unknown |
+| MRF-specific diagnosis | No separate algorithm was compared on this case | Give source review and targeted tests the same evidence | No demonstrated incremental diagnosis benefit or cost reduction |
+
+The source changes explain the observed sequence: the reported implementation reuses an input after entropy-related reshaping/masking; the first repair separates that input but leaves the entropy variable uninitialized when no mask is supplied; the follow-up initializes it for both paths. This is source-grounded interpretation consistent with retained numerical outputs, not an independently timed developer study.
+
+Local source SHA-256 readback matches all three accepted digests. The retained result has twelve version/fixture checks, zero optimizer updates and zero trainable parameters. No additional test results are claimed by this assessment.
+
+### Continuation decision
+
+**Keep this as a bounded regression-testing and repair-review example. Do not use it to justify a new training run, automated diagnosis method or causal-specificity benchmark.** The observed practical decision is already settled by ordinary branch coverage and the explicit oracle. A replay/evidence package can be useful without claiming novel diagnosis.
+
+A historical known-good/regressed trained-task pair, licensed pinned task/data, repeated restoration evidence and a surviving comparison against complete diff inspection remain missing. They cannot be supplied by the existing fixed tensors. No further general incident search or artificial difficulty is justified by this case.
+
+Research continuation remains conditional on concrete new evidence supporting a different unresolved engineer decision. Until then, maintain the completed localization study and this executable example, and allocate substantial experiment effort elsewhere. This decision does not claim that all release debugging is easy or that ML regression diagnosis is solved.
