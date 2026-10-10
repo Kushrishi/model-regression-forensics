@@ -1,6 +1,6 @@
 # Research status
 
-Updated October 9, 2026. This page is the current status; dated records below describe their original scopes.
+Updated October 10, 2026. This page is the current status; dated records below describe their original scopes.
 
 The matched Banking77 localization study is complete. The repository also has an
 executable classification investigation workflow: model callbacks, retained
@@ -15,8 +15,8 @@ partial rollbacks failed. These constructed, overlapping scenarios establish
 application behavior, not a novel diagnostic advantage. Next: independent first
 use with an engineer's own saved predictions and, separately, qualified real
 incidents for a comparative research design.
-That prospective engineering scope follows the owner's continuation decision;
-no new confirmatory study or official-test access follows. No paper is published.
+These are development results; no confirmatory study or official-test result is
+claimed. No paper is published.
 
 ## Question
 
@@ -44,7 +44,7 @@ See the [technical report](M4_TECHNICAL_REPORT.md), [result record](M4_RESULT.js
 
 ## Software
 
-PR63/64 added actual release/repair execution and interactive inspection. The
+The application executes release/repair functions and provides interactive inspection. The
 digit walkthrough retains 540 evaluation cases, model parameters and five
 executions. Two repairs restore its disclosed input-order fault; ambiguity is
 reported. This is application evidence, not a new diagnosis result.
@@ -54,59 +54,26 @@ The exact-label comparator checks record alignment, declared evaluation slices a
 
 The [ambiguous-repair example](../docs/ambiguous-repairs.md) reverses a linear classifier's input feature order. Restoring the inputs or reversing the weights both recover the original predictions. The assessment reports `ambiguous_repairs` and leaves the historical cause `not_identified`. This demonstrates the difference between a successful repair and evidence for a unique cause.
 
-## Historical v2 closure — 7 October
+## Research history and limits
 
-The owner [amended the governance rule](GOVERNANCE_AMENDMENT_2026_10_07.md) without
-pretending independent review occurred. A development-only SmolLM2-135M-Instruct
-feasibility attempt then failed its declared clean protected-behavior floor in
-one of two seeds. See [the bounded closure](DEVELOPMENT_CLOSURE_2026_10_07.md).
-No regressed fits, new incidents, interventions or official test access followed.
-This is not confirmatory evidence and does not disprove the general diagnosis
-question. The tested v2 continuation is closed; the completed negative v1 and
-unsuccessful development feasibility record are preserved. The no-automatic-v3 decision was subsequently amended prospectively by the owner, without reopening v2.
+The [experiment history](EXPERIMENT_HISTORY.md) retains the original study sequence.
+The [small-model feasibility attempt](DEVELOPMENT_CLOSURE_2026_10_07.md) failed its
+clean-baseline requirement and remains closed. Later incident screens found no
+qualified training-release case. A [fixed-tensor software-defect replay](LFQ_FIXED_TENSOR_REPLAY_2026_10_09.md)
+reproduced a loss/gradient defect and repairs without training; it is not evidence
+of trained-task recovery or an MRF-specific advantage.
 
-## Evidence and limitations
+Current work follows the [roadmap](ROADMAP.md). The findings do not establish
+causal identification, superiority to modern attribution methods or cross-model
+generalization. Frozen protocols and result records remain the evidence source.
 
-The results concern the constructed tasks tested here. They do not establish general causal identification, superiority to modern attribution methods or cross-model generalization. Frozen protocols and result records define each study; the [claims summary](CLAIMS.md) and this page describe their current interpretation.
+## Reproduction gap
 
-## Historical discovery decision — 7 October
-
-[The dated amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md) permits a separate
-discovery/infrastructure track. It broadens candidate categories prospectively to
-versioned training-pipeline changes. No new model training, official test access,
-confirmatory protocol, large benchmark or scientific contribution is authorized or
-established. See the current contribution and incident audits.
-
-The [October 9 provenance follow-up](VNEXT_PROVENANCE_FOLLOWUP_2026_10_09.md)
-traced the two DeepFD leads to their original reports and found additional source
-reconstruction differences. Neither qualifies as a release-regression incident;
-the screened set still contains zero qualified cases. This does not close the
-maintained discovery/software track or authorize a new training study.
-
-A [bounded compiler-incident screen](VNEXT_COMPILER_INCIDENT_SCREEN_2026_10_09.md)
-adds three public leads, including reported masking and multi-change repairs.
-Two remain provenance leads only; none qualifies for a new training study. Their
-compiler numerical checks must not be presented as task-performance evidence.
-The ledger now offers opt-in bounded local payload hashing, which checks byte
-identity rather than run authenticity or scientific responsibility.
-
-The [ten-lead pipeline screen](VNEXT_PIPELINE_SCREEN_2026_10_09.md) is now complete:
-zero additional qualified incidents, two provenance leads only, and no new
-training. Several reported defects have direct code-level oracles; none supplied
-the required repeated good-versus-regressed task evidence. Further expansion is
-paused pending concrete new qualification evidence rather than an unbounded search.
-
-A source-only follow-up now pins both masked-LFQ maintainer repairs and the
-DeepSpeed merge parent/complete fix scope. Repair provenance improved; neither
-lead supplies a reconstructed repeated training-task regression. Qualification
-remains zero and the bounded follow-up is closed without training.
-
-A [fixed-tensor LFQ replay](LFQ_FIXED_TENSOR_REPLAY_2026_10_09.md) now independently
-reproduces incorrect commitment losses/gradients, the first repair's unmasked
-exception and the follow-up repair's agreement with a direct numerical oracle.
-Twelve CPU checks use zero trainable parameters and zero optimizer updates. This
-adds executable software evidence, not trained-task restoration or a qualified
-release-regression incident. No new training is authorized by this result.
+The Banking77 investigation bundle is retained. Persistent upload of the complete
+incremental-intent experiment archive failed; its recovery remains unresolved.
+Compact protocol and result records are available, but they are not a substitute
+for the complete numeric models, inputs and predictions. Independent first use
+has not been completed.
 
 ## Saved-prediction import — 2026-10-09
 
