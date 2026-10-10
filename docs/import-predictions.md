@@ -120,6 +120,17 @@ for the combined policy, a runnable file-only example and fair-comparison limits
 
 ## Try the initial comparison
 
+Reopening an imported investigation verifies both retained source files against
+the SHA-256 hashes in its plan. It also checks that the plan matches the source
+policy and that execution records match the source CSV predictions. Missing or
+changed files fail visibly; a previously rendered HTML file is a snapshot, not a
+live integrity check. Keep the entire investigation directory for verification.
+
+These checks detect corruption and inconsistent edits. They do not authenticate
+the producer, establish that a model was run, or prevent someone from rewriting
+the whole package and its hashes. To compare a new policy or revised predictions,
+import into a new directory rather than editing retained evidence.
+
 This two-case synthetic example demonstrates the interface; it is not research
 evidence. From a checkout with MRF installed:
 

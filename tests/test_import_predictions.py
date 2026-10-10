@@ -48,6 +48,7 @@ def test_import_roundtrip_and_unknown_cost(tmp_path):
     assert (output / "source-predictions.csv").read_bytes() == predictions.read_bytes()
     page = (output / "index.html").read_text()
     assert "Unknown: these predictions were imported" in page
+    assert "Imported source integrity checked" in page
     assert "<script>unsafe</script>" not in page
     assert not (tmp_path / "repair").exists()
     with pytest.raises(FileExistsError):
@@ -124,4 +125,74 @@ def test_initial_stage_cannot_hide_supplied_repairs(tmp_path):
     plan["investigation_stage"] = "initial_comparison"
     (output / "plan.json").write_text(json.dumps(plan))
     with pytest.raises(ValueError, match="exactly baseline and candidate"):
+        reopen(output)
+
+
+@pytest.mark.parametrize("filename", ["source-policy.json", "source-predictions.csv"])
+def test_reopen_rejects_changed_source_bytes(tmp_path, filename):
+    policy, predictions = inputs(tmp_path)
+    output = tmp_path / "output"
+    import_predictions(policy, predictions, output)
+    source = output / filename
+    source.write_bytes(source.read_bytes() + b"\n")
+    with pytest.raises(ValueError, match="SHA-256 mismatch"):
+        reopen(output)
+
+
+@pytest.mark.parametrize("field", ["cases", "slices", "declared_changes"])
+def test_reopen_rejects_policy_drift(tmp_path, field):
+    policy, predictions = inputs(tmp_path)
+    output = tmp_path / "output"
+    import_predictions(policy, predictions, output)
+    plan_path = output / "plan.json"
+    plan = json.loads(plan_path.read_text())
+    plan[field] = [] if field != "declared_changes" else {}
+    plan_path.write_text(json.dumps(plan))
+    with pytest.raises(ValueError, match="differs from retained source policy"):
+        reopen(output)
+
+
+def test_reopen_rejects_changed_execution_predictions(tmp_path):
+    policy, predictions = inputs(tmp_path)
+    output = tmp_path / "output"
+    import_predictions(policy, predictions, output)
+    path = output / "execution-001.json"
+    record = json.loads(path.read_text())
+    record["release"]["predictions"][0]["observed"] = "yes"
+    path.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match="execution predictions differ"):
+        reopen(output)
+
+
+def test_reopen_allows_reordered_execution_rows(tmp_path):
+    policy, predictions = inputs(tmp_path)
+    output = tmp_path / "output"
+    original = import_predictions(policy, predictions, output)
+    path = output / "execution-001.json"
+    record = json.loads(path.read_text())
+    record["release"]["predictions"].reverse()
+    path.write_text(json.dumps(record))
+    assert reopen(output)[1]["assessment"] == original["assessment"]
+
+
+@pytest.mark.parametrize("missing", ["source-policy.json", "source-predictions.csv"])
+def test_reopen_requires_source_files(tmp_path, missing):
+    policy, predictions = inputs(tmp_path)
+    output = tmp_path / "output"
+    import_predictions(policy, predictions, output)
+    (output / missing).unlink()
+    with pytest.raises(FileNotFoundError):
+        reopen(output)
+
+
+def test_reopen_rejects_missing_hashes_even_if_plan_origin_removed(tmp_path):
+    policy, predictions = inputs(tmp_path)
+    output = tmp_path / "output"
+    import_predictions(policy, predictions, output)
+    path = output / "plan.json"
+    plan = json.loads(path.read_text())
+    del plan["source_sha256"]
+    del plan["record_origin"]
+    path.write_text(json.dumps(plan))
+    with pytest.raises(ValueError, match="both source SHA-256"):
         reopen(output)

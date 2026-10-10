@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import hashlib
-import io
 import json
 from pathlib import Path
 
 from model_forensics.investigation_report import render
 from model_forensics.prediction_assessment import assess_predictions
-from model_forensics.release_compare import Comparison, Release
+from model_forensics.prediction_sources import parse_prediction_csv
+from model_forensics.release_compare import Comparison
 
 
 def import_predictions(policy_path: Path, predictions_path: Path, output: Path) -> dict:
@@ -28,26 +27,7 @@ def import_predictions(policy_path: Path, predictions_path: Path, output: Path) 
         raise ValueError("policy requires exactly cases, slices and declared_changes")
     if not isinstance(policy["declared_changes"], dict):
         raise ValueError("declared_changes must be an object")
-    reader = csv.DictReader(io.StringIO(prediction_bytes.decode("utf-8-sig"), newline=""))
-    if reader.fieldnames is None or sorted(reader.fieldnames) != [
-        "case_id",
-        "observed",
-        "release_id",
-    ]:
-        raise ValueError("CSV requires exactly release_id,case_id,observed columns")
-    grouped: dict[str, list[dict]] = {}
-    for row in reader:
-        if None in row or any(value is None or not value.strip() for value in row.values()):
-            raise ValueError(f"incomplete or extra CSV fields at line {reader.line_num}")
-        grouped.setdefault(row["release_id"], []).append(
-            {"case_id": row["case_id"], "observed": row["observed"]}
-        )
-    if not {"baseline", "candidate"} <= grouped.keys():
-        raise ValueError("CSV requires baseline and candidate")
-    releases = {
-        name: Release.model_validate_json(json.dumps({"release_id": name, "predictions": rows}))
-        for name, rows in grouped.items()
-    }
+    releases = parse_prediction_csv(prediction_bytes)
     comparisons = {
         name: Comparison.model_validate_json(
             json.dumps(

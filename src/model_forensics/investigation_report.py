@@ -9,6 +9,7 @@ from pathlib import Path
 
 from model_forensics.case_previews import previews
 from model_forensics.prediction_assessment import assess_predictions
+from model_forensics.prediction_sources import verify_imported_sources
 from model_forensics.release_compare import Comparison, Release
 
 
@@ -34,6 +35,10 @@ def reopen(directory: Path) -> tuple[dict, dict, list[dict]]:
         if release.release_id != name:
             raise ValueError("execution identity differs from plan")
         records.append(record)
+    if plan.get("record_origin") == "imported_predictions" or any(
+        record.get("record_origin") == "imported_predictions" for record in records
+    ):
+        verify_imported_sources(directory, plan, records)
     comparisons = {
         name: Comparison.model_validate_json(
             json.dumps(
@@ -175,6 +180,14 @@ h1,h2{line-height:1.2}
 historical cause. Slice results may overlap and are not statistical significance tests.</p>
 """
     assessment = report["assessment"]
+    if plan.get("record_origin") == "imported_predictions" or any(
+        record.get("record_origin") == "imported_predictions" for record in records
+    ):
+        page += (
+            "<p>Imported source integrity checked: retained input hashes, policy and "
+            "prediction records agree. This does not authenticate the producer "
+            "or prove model execution.</p>"
+        )
     if report["schema_version"] == "initial-release-comparison/0.1":
         page += (
             "<h2>Initial release comparison</h2>"
