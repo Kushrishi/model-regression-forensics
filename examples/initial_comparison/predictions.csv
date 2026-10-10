@@ -1,0 +1,5 @@
+release_id,case_id,observed
+baseline,message-1,delivery
+baseline,message-2,payment
+candidate,message-1,payment
+candidate,message-2,payment

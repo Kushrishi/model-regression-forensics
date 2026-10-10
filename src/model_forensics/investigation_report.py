@@ -8,8 +8,8 @@ import json
 from pathlib import Path
 
 from model_forensics.case_previews import previews
+from model_forensics.prediction_assessment import assess_predictions
 from model_forensics.release_compare import Comparison, Release
-from model_forensics.repair_compare import RepairComparison, compare_repairs
 
 
 def reopen(directory: Path) -> tuple[dict, dict, list[dict]]:
@@ -18,7 +18,14 @@ def reopen(directory: Path) -> tuple[dict, dict, list[dict]]:
     if plan.get("schema_version") != "investigation-plan/0.1":
         raise ValueError("unsupported investigation plan")
     names = plan["execution_order"]
-    if len(names) < 3 or names[:2] != ["baseline", "candidate"] or len(names) != len(set(names)):
+    initial = plan.get("investigation_stage") == "initial_comparison"
+    if initial and len(names) != 2:
+        raise ValueError("initial comparison requires exactly baseline and candidate")
+    if (
+        len(names) < (2 if initial else 3)
+        or names[:2] != ["baseline", "candidate"]
+        or len(names) != len(set(names))
+    ):
         raise ValueError("invalid execution order")
     records = []
     for index, name in enumerate(names):
@@ -40,9 +47,7 @@ def reopen(directory: Path) -> tuple[dict, dict, list[dict]]:
         )
         for name, record in zip(names[1:], records[1:], strict=True)
     }
-    report = compare_repairs(
-        RepairComparison(regressed=comparisons.pop("candidate"), repairs=comparisons)
-    )
+    report = assess_predictions(comparisons.pop("candidate"), comparisons)
     return plan, report, records
 
 
@@ -51,8 +56,9 @@ def render(directory: Path, output: Path) -> None:
     plan, report, records = reopen(directory)
     esc = lambda value: html.escape(str(value), quote=True)  # noqa: E731
     sections = []
-    comparisons = {"candidate": report["regressed"], **report["repairs"]}
-    has_floors = any("minimum_accuracy" in row for row in report["regressed"]["slices"])
+    candidate = report.get("candidate", report.get("regressed"))
+    comparisons = {"candidate": candidate, **report["repairs"]}
+    has_floors = any("minimum_accuracy" in row for row in candidate["slices"])
     for name, comparison in comparisons.items():
         rows = "".join(
             "<tr>"
@@ -169,17 +175,25 @@ h1,h2{line-height:1.2}
 historical cause. Slice results may overlap and are not statistical significance tests.</p>
 """
     assessment = report["assessment"]
-    page += (
-        "<h2>Repair assessment</h2>"
-        f"<p>{esc(assessment['reason'])}</p>"
-        "<p>Successful repairs: "
-        f"{esc(', '.join(assessment['successful_repairs']) or 'None')}.</p>"
-    )
+    if report["schema_version"] == "initial-release-comparison/0.1":
+        page += (
+            "<h2>Initial release comparison</h2>"
+            f"<p>Candidate policy result: {'Pass' if candidate['passed'] else 'Fail'}.</p>"
+            f"<p>{esc(assessment['reason'])}</p>"
+        )
+    else:
+        page += (
+            "<h2>Repair assessment</h2>"
+            f"<p>{esc(assessment['reason'])}</p>"
+            "<p>Successful repairs: "
+            f"{esc(', '.join(assessment['successful_repairs']) or 'None')}.</p>"
+        )
     page += "".join(sections)
     page += (
         '<section id="case-inspection"><h2>Inspect cases</h2>'
         "<p>Outcome filters compare the candidate with the baseline. "
-        "Repair predictions appear alongside them. Previews are caller-supplied inputs.</p>"
+        "Supplied repair predictions appear alongside them. "
+        "Previews are caller-supplied inputs.</p>"
         '<label>Search cases or labels <input id="case-search" type="search"></label> '
         '<label>Candidate outcome <select id="case-state"><option value="all">All cases</option>'
         '<option value="different">Changed prediction</option>'

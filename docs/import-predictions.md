@@ -62,15 +62,25 @@ restore_labels,message-1,delivery
 restore_labels,message-2,payment
 ```
 
-The candidate must fail at least one declared policy requirement; an already
-passing candidate is outside this repair-investigation interface.
+Start with just the baseline and candidate rows when no repair is available.
+The report shows whether the candidate passes the declared policy, identifies
+changed cases, and explicitly says that repairs have not been evaluated. Both
+passing and failing candidates are accepted in this initial comparison.
+
+To evaluate repairs, add their predictions to the CSV and import into a new
+output directory. In this repair stage, the candidate must fail at least one
+declared policy requirement. A passing repair does not establish the cause.
 
 `baseline` and `candidate` are reserved roles. Every other release ID is a named
-repair, and at least one repair is required. Every release must contain exactly
+repair; repairs are optional. Every release must contain exactly
 one prediction for every case in the policy. Row order does not matter. IDs and
 labels are compared exactly, including whitespace and case; use normal CSV
 quoting for commas or newlines. Duplicate cases, missing predictions, unknown
 cases, extra columns and blank fields are rejected.
+
+Supply actual class labels, not probability-column indices. Record the label
+mapping and prediction method in `declared_changes`, especially if they differ
+between releases. Changed predictions alone do not prove a training defect.
 
 Include a complete rollback as an ordinary comparator when it is feasible. A
 passing repair is evidence of restored measured behavior, not evidence that MRF
@@ -107,3 +117,16 @@ is not independent first-use validation or evidence of comparative research valu
 For releases that must retain a new capability, slices can also declare
 `minimum_accuracy`. See [release acceptance requirements](release-acceptance.md)
 for the combined policy, a runnable file-only example and fair-comparison limits.
+
+## Try the initial comparison
+
+This two-case synthetic example demonstrates the interface; it is not research
+evidence. From a checkout with MRF installed:
+
+```sh
+mrf-import examples/initial_comparison/policy.json examples/initial_comparison/predictions.csv initial-review
+```
+
+Open `initial-review/index.html`. The candidate fails the declared policy, one
+case changes from correct to incorrect, and repairs are explicitly unevaluated.
+Use the outcome filter and export button to retain the affected case IDs.

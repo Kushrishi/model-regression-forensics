@@ -4,6 +4,7 @@ on:
     paths:
       - 'src/model_forensics/**'
       - 'examples/investigations/**'
+      - 'examples/initial_comparison/**'
       - 'examples/banking_investigation.py'
       - 'tests/browser/**'
       - '.github/workflows/inspection.yml'
@@ -29,6 +30,10 @@ jobs:
       - run: node tests/browser/investigation.cjs
         env:
           MRF_REPORT_HTML: current.html
+      - run: mrf-import examples/initial_comparison/policy.json examples/initial_comparison/predictions.csv /tmp/mrf-initial
+      - run: node tests/browser/investigation.cjs
+        env:
+          MRF_REPORT_DIR: /tmp/mrf-initial
       - uses: actions/upload-artifact@v4
         with:
           name: investigation-browser-views

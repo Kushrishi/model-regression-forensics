@@ -25,11 +25,16 @@ flowchart TD
 | `investigation_report.py`, `case_previews.py` | Recompute assessments and render escaped local HTML | Supplied records/previews are not authenticated model executions |
 | `incidents.py`, `artifact_verify.py` | Experimental incident schema and optional local payload verification | Hash verification establishes byte identity, not causal truth |
 
-The importer requires a candidate that fails at least one declared requirement
-and at least one supplied repair. A candidate that already passes is outside
-this repair-investigation interface. Import success and repair success are
-different: inspect the report's assessment rather than treating exit zero as a
-passing release.
+The importer accepts baseline and candidate predictions for an initial comparison,
+including candidates that pass the policy. Its `initial-release-comparison/0.1`
+report uses `candidate` and marks repair assessment `not_evaluated`. The saved plan
+explicitly records `investigation_stage: initial_comparison`; an incomplete repair
+investigation is not silently reinterpreted as an initial comparison.
+
+When repairs are supplied, the existing repair assessment requires a candidate
+that fails at least one declared requirement. Import success and policy success
+are different: inspect the report rather than treating exit zero as a passing
+release. Reopening recomputes either stage from retained predictions.
 
 ## Historical research implementation
 

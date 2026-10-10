@@ -80,3 +80,48 @@ def test_nonfinite_declaration_leaves_no_output(tmp_path):
     with pytest.raises(ValueError):
         import_predictions(policy, predictions, tmp_path / "output")
     assert not (tmp_path / "output").exists()
+
+
+@pytest.mark.parametrize("passing", [False, True])
+def test_initial_comparison_reopens_without_claiming_repairs(tmp_path, passing):
+    policy, predictions = inputs(tmp_path)
+    rows = list(csv.DictReader(predictions.open()))
+    with predictions.open("w", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=["release_id", "case_id", "observed"])
+        writer.writeheader()
+        for row in rows:
+            if row["release_id"] not in {"baseline", "candidate"}:
+                continue
+            if passing and row["release_id"] == "candidate" and row["case_id"] == "a":
+                row["observed"] = "yes"
+            writer.writerow(row)
+    output = tmp_path / "output"
+    report = import_predictions(policy, predictions, output)
+    assert report["candidate"]["passed"] is passing
+    assert report["assessment"]["status"] == "not_evaluated"
+    assert report["assessment"]["evaluated_repairs"] == []
+    assert "regressed" not in report
+    (output / "report.json").write_text('{"assessment": "forged"}')
+    plan, reopened, records = reopen(output)
+    assert reopened["candidate"] == report["candidate"]
+    assert reopened["assessment"] == report["assessment"]
+    assert len(records) == 2
+    page = (output / "index.html").read_text()
+    assert "Repairs have not been evaluated" in page
+    assert "Successful repairs: None" not in page
+    assert f"Candidate policy result: {'Pass' if passing else 'Fail'}" in page
+    del plan["investigation_stage"]
+    (output / "plan.json").write_text(json.dumps(plan))
+    with pytest.raises(ValueError, match="invalid execution order"):
+        reopen(output)
+
+
+def test_initial_stage_cannot_hide_supplied_repairs(tmp_path):
+    policy, predictions = inputs(tmp_path)
+    output = tmp_path / "output"
+    import_predictions(policy, predictions, output)
+    plan = json.loads((output / "plan.json").read_text())
+    plan["investigation_stage"] = "initial_comparison"
+    (output / "plan.json").write_text(json.dumps(plan))
+    with pytest.raises(ValueError, match="exactly baseline and candidate"):
+        reopen(output)

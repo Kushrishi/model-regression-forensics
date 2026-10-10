@@ -1,0 +1,10 @@
+{
+  "cases": [
+    {"case_id": "message-1", "expected": "delivery"},
+    {"case_id": "message-2", "expected": "payment"}
+  ],
+  "slices": [
+    {"name": "all", "case_ids": ["message-1", "message-2"], "maximum_accuracy_drop": 0.0}
+  ],
+  "declared_changes": {"candidate": "Synthetic example: one changed prediction; cause unspecified."}
+}
