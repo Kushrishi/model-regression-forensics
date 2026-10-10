@@ -106,6 +106,7 @@ def test_wrong_decisions_and_overclaims_are_scored_without_inventing_effort(tmp_
     report = audit(gold, submission)
     assert set(report["objective_answers"].values()) == {"correct"}
     assert report["submitted_effort"]["active_seconds"] is None
+    assert report["unsupported_evidence_claims"] == []
     for key in (
         "complete_rollback_passes",
         "historical_cause_identified",
@@ -116,6 +117,12 @@ def test_wrong_decisions_and_overclaims_are_scored_without_inventing_effort(tmp_
     report = audit(gold, submission)
     assert report["objective_answers"]["complete_rollback_passes"] == "incorrect"
     assert report["objective_answers"]["historical_cause_identified"] == "incorrect"
+    assert report["unsupported_evidence_claims"] == [
+        "historical_cause_identified",
+        "retraining_evaluated",
+        "execution_cost_known",
+    ]
+    assert report["release_decisions"]["complete_rollback_passes"] == "incorrect"
     submission["answers"]["candidate_passes"] = 0
     with pytest.raises(ValueError, match="type"):
         audit(gold, submission)
@@ -142,3 +149,20 @@ def test_multiple_repairs_and_missing_evidence_remain_distinct(tmp_path):
     missing = json.loads((tmp_path / "missing/facilitator-gold.json").read_text())
     assert not missing["repair_evidence_supplied"]
     assert not missing["passing_supplied_repairs"]
+
+
+def test_effort_subset_and_unanswered_claims(tmp_path):
+    source = ROOT / "examples/release_acceptance"
+    output = tmp_path / "packet"
+    protocol = prepare(source / "policy.json", source / "predictions.csv", output)
+    assert "not independent incidents" in protocol["incident_independence"]
+    gold = json.loads((output / "facilitator-gold.json").read_text())
+    submission = json.loads((output / "mrf/answer-template.json").read_text())
+    assert audit(gold, submission)["unsupported_evidence_claims"] == []
+    submission["effort"] = {"active_seconds": 10, "provenance_lookup_seconds": 11}
+    with pytest.raises(ValueError, match="exceeds total"):
+        audit(gold, submission)
+    submission["effort"]["provenance_lookup_seconds"] = 10
+    assert audit(gold, submission)["submitted_effort"]["active_seconds"] == 10
+    submission["effort"]["active_seconds"] = None
+    assert audit(gold, submission)["submitted_effort"]["active_seconds"] is None
