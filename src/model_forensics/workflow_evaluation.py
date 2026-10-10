@@ -141,6 +141,11 @@ def prepare(policy_path: Path, predictions_path: Path, output: Path) -> dict:
             "matched tasks for crossover, counterbalance order; no same-case "
             "second attempt as independent evidence."
         ),
+        "incident_independence": (
+            "Task formats, repair variants and repeated trajectories are not independent "
+            "incidents. Source hashes identify evidence, not incident independence; "
+            "group related variants before any cross-incident benefit claim."
+        ),
         "eligibility": (
             "Independent of implementation and fixtures; disclose experience "
             "and prior exposure. Owner/author rehearsals are tooling checks "
@@ -195,8 +200,21 @@ def audit(gold: dict, submission: dict) -> dict:
         value = effort.get(name)
         if value is not None and (type(value) not in (int, float) or not 0 <= value < float("inf")):
             raise ValueError("invalid measured effort")
+    active = effort.get("active_seconds")
+    provenance = effort.get("provenance_lookup_seconds")
+    if active is not None and provenance is not None and provenance > active:
+        raise ValueError("provenance lookup effort exceeds total active effort")
+    # Separate false assertions of available evidence from release-decision errors.
+    # Null remains unanswered; no participant behavior or timing is inferred.
+    evidence_keys = ("historical_cause_identified", "retraining_evaluated", "execution_cost_known")
     return {
         "schema": "mrf-submission-audit/1",
+        "unsupported_evidence_claims": [
+            key for key in evidence_keys if gold.get(key) is False and answers[key] is True
+        ],
+        "release_decisions": {
+            key: scored[key] for key in ("candidate_passes", "complete_rollback_passes")
+        },
         "objective_answers": scored,
         "submitted_effort": effort,
         "participant_declaration": submission.get("participant"),
