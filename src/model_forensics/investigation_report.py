@@ -63,9 +63,9 @@ def render(directory: Path, output: Path) -> None:
                     row["count"],
                     f"{row['baseline_accuracy']:.2%}",
                     f"{row['candidate_accuracy']:.2%}",
+                    f"{row['maximum_accuracy_drop']:.2%}",
                     *(
                         (
-                            f"{row['maximum_accuracy_drop']:.2%}",
                             f"{row['minimum_accuracy']:.2%}"
                             if "minimum_accuracy" in row
                             else "Not set",
@@ -89,12 +89,8 @@ def render(directory: Path, output: Path) -> None:
             f"<details><summary>{esc(name.replace(chr(95), chr(32)))}: slice results</summary>"
             "<table><thead><tr>"
             "<th>Slice</th><th>Cases</th><th>Baseline accuracy</th>"
-            "<th>Release accuracy</th>"
-            + (
-                "<th>Maximum drop</th><th>Minimum accuracy</th><th>Minimum met</th>"
-                if has_floors
-                else ""
-            )
+            "<th>Release accuracy</th><th>Maximum drop</th>"
+            + ("<th>Minimum accuracy</th><th>Minimum met</th>" if has_floors else "")
             + "<th>Policy result</th>"
             f"<th>Regressed cases</th></tr></thead><tbody>{rows}</tbody></table></details>"
         )

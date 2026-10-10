@@ -32,6 +32,9 @@ def test_recomputes_instead_of_trusting_saved_report(tmp_path):
     page = (tmp_path / "report.html").read_text()
     assert "<script>alert(1)</script>" not in page
     assert "&lt;script&gt;" in page
+    assert "<th>Maximum drop</th>" in page
+    assert "<td>0.00%</td>" in page
+    assert "<th>Minimum accuracy</th>" not in page
     with pytest.raises(FileExistsError):
         render(tmp_path / "run", tmp_path / "report.html")
 

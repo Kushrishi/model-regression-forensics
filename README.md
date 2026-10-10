@@ -109,6 +109,8 @@ The next research question is whether a debugger can reduce incorrect, overly sp
 
 ## Research history and limits
 
+[Evidence guide](research/README.md) · [Software architecture](docs/architecture.md)
+
 The [experiment history](research/EXPERIMENT_HISTORY.md) preserves the completed
 localization study, unsuccessful development attempts and incident-discovery
 records. The [roadmap](research/ROADMAP.md) defines current work; those older

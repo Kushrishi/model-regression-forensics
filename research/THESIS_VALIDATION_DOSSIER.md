@@ -1,5 +1,8 @@
 # Model Regression Forensics — Thesis Validation Dossier v0.1
 
+Historical design record. See [current evidence](STATE.md) and the
+[roadmap](ROADMAP.md) for the conclusions reached since this proposal.
+
 Status: **adversarial prior-art review / research gate**
 Date: **2026-09-20**
 Branch: `research-plan-v2`

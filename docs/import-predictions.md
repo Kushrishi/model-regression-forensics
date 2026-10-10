@@ -62,6 +62,9 @@ restore_labels,message-1,delivery
 restore_labels,message-2,payment
 ```
 
+The candidate must fail at least one declared policy requirement; an already
+passing candidate is outside this repair-investigation interface.
+
 `baseline` and `candidate` are reserved roles. Every other release ID is a named
 repair, and at least one repair is required. Every release must contain exactly
 one prediction for every case in the policy. Row order does not matter. IDs and

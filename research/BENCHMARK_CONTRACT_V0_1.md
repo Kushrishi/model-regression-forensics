@@ -1,5 +1,8 @@
 # Model Regression Forensics — Benchmark Contract v0.1
 
+Historical design record. See [current evidence](STATE.md) and the
+[roadmap](ROADMAP.md) for the conclusions reached since this proposal.
+
 Status: **draft benchmark specification**
 Date: **2026-09-20**
 Branch: `research-plan-v2`

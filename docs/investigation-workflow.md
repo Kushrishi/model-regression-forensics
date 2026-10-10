@@ -63,8 +63,11 @@ predict exactly the same case IDs. Completed execution files remain available if
 a later function fails; the exception is propagated and `failed.json` records
 which release failed. The report renderer currently requires a complete attempt.
 
-This version provides a portable inspection report. Pretrained-model integration and a comparative training-regression study remain
-development work. No human usability or time-saving claim is made.
+The saved-prediction interface supports existing models without loading them.
+The [Banking77](banking-investigation.md) and
+[incremental-intent](incremental-intent-release.md) walkthroughs demonstrate
+fitted-model integration. Independent usability and comparative research value
+remain unverified.
 
 ## Inspect inputs and select cases
 
