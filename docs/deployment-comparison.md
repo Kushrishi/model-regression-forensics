@@ -92,6 +92,22 @@ Float32 is the conservative label-preserving export; INT8 offers a measured
 size/latency tradeoff with explicit case errors. Independent first use is still
 the next product-acceptance milestone.
 
+### Verify the public fixture against original scores
+
+With NumPy available and the separately retained private archive, run:
+
+```bash
+python examples/verify_deployment_fixture.py MRF_Deployment_Comparison_20261010.zip examples/deployment_comparison fixture-lineage.json
+```
+
+The verifier checks the original whole-archive SHA-256 above, derives all 3,938
+baseline/candidate labels from the saved float32/INT8 score matrices, and checks
+exact case/policy/text agreement with the public fixture. It retains original CSV
+line endings and refuses an existing report path. A modified archive, prediction,
+policy or text is rejected. The archive is required and is not bundled with the
+public package. This is saved-score lineage verification, not another model
+execution, a new independent incident or evidence of engineer benefit.
+
 ## Compare the release-decision paths
 
 The installed module runs the same saved records through MRF and a separate
