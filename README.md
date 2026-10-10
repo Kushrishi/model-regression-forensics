@@ -1,44 +1,51 @@
 # Model Regression Forensics
 
-Model Regression Forensics compares classification releases, executes declared
-repairs and lets an engineer inspect the affected examples and retained evidence.
-Its research asks what distinguishes a successful repair from a uniquely
-responsible training change.
+Compare classification releases, inspect changed examples and check whether
+proposed repairs satisfy declared requirements. MRF imports saved predictions or
+runs explicit release functions, then produces a portable HTML report.
 
-**Current software:** explicit baseline/candidate/repair execution, identical-case
-comparison, portable HTML inspection, input previews, filtering and selection
-export. The [digit walkthrough](docs/investigation-workflow.md) is executable.
-The [real-text training-release walkthrough](docs/banking-investigation.md)
-executes two visible training changes and their separate rollbacks on 1,969
-development cases. Five CPU fits completed; only the combined rollback passed
-the declared repair policy.
+The research asks a separate question: when does a successful repair identify
+the responsible training change? The completed Banking77 study found no
+consistent top-1 benefit from model-based diagnostics over simple baselines.
 
-The [incremental intent-release experiment](docs/incremental-intent-release.md)
-adds 30 intents while protecting 120 existing ones. Fifteen actual fits across
-three fixed development scenarios found that ordinary full-data retraining was
-the only acceptable repair; both partial rollbacks failed. Saved predictions and
-portable reports support inspection, not a claim of diagnostic superiority.
+[Project overview](https://kushrishi.com/research/model-regression-forensics) ·
+[Current status](research/STATE.md) · [Roadmap](research/ROADMAP.md) ·
+[Technical report](research/M4_TECHNICAL_REPORT.md)
 
-**Completed research:** simple label and lexical baselines found the planted
-change in both Banking77 worlds; Grad-Dot and TracIn added no consistent top-1
-benefit. The separate small SmolLM2 feasibility attempt remains closed. These
-findings are preserved; application development does not relabel them as success.
+## Start with saved predictions
 
-[Current status](research/STATE.md) · [Direction and milestones](research/ROADMAP.md)
+Python 3.12 or later, from a checkout of this repository:
 
-[Visual study](https://kushrishi.com/research/model-regression-forensics) · [Technical report](research/M4_TECHNICAL_REPORT.md) · [Reproduction](research/REPRODUCE_M4.md)
+```bash
+python -m pip install .
+mrf-import examples/deployment_comparison/policy.json examples/deployment_comparison/predictions.csv deployment-investigation
+```
+
+The output directory must not already exist. Open
+`deployment-investigation/index.html` in a browser. No model download, training
+or report server is needed. Installation needs access to the package dependencies.
+
+This retained example compares 1,969 real-text predictions. The candidate passes
+the declared policy but changes eight labels: three new errors, three
+corrections and two changes between incorrect labels. Repairs remain unevaluated.
+The [walkthrough](docs/deployment-comparison.md) adds optional text previews and
+explains the thresholds, measurements and limits.
+
+| Task | Start here |
+| --- | --- |
+| Import your own baseline, candidate and optional repair predictions | [Input contract](docs/import-predictions.md) |
+| Run a classification model and disclosed preprocessing fault | [Digit investigation](docs/investigation-workflow.md) |
+| Inspect visible training changes and separate rollbacks | [Real-text investigation](docs/banking-investigation.md) |
+| Replay the completed localization result without training | [Research reproduction](research/REPRODUCE_M4.md) |
+| Understand the implementation | [Software architecture](docs/architecture.md) |
+
+The real-text training walkthrough completed five CPU fits; only combined
+rollback passed its repair policy. A separate [incremental-intent experiment](docs/incremental-intent-release.md)
+completed fifteen fits across three fixed scenarios; ordinary full-data
+retraining was the only acceptable repair. These are development examples,
+not proof of diagnostic superiority. Independent practical use remains pending.
 
 ![Rank of the planted change among five candidates in two constructed Banking77 benchmarks](docs/assets/ranking-results.svg)
-
-## Use your own saved predictions
-
-Install the package and run `mrf-import policy.json predictions.csv investigation`
-to build a portable classification-release report without loading or training
-models. See the [input contract and walkthrough](docs/import-predictions.md).
-
-The [quantized-release example](docs/deployment-comparison.md) provides 1,969
-saved real-text predictions for a passing candidate with eight changed labels.
-Inspect the affected cases without training or downloading a model.
 
 ## Completed localization study
 
@@ -124,6 +131,3 @@ MRF has not established general causal identification, superiority to attributio
 methods, independent-user benefit or a published paper. Public distribution
 licensing remains unresolved.
 
-## Run a release investigation
-
-Execute baseline, candidate and repair functions, then reopen their retained predictions in a portable browser report. The [handwritten-digit walkthrough](docs/investigation-workflow.md) demonstrates an actual model and a disclosed preprocessing fault. This is an application integration example, not a causal-discovery benchmark.
