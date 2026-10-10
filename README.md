@@ -131,3 +131,19 @@ MRF has not established general causal identification, superiority to attributio
 methods, independent-user benefit or a published paper. Public distribution
 licensing remains unresolved.
 
+
+### Independent first-use decision packets
+
+Prepare equal-evidence MRF and standalone ordinary diff/policy packets:
+
+```bash
+python -m model_forensics.workflow_evaluation prepare examples/release_acceptance/policy.json examples/release_acceptance/predictions.csv /tmp/mrf-decision-task
+```
+
+The facilitator distributes only one condition subdirectory, keeps the gold
+answers separate, assigns task/order prospectively and records prior exposure.
+Use the initial-comparison fixture for missing repair evidence and the retained
+ambiguity fixture for multiple passing interventions. No participant observations
+are generated. The audit preserves unanswered items and requires human review
+of provenance steps and interpretation; correctness agreement alone establishes
+no user benefit. Actual independent first use remains outstanding.
