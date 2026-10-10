@@ -31,6 +31,12 @@ const {chromium} = require('playwright');
       assert((await page.locator('body').textContent()).includes('Repairs have not been evaluated'));
       assert.equal(await page.locator('#cases thead th').count(), 5);
     }
+    const before = new Map(JSON.parse(fs.readFileSync(path.join(root, 'execution-000.json'))).release.predictions.map(row => [row.case_id, row.observed]));
+    const after = JSON.parse(fs.readFileSync(path.join(root, 'execution-001.json'))).release.predictions;
+    await page.selectOption('#case-state', 'different');
+    assert.equal(await visible.count(), after.filter(row => before.get(row.case_id) !== row.observed).length);
+    await page.selectOption('#case-state', 'improved');
+    assert.equal(await visible.count(), all.improved_case_ids.length);
     await page.selectOption('#case-state', 'regressed');
     assert.equal(await visible.count(), all.regressed_case_ids.length);
     const target = all.regressed_case_ids[0];

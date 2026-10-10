@@ -5,6 +5,7 @@ on:
       - 'src/model_forensics/**'
       - 'examples/investigations/**'
       - 'examples/initial_comparison/**'
+      - 'examples/deployment_comparison/**'
       - 'examples/banking_investigation.py'
       - 'tests/browser/**'
       - '.github/workflows/inspection.yml'
@@ -34,6 +35,13 @@ jobs:
       - run: node tests/browser/investigation.cjs
         env:
           MRF_REPORT_DIR: /tmp/mrf-initial
+      - run: mrf-import examples/deployment_comparison/policy.json examples/deployment_comparison/predictions.csv /tmp/mrf-deployment
+      - run: python -c "import shutil; shutil.copyfile('examples/deployment_comparison/case_inputs.json', '/tmp/mrf-deployment/case_inputs.json')"
+      - run: python -m model_forensics.investigation_report /tmp/mrf-deployment /tmp/mrf-deployment/with-inputs.html
+      - run: node tests/browser/investigation.cjs
+        env:
+          MRF_REPORT_DIR: /tmp/mrf-deployment
+          MRF_REPORT_HTML: with-inputs.html
       - uses: actions/upload-artifact@v4
         with:
           name: investigation-browser-views
