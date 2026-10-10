@@ -18,6 +18,14 @@ incidents for a comparative research design.
 These are development results; no confirmatory study or official-test result is
 claimed. No paper is published.
 
+The [deployment-conversion investigation](../docs/deployment-comparison.md) reused
+the retained original-label linear Banking77 model without training. Float32
+preserved all 1,969 development labels; INT8 changed eight while overall accuracy
+remained 88.07%. All fixed slice limits passed. Saved predictions/texts are public
+and inspectable through the importer; complete numerical producer evidence is
+retained separately. Ordinary prediction comparison agrees with MRF. Independent
+first use and research advantage remain unmeasured.
+
 ## Question
 
 After a model regresses, can controlled retraining distinguish the responsible training-data change from other changes that also improve the failed behavior?

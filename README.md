@@ -36,6 +36,10 @@ Install the package and run `mrf-import policy.json predictions.csv investigatio
 to build a portable classification-release report without loading or training
 models. See the [input contract and walkthrough](docs/import-predictions.md).
 
+The [quantized-release example](docs/deployment-comparison.md) provides 1,969
+saved real-text predictions for a passing candidate with eight changed labels.
+Inspect the affected cases without training or downloading a model.
+
 ## Completed localization study
 
 Two constructed Banking77 benchmarks (A and B; recorded as world 00 and world 01) contain five structurally matched label-swap changes each. A pinned DistilBERT classifier was trained across three paired trajectories per world, and rankings were finalized before truth scoring.
