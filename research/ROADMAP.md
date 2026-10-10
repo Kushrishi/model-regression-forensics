@@ -25,9 +25,14 @@ on a demonstrated contribution beyond ordinary comparison and rollback.
 
 ## Immediate order
 
-1. Resolve the experiment-archive gap and verify the supported saved-prediction path.
-2. Prepare independent first use using the existing importer; no new training is
-   required. The report must distinguish failed policy requirements from import errors.
+1. Use the complete [deployment comparison](../docs/deployment-comparison.md) on
+   a second machine: import saved predictions, open the report, inspect failed
+   requirements and export the cases supporting a release decision. No training
+   is needed. Maintainer use is not an independent-user evaluation.
+2. Prepare independent first use using the existing importer. The report must
+   distinguish failed policy requirements from import errors. Keep the older
+   experiment-archive gap explicit; it does not block the complete deployment
+   example or use of an engineer's own saved predictions.
 3. Use concrete user problems to select product changes. Do not add another model
    or dashboard feature solely to increase project scope.
 4. Qualify real incidents for a prospective comparative design. Existing screens
