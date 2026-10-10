@@ -1,5 +1,8 @@
 # Baseline plan
 
+Historical design record. See [current evidence](STATE.md) and the
+[roadmap](ROADMAP.md) for the conclusions reached since this proposal.
+
 **Updated:** 2026-09-24  
 **Status:** prospective feasibility plan; exact confirmatory baseline set not yet frozen
 

@@ -41,6 +41,26 @@ M4 then trained three clean and six composite models across those worlds and thr
 
 Matching change structure did not remove the semantic shortcut: known target labels identify a disjoint candidate pair. M4 supports a bounded comparison in this construction, not difficult general localization or causal certification. The [technical report](M4_TECHNICAL_REPORT.md) presents the complete results.
 
-## Disposition
+## Subsequent development
 
-The matched study is accepted and retained. Further certification protocol development and execution remain held under the [continuation gate](M4_CONTINUATION_GATE.md). A future study needs independent scientific justification; completing this history or replaying artifacts does not clear that gate.
+- The [October 7 small-model attempt](DEVELOPMENT_CLOSURE_2026_10_07.md) failed
+  its clean-baseline requirement and was closed.
+- [Public incident screening](VNEXT_PIPELINE_SCREEN_2026_10_09.md) found useful
+  software-defect leads but no eligible training-release incident. The
+  [fixed-tensor LFQ replay](LFQ_FIXED_TENSOR_REPLAY_2026_10_09.md) reproduces a
+  loss/gradient defect without a trained-task restoration claim.
+- The [Banking77 application walkthrough](../docs/banking-investigation.md)
+  executed declared training changes and repairs.
+- The [incremental-intent experiment](../docs/incremental-intent-release.md)
+  tested preservation of existing intents and support for added intents. Ordinary
+  full-data retraining alone passed all three constructed scenarios.
+
+These later examples validate application behavior. They do not reverse the
+matched study's negative comparative finding. Archive-recovery limitations and
+independent-use requirements are recorded in [current status](STATE.md).
+
+## Current direction
+
+Follow the [roadmap](ROADMAP.md) for application delivery and any prospective
+comparative research. The historical [continuation decision](M4_CONTINUATION_GATE.md)
+explains why further certification did not follow automatically from localization.

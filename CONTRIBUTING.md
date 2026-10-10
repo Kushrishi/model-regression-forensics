@@ -1,4 +1,19 @@
-# Contributing a reproducible model-release regression case
+# Contributing
+
+## Software changes
+
+Use Python 3.12 and run `uv sync --extra dev`, `uv run ruff check .`,
+`uv run ruff format --check .` and `uv run pytest`. Optional numerical modules
+are also checked by research CI. Explain the user-visible problem and include
+a regression test for changed behavior. Keep the saved-prediction path free of
+model-training dependencies.
+
+See the [architecture](docs/architecture.md) before changing shared modules.
+Preserve frozen protocols and result records; present a new experiment as a new
+design rather than rewriting old evidence. Public source visibility does not
+grant a distribution license.
+
+## Reproducible regression cases
 
 Public, licensed evidence is welcome through the issue template. Please provide:
 
@@ -14,5 +29,5 @@ Public, licensed evidence is welcome through the issue template. Please provide:
 Do not submit private, proprietary, patient, credential-bearing or unlicensed data.
 A crash alone or a single obvious diff may be useful software evidence but may not
 qualify for the proposed research question. Submission does not promise
-collaboration, publication or acceptance into a benchmark. No new training study
-is currently approved; the completed negative v1 and closed v2 remain preserved.
+collaboration, publication or acceptance into a benchmark. A submitted case must satisfy the prospective study design before it can
+support a new comparative claim.

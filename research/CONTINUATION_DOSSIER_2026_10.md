@@ -1,6 +1,9 @@
 # Continuation dossier — October 2026
 
-**Current governance:** the subsequent [vNext owner amendment](VNEXT_OWNER_AMENDMENT_2026_10_07.md) authorizes discovery/infrastructure only. The earlier development exception ended at its failed gate; v2 stays closed. No independent review occurred. M5, new training and official test access remain held. The review text below is historical, not current experiment authorization.
+Historical contribution review. Subsequent application-development experiments
+are listed in the [experiment history](EXPERIMENT_HISTORY.md). Use
+[current status](STATE.md) and the [roadmap](ROADMAP.md) for ongoing work; the
+review below describes its October 6 evidence and recommendation.
 
 **Review date:** 2026-10-06. **Status:** author-side decision support, NOT independent approval.
 **Recommendation:** NO-GO for result-bearing continuation now; conditional case for independent review of a distinct decision problem.
