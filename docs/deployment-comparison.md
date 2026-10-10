@@ -92,6 +92,51 @@ Float32 is the conservative label-preserving export; INT8 offers a measured
 size/latency tradeoff with explicit case errors. Independent first use is still
 the next product-acceptance milestone.
 
+## Compare the release-decision paths
+
+The installed module runs the same saved records through MRF and a separate
+ordinary count-based diff. The latter does not call MRF's slice comparator or
+repair assessor:
+
+```bash
+python -m model_forensics.decision_comparison examples/deployment_comparison/policy.json examples/deployment_comparison/predictions.csv decision-comparison
+```
+
+The fresh output directory retains exact source bytes/hashes and
+`comparison.json`. Both paths enforce the same case sets, slice membership,
+integer-count drop calculation and declared accuracy floors. The report compares
+slice decisions and covered case errors/corrections, and also retains every
+changed label, including wrong-to-wrong changes. An overall policy pass does not
+mean predictions are unchanged.
+
+Complete rollback is assessed by reusing supplied baseline predictions against
+the full policy. This can fail a new-capability floor; it is not an executed model
+rollback. Supplied repairs are assessed explicitly. Missing retraining predictions,
+execution costs and participant observations remain unknown. An agreeing report
+establishes decision consistency for these inputs, not MRF superiority, causal
+diagnosis or independent user benefit. Disagreement exits nonzero and is retained
+for investigation rather than choosing the preferred conclusion.
+
+### What the workflow adds, and what must be tested
+
+A competent ordinary diff and policy script can reproduce these numerical
+release decisions. MRF's current distinction is the packaged investigation:
+portable case inspection, source hashes, recomputation when reopening retained
+records, explicit supplied-repair evidence, and visible unknowns when evidence
+is missing. Those are engineering affordances, not demonstrated decision gains.
+A baseline equipped with those affordances may remove the distinction entirely.
+
+The next evaluation should give independent engineers identical saved records,
+policy, repair predictions and task instructions in both workflows. Counterbalance
+workflow order on matched cases; record correct release/rollback/repair choices,
+missed policy failures, evidence needed for the choice and time to a justified
+decision. Include an unchanged-policy pass with changed predictions, a new-capability
+floor that rejects complete rollback, partial slice coverage and missing repair
+predictions. Supply the baseline's complete case diff and executable policy
+checks; withholding them would manufacture an advantage. A maintainer's automated
+replay cannot substitute for independent-user observations. No participant result
+has been collected by this implementation.
+
 ## Attribution
 
 Banking77: Casanueva et al. (2020), *Efficient Intent Detection with Dual Sentence

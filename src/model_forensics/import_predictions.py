@@ -13,15 +13,10 @@ from model_forensics.prediction_sources import parse_prediction_csv
 from model_forensics.release_compare import Comparison
 
 
-def import_predictions(policy_path: Path, predictions_path: Path, output: Path) -> dict:
-    """Validate every record before creating a new, self-contained investigation.
-
-    The policy contains cases, slices and declared_changes. The long-form CSV has
-    release_id,case_id,observed columns; baseline and candidate are reserved roles.
-    All other release IDs denote supplied repairs. No execution costs are inferred.
-    """
-    policy_bytes = policy_path.read_bytes()
-    prediction_bytes = predictions_path.read_bytes()
+def assess_prediction_sources(
+    policy_bytes: bytes, prediction_bytes: bytes
+) -> tuple[dict, dict, dict]:
+    """Validate and assess immutable source bytes without rendering or publishing."""
     policy = json.loads(policy_bytes)
     if not isinstance(policy, dict) or set(policy) != {"cases", "slices", "declared_changes"}:
         raise ValueError("policy requires exactly cases, slices and declared_changes")
@@ -42,8 +37,22 @@ def import_predictions(policy_path: Path, predictions_path: Path, output: Path) 
         for name, release in releases.items()
         if name != "baseline"
     }
+    json.dumps(policy, allow_nan=False)
     report = assess_predictions(comparisons.pop("candidate"), comparisons)
-    order = ["baseline", "candidate", *sorted(comparisons)]
+    return policy, releases, report
+
+
+def import_predictions(policy_path: Path, predictions_path: Path, output: Path) -> dict:
+    """Validate every record before creating a new, self-contained investigation.
+
+    The policy contains cases, slices and declared_changes. The long-form CSV has
+    release_id,case_id,observed columns; baseline and candidate are reserved roles.
+    All other release IDs denote supplied repairs. No execution costs are inferred.
+    """
+    policy_bytes = policy_path.read_bytes()
+    prediction_bytes = predictions_path.read_bytes()
+    policy, releases, report = assess_prediction_sources(policy_bytes, prediction_bytes)
+    order = ["baseline", "candidate", *sorted(report["repairs"])]
     plan = {
         "schema_version": "investigation-plan/0.1",
         "cases": policy["cases"],
@@ -59,7 +68,7 @@ def import_predictions(policy_path: Path, predictions_path: Path, output: Path) 
             "source-predictions.csv": hashlib.sha256(prediction_bytes).hexdigest(),
         },
     }
-    if not comparisons:
+    if not report["repairs"]:
         plan["investigation_stage"] = "initial_comparison"
     # Reject non-finite values in declarations before leaving any output.
     json.dumps(plan, allow_nan=False)
