@@ -13,7 +13,7 @@ const {chromium} = require('playwright');
     const root = path.resolve(process.env.MRF_REPORT_DIR || 'examples/investigations/digits');
     const report = JSON.parse(fs.readFileSync(path.join(root, 'report.json')));
     const plan = JSON.parse(fs.readFileSync(path.join(root, 'plan.json')));
-    const all = report.regressed.slices.find(row => row.name === 'all');
+    const all = (report.candidate || report.regressed).slices.find(row => row.name === 'all');
     await page.goto(pathToFileURL(path.join(root, process.env.MRF_REPORT_HTML || 'index.html')).href);
     const visible = page.locator('#cases tbody tr:visible');
     assert.equal(await visible.count(), plan.cases.length);
@@ -22,10 +22,14 @@ const {chromium} = require('playwright');
       assert.equal(await images.count(), plan.cases.length);
       assert(await images.evaluateAll(items => items.every(image =>
         image.complete && image.naturalWidth === 8 && image.naturalHeight === 8)));
-    } else {
+    } else if (fs.existsSync(path.join(root, 'case_inputs.json'))) {
       const inputs = JSON.parse(fs.readFileSync(path.join(root, 'case_inputs.json')));
       const example = Object.values(inputs)[0].text;
       assert((await page.locator('#cases').textContent()).includes(example));
+    }
+    if (report.candidate) {
+      assert((await page.locator('body').textContent()).includes('Repairs have not been evaluated'));
+      assert.equal(await page.locator('#cases thead th').count(), 5);
     }
     await page.selectOption('#case-state', 'regressed');
     assert.equal(await visible.count(), all.regressed_case_ids.length);

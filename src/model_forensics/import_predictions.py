@@ -10,8 +10,8 @@ import json
 from pathlib import Path
 
 from model_forensics.investigation_report import render
+from model_forensics.prediction_assessment import assess_predictions
 from model_forensics.release_compare import Comparison, Release
-from model_forensics.repair_compare import RepairComparison, compare_repairs
 
 
 def import_predictions(policy_path: Path, predictions_path: Path, output: Path) -> dict:
@@ -42,8 +42,8 @@ def import_predictions(policy_path: Path, predictions_path: Path, output: Path) 
         grouped.setdefault(row["release_id"], []).append(
             {"case_id": row["case_id"], "observed": row["observed"]}
         )
-    if not {"baseline", "candidate"} <= grouped.keys() or len(grouped) < 3:
-        raise ValueError("CSV requires baseline, candidate and at least one named repair")
+    if not {"baseline", "candidate"} <= grouped.keys():
+        raise ValueError("CSV requires baseline and candidate")
     releases = {
         name: Release.model_validate_json(json.dumps({"release_id": name, "predictions": rows}))
         for name, rows in grouped.items()
@@ -62,9 +62,7 @@ def import_predictions(policy_path: Path, predictions_path: Path, output: Path) 
         for name, release in releases.items()
         if name != "baseline"
     }
-    report = compare_repairs(
-        RepairComparison(regressed=comparisons.pop("candidate"), repairs=comparisons)
-    )
+    report = assess_predictions(comparisons.pop("candidate"), comparisons)
     order = ["baseline", "candidate", *sorted(comparisons)]
     plan = {
         "schema_version": "investigation-plan/0.1",
@@ -81,6 +79,8 @@ def import_predictions(policy_path: Path, predictions_path: Path, output: Path) 
             "source-predictions.csv": hashlib.sha256(prediction_bytes).hexdigest(),
         },
     }
+    if not comparisons:
+        plan["investigation_stage"] = "initial_comparison"
     # Reject non-finite values in declarations before leaving any output.
     json.dumps(plan, allow_nan=False)
     output.mkdir()
