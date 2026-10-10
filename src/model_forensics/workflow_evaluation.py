@@ -77,7 +77,17 @@ def prepare(policy_path: Path, predictions_path: Path, output: Path) -> dict:
         },
     )
     mrf = output / "mrf"
-    import_predictions(policy_path, predictions_path, mrf)
+    # Render from the captured bytes used by the baseline/gold, never reread
+    # caller paths that can change between comparison and publication.
+    import_predictions(baseline / "source-policy.json", baseline / "source-predictions.csv", mrf)
+    for name, expected_bytes in (
+        ("source-policy.json", policy_bytes),
+        ("source-predictions.csv", prediction_bytes),
+    ):
+        if (mrf / name).read_bytes() != expected_bytes or (
+            baseline / name
+        ).read_bytes() != expected_bytes:
+            raise ValueError("captured evidence changed during packet preparation")
     task = {
         "schema": "mrf-first-use-answer/1",
         "answers": dict.fromkeys(gold),

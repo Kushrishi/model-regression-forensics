@@ -6,9 +6,48 @@ from pathlib import Path
 
 import pytest
 
+import model_forensics.workflow_evaluation as workflow
 from model_forensics.workflow_evaluation import audit, prepare
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_original_paths_changing_during_render_cannot_mix_conditions(tmp_path, monkeypatch):
+    source = ROOT / "examples/release_acceptance"
+    policy = tmp_path / "policy.json"
+    predictions = tmp_path / "predictions.csv"
+    policy.write_bytes((source / "policy.json").read_bytes())
+    predictions.write_bytes((source / "predictions.csv").read_bytes())
+    original = workflow.import_predictions
+
+    def mutate_then_render(policy_snapshot, prediction_snapshot, output):
+        policy.write_text("changed original policy")
+        predictions.write_text("changed original predictions")
+        return original(policy_snapshot, prediction_snapshot, output)
+
+    monkeypatch.setattr(workflow, "import_predictions", mutate_then_render)
+    output = tmp_path / "packet"
+    prepare(policy, predictions, output)
+    assert (output / "mrf/source-policy.json").read_bytes() == (source / "policy.json").read_bytes()
+    assert (output / "ordinary/source-predictions.csv").read_bytes() == (
+        source / "predictions.csv"
+    ).read_bytes()
+
+
+def test_changed_snapshot_rejects_completed_packet(tmp_path, monkeypatch):
+    source = ROOT / "examples/release_acceptance"
+    original = workflow.import_predictions
+
+    def corrupt_after_render(policy, predictions, output):
+        result = original(policy, predictions, output)
+        (output / "source-policy.json").write_text("corrupted snapshot")
+        return result
+
+    monkeypatch.setattr(workflow, "import_predictions", corrupt_after_render)
+    output = tmp_path / "packet"
+    with pytest.raises(ValueError, match="captured evidence"):
+        prepare(source / "policy.json", source / "predictions.csv", output)
+    assert not (output / "protocol.json").exists()
 
 
 @pytest.mark.parametrize(
