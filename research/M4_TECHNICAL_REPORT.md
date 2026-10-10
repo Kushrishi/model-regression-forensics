@@ -2,7 +2,10 @@
 
 **A matched Banking77 case study**
 **Status:** technical report draft; not a submitted or peer-reviewed paper
-**Evidence:** accepted M4 development study, October 3, 2026
+**Evidence:** matched label-swap localization study, October 3, 2026
+
+Historical result files use the identifier `M4`; it names this study, not an
+additional method or performance level.
 
 ## Abstract
 
@@ -18,7 +21,7 @@ The model is `distilbert/distilbert-base-uncased`, pinned at revision `12040acca
 
 The target behavior is the mean pairwise logit margin over all development-evaluation examples belonging to the target pair. Candidate scores sum changed-slot suspiciousness. Model-based scores are averaged across the three trajectories to obtain the primary world-level ranking. Higher scores indicate greater suspicion; ascending opaque candidate ID resolves ties. These rules were frozen before rankings were inspected.
 
-The complete source definitions are in [the M4 protocol](M4_LOCALIZATION_BASELINE_PROTOCOL.md) and its [amendment](M4_LOCALIZATION_BASELINE_PROTOCOL_AMENDMENT_1.md). This report summarizes the accepted experiment rather than changing those definitions.
+The complete source definitions are in [the matched-study protocol](M4_LOCALIZATION_BASELINE_PROTOCOL.md) and its [amendment](M4_LOCALIZATION_BASELINE_PROTOCOL_AMENDMENT_1.md). This report summarizes the accepted experiment rather than changing those definitions.
 
 ## Baselines and results
 

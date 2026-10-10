@@ -28,13 +28,19 @@ findings are preserved; application development does not relabel them as success
 
 [Visual study](https://kushrishi.com/research/model-regression-forensics) · [Technical report](research/M4_TECHNICAL_REPORT.md) · [Reproduction](research/REPRODUCE_M4.md)
 
-![Root-candidate ranks in the two constructed Banking77 worlds](docs/assets/ranking-results.svg)
+![Rank of the planted change among five candidates in two constructed Banking77 benchmarks](docs/assets/ranking-results.svg)
+
+## Use your own saved predictions
+
+Install the package and run `mrf-import policy.json predictions.csv investigation`
+to build a portable classification-release report without loading or training
+models. See the [input contract and walkthrough](docs/import-predictions.md).
 
 ## Completed localization study
 
-Two constructed Banking77 worlds contain five structurally matched label-swap changes each. A pinned DistilBERT classifier was trained across three paired trajectories per world, and rankings were finalized before truth scoring.
+Two constructed Banking77 benchmarks (A and B; recorded as world 00 and world 01) contain five structurally matched label-swap changes each. A pinned DistilBERT classifier was trained across three paired trajectories per world, and rankings were finalized before truth scoring.
 
-| Diagnostic | World 00 root rank | World 01 root rank |
+| Diagnostic | Benchmark A root rank | Benchmark B root rank |
 | --- | ---: | ---: |
 | Deterministic random reference | 3 | 3 |
 | Target-label overlap | 1 | 1 |
@@ -101,37 +107,17 @@ The same release-comparison policy marks both repairs successful. The specificit
 
 The next research question is whether a debugger can reduce incorrect, overly specific diagnoses without simply refusing to diagnose everything. It would have to beat ordinary diff inspection and targeted reversions at a comparable testing cost, using real incidents with known-good and regressed versions. Current incident screens have found software defects and useful repair examples, but no qualified training-release case with the required outcome and provenance evidence. The existing ambiguous-repair example demonstrates intended software behavior; it does not establish research novelty.
 
-## Historical incident-discovery track
+## Research history and limits
 
-[The subsequent owner amendment](research/VNEXT_OWNER_AMENDMENT_2026_10_07.md)
-authorizes public incident discovery and software work for versioned training-pipeline
-regressions. Historical cause and responsibility under a specified intervention
-process remain different targets. Set-valued/selective diagnosis is an open question,
-not a solved method. Complete visible diffs and strong cheap intervention baselines
-must be included; the official Banking77 test split remains unopened.
+The [experiment history](research/EXPERIMENT_HISTORY.md) preserves the completed
+localization study, unsuccessful development attempts and incident-discovery
+records. The [roadmap](research/ROADMAP.md) defines current work; those older
+records are not a second active plan.
 
-[Contribution audit](research/VNEXT_CONTRIBUTION_AUDIT_2026_10_07.md) ·
-[Incident screen](research/VNEXT_INCIDENT_AUDIT_2026_10_07.md) ·
-[Incident records](docs/incident-records.md) · [Submit a public case](CONTRIBUTING.md)
+MRF has not established general causal identification, superiority to attribution
+methods, independent-user benefit or a published paper. Public distribution
+licensing remains unresolved.
 
-## Limits
-
-MRF does not currently establish causal attribution, generalization beyond the evaluated setting, superiority to attribution methods, or a published paper.
-
-## October 7 development closure
-
-A transparently owner-authorized, non-confirmatory SmolLM2 feasibility attempt
-failed its declared stable clean-baseline gate before regression incidents or
-interventions. [The record](research/DEVELOPMENT_CLOSURE_2026_10_07.md) closes that
-v2 attempt. It does not establish that release diagnosis is impossible. The
-completed bounded negative v1 and its software remain intact. The current classification-workflow development is a separate engineering task; it does not reopen this failed attempt.
-
-### Run a release investigation
+## Run a release investigation
 
 Execute baseline, candidate and repair functions, then reopen their retained predictions in a portable browser report. The [handwritten-digit walkthrough](docs/investigation-workflow.md) demonstrates an actual model and a disclosed preprocessing fault. This is an application integration example, not a causal-discovery benchmark.
-
-### Use your own saved predictions
-
-Install the package and run `mrf-import policy.json predictions.csv investigation`
-to build a portable classification-release report without loading or training
-models. See the [input contract and walkthrough](docs/import-predictions.md).
