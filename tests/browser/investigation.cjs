@@ -13,9 +13,33 @@ const {chromium} = require('playwright');
     const root = path.resolve(process.env.MRF_REPORT_DIR || 'examples/investigations/digits');
     const report = JSON.parse(fs.readFileSync(path.join(root, 'report.json')));
     const plan = JSON.parse(fs.readFileSync(path.join(root, 'plan.json')));
-    const all = (report.candidate || report.regressed).slices.find(row => row.name === 'all');
+    const candidate = report.candidate || report.regressed;
+    const all = candidate.slices.find(row => row.name === 'all');
+    const before = new Map(JSON.parse(fs.readFileSync(path.join(root, 'execution-000.json'))).release.predictions.map(row => [row.case_id, row.observed]));
+    const after = JSON.parse(fs.readFileSync(path.join(root, 'execution-001.json'))).release.predictions;
+    const changedCount = after.filter(row => before.get(row.case_id) !== row.observed).length;
     await page.goto(pathToFileURL(path.join(root, process.env.MRF_REPORT_HTML || 'index.html')).href);
     const visible = page.locator('#cases tbody tr:visible');
+    assert.equal(await page.inputValue('#case-state'), 'different');
+    assert.equal(await visible.count(), changedCount);
+    assert.equal(await page.locator('#case-count').textContent(), `${changedCount} of ${plan.cases.length} cases`);
+    const overview = await page.locator('#decision-overview').textContent();
+    assert(overview.includes(`Candidate policy result: ${candidate.passed ? 'Pass' : 'Fail'}`));
+    assert(overview.includes(`${changedCount} changed predictions`));
+    // The retained deployment is a policy pass with changed labels, not a failure.
+    if (plan.declared_changes.baseline === 'float32' && plan.declared_changes.candidate === 'int8') {
+      assert.equal(plan.cases.length, 1969);
+      assert.equal(changedCount, 8);
+      assert(overview.includes('3 new errors'));
+      assert(overview.includes('3 corrections'));
+      assert(overview.includes('2 changes between incorrect labels'));
+      assert(overview.includes('78 of 78 declared slices passed'));
+      assert(overview.includes('baseline 1734/1969'));
+      assert(overview.includes('candidate 1734/1969'));
+      assert(overview.includes('Historical cause: not identified'));
+      assert(overview.includes('Model execution costs: unknown'));
+    }
+    await page.selectOption('#case-state', 'all');
     assert.equal(await visible.count(), plan.cases.length);
     const images = page.locator('#cases img');
     if (await images.count()) {
@@ -31,10 +55,8 @@ const {chromium} = require('playwright');
       assert((await page.locator('body').textContent()).includes('Repairs have not been evaluated'));
       assert.equal(await page.locator('#cases thead th').count(), 5);
     }
-    const before = new Map(JSON.parse(fs.readFileSync(path.join(root, 'execution-000.json'))).release.predictions.map(row => [row.case_id, row.observed]));
-    const after = JSON.parse(fs.readFileSync(path.join(root, 'execution-001.json'))).release.predictions;
     await page.selectOption('#case-state', 'different');
-    assert.equal(await visible.count(), after.filter(row => before.get(row.case_id) !== row.observed).length);
+    assert.equal(await visible.count(), changedCount);
     await page.selectOption('#case-state', 'improved');
     assert.equal(await visible.count(), all.improved_case_ids.length);
     await page.selectOption('#case-state', 'regressed');
