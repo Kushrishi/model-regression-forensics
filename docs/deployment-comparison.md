@@ -17,7 +17,7 @@ mrf-import examples/deployment_comparison/policy.json examples/deployment_compar
 ```
 
 Open `deployment-investigation/index.html`. The candidate passes the policy, but
-its predictions are not identical. Filter to changed cases to inspect all eight;
+its predictions are not identical. The report initially shows all eight changed cases;
 filter to regressions to see three newly incorrect cases. Repairs are explicitly
 unevaluated. A passing candidate is not a uniquely responsible cause or a claim
 that no behavior changed.

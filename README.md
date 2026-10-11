@@ -12,6 +12,10 @@ consistent top-1 benefit from model-based diagnostics over simple baselines.
 [Current status](research/STATE.md) · [Roadmap](research/ROADMAP.md) ·
 [Technical report](research/M4_TECHNICAL_REPORT.md)
 
+Source distribution: this repository currently has no project-wide software
+license. Publicly visible source is not a general open-source permission grant;
+Banking77 and other third-party materials have their own stated terms.
+
 ## Start with saved predictions
 
 Python 3.12 or later, from a checkout of this repository:

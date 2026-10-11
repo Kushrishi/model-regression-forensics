@@ -225,7 +225,7 @@ historical cause. Slice results may overlap and are not statistical significance
         f"({correct[1] / len(expected):.2%}). These counts include every case once. "
         "A policy pass does not mean identical predictions.</p>"
         "<p>Historical cause: not identified. Supplied predictions and declared "
-        "changes do not establish why behavior changed.</p></section>"
+        "changes do not establish why behavior changed.</p>"
     )
     if report["repairs"]:
         overview += (
@@ -249,6 +249,7 @@ historical cause. Slice results may overlap and are not statistical significance
             "<p>Model execution costs: unknown for imported predictions. "
             "No model was executed by this investigation.</p>"
         )
+    overview += "</section>"
     # Put conclusions before the full table and optional evidence details.
     page = page.replace(
         "<h1>Model release investigation</h1>", "<h1>Model release investigation</h1>" + overview
