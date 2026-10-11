@@ -206,7 +206,12 @@ def audit(gold: dict, submission: dict) -> dict:
         raise ValueError("provenance lookup effort exceeds total active effort")
     # Separate false assertions of available evidence from release-decision errors.
     # Null remains unanswered; no participant behavior or timing is inferred.
-    evidence_keys = ("historical_cause_identified", "retraining_evaluated", "execution_cost_known")
+    evidence_keys = (
+        "historical_cause_identified",
+        "retraining_evaluated",
+        "execution_cost_known",
+        "repair_evidence_supplied",
+    )
     return {
         "schema": "mrf-submission-audit/1",
         "unsupported_evidence_claims": [

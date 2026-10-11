@@ -166,3 +166,21 @@ def test_effort_subset_and_unanswered_claims(tmp_path):
     assert audit(gold, submission)["submitted_effort"]["active_seconds"] == 10
     submission["effort"]["active_seconds"] = None
     assert audit(gold, submission)["submitted_effort"]["active_seconds"] is None
+
+
+def test_missing_real_deployment_repairs_are_reported_as_evidence_overclaims(tmp_path):
+    # Reuse retained float32/int8 deployment evidence; do not invent another incident.
+    source = ROOT / "examples/deployment_comparison"
+    output = tmp_path / "packet"
+    prepare(source / "policy.json", source / "predictions.csv", output)
+    gold = json.loads((output / "facilitator-gold.json").read_text())
+    submission = json.loads((output / "mrf/answer-template.json").read_text())
+    assert gold["repair_evidence_supplied"] is False
+    assert audit(gold, submission)["unsupported_evidence_claims"] == []
+    submission["answers"]["repair_evidence_supplied"] = True
+    report = audit(gold, submission)
+    assert report["unsupported_evidence_claims"] == ["repair_evidence_supplied"]
+    assert report["objective_answers"]["repair_evidence_supplied"] == "incorrect"
+    assert set(report["release_decisions"].values()) == {"unanswered"}
+    assert report["submitted_effort"]["active_seconds"] is None
+    assert report["comparative_user_benefit"] == "not_established"
