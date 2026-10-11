@@ -68,3 +68,51 @@ def test_ordinary_diff_rejects_duplicate_prediction():
         ordinary_diff(
             policy, b"release_id,case_id,observed\nbaseline,a,yes\nbaseline,a,no\ncandidate,a,yes\n"
         )
+
+
+def test_exhaustive_three_case_policies_against_ordinary_diff():
+    """Exercise every pair of three-label prediction vectors, keyed in reverse order."""
+    from itertools import product
+
+    from model_forensics.release_compare import Comparison, compare_releases
+
+    policy = {
+        "cases": [{"case_id": str(i), "expected": label} for i, label in enumerate("aba")],
+        "slices": [
+            {"name": "all", "case_ids": ["2", "0", "1"], "maximum_accuracy_drop": 1 / 3},
+            {"name": "floor", "case_ids": ["0", "1"], "minimum_accuracy": 0.5},
+            {"name": "overlap", "case_ids": ["1"], "maximum_accuracy_drop": 0.0},
+        ],
+    }
+    for before, after in product(product("abc", repeat=3), repeat=2):
+        vectors = {"baseline": before, "candidate": after}
+        csv_bytes = (
+            "release_id,case_id,observed\n"
+            + "".join(
+                f"{role},{i},{values[i]}\n"
+                for role, values in vectors.items()
+                for i in reversed(range(3))
+            )
+        ).encode()
+        ordinary = ordinary_diff(policy, csv_bytes)["candidate"]
+        spec = {
+            **policy,
+            **{
+                role: {
+                    "release_id": role,
+                    "predictions": [{"case_id": str(i), "observed": values[i]} for i in range(3)],
+                }
+                for role, values in vectors.items()
+            },
+        }
+        mrf = compare_releases(Comparison.model_validate_json(json.dumps(spec)))
+        assert mrf["passed"] == ordinary["passed"]
+        assert [{"name": row["name"], "passed": row["passed"]} for row in mrf["slices"]] == (
+            ordinary["slices"]
+        )
+        assert {key for row in mrf["slices"] for key in row["regressed_case_ids"]} == set(
+            ordinary["new_error_case_ids"]
+        )
+        assert {key for row in mrf["slices"] for key in row["improved_case_ids"]} == set(
+            ordinary["corrected_case_ids"]
+        )

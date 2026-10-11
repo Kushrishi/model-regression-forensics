@@ -39,3 +39,14 @@ def test_saved_deployment_case_counts_and_policy(tmp_path):
     page = (output / "inspection.html").read_text()
     assert "Imported source integrity checked" in page
     assert "Repairs have not been evaluated" in page
+    assert "8 changed predictions" in page
+    assert "3 new errors" in page
+    assert "3 corrections" in page
+    assert "2 changes between incorrect labels" in page
+    assert "1961 predictions unchanged" in page
+    assert "78 of 78 declared slices passed" in page
+    assert "baseline 1734/1969" in page
+    assert "candidate 1734/1969" in page
+    assert page.index('id="decision-overview"') < page.index('id="case-inspection"')
+    assert '<option value="different" selected>' in page
+    assert "filterCases();" in page
