@@ -21,6 +21,17 @@ Banking77 and other third-party materials have their own stated terms.
 
 ## Start with saved predictions
 
+![Actual MRF report: passing policy, eight changed Banking77 predictions, three new errors and three corrections](docs/assets/release-investigation-real.png)
+
+Actual retained HTML, with the changed-prediction filter selected. Screenshot
+supplied by the owner after an independent Chromium interaction check; this is
+interface acceptance, not evidence of independent-user benefit.
+Banking77 examples: PolyAI, Casanueva et al. (2020),
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
+[dataset source](https://github.com/PolyAI-LDN/task-specific-datasets).
+Changes: development-case selection, model predictions and report grouping.
+[Capture identity and interpretation](docs/deployment-comparison.md#published-report-capture).
+
 Python 3.12 or later, from a checkout of this repository:
 
 ```bash

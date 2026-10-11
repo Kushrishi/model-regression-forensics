@@ -155,6 +155,26 @@ has been collected by this implementation.
 
 ## Attribution
 
+### Published report capture
+
+The [unaltered screenshot](assets/release-investigation-real.png) is the
+owner-supplied `MRF_Real_Investigation_Full_20261011.png` (1440 × 1514 pixels,
+245,168 bytes; SHA-256
+`c38609d6fcc2e756ef3b5704459d75a17c8d5d26c8e78d1d349b3970987e5e44`).
+It depicts the retained HTML report with SHA-256
+`85596b8029ae630be4abe68dad8538e7dbc52eedc1c570723767b152154d3fbb`.
+Its displayed counts and eight changed-case rows agree with the saved fixture.
+The owner attests that an independent reviewer rendered that HTML in Chromium,
+checked Changed, Correct-to-incorrect, All, case search and exported IDs, without
+JavaScript errors. The maintainer did not perform that graphical check here.
+Direct offline Mac opening remains unverified. This establishes reported
+interface behavior, not user decision gains or producer execution provenance.
+
+The Banking77 attribution below also applies to the text visible in the image.
+The screenshot was preserved without image editing; dataset presentation changes
+are case selection, predictions and grouping. MRF implements the importer,
+policy checks and report; PolyAI supplied the dataset, not this application.
+
 Banking77: Casanueva et al. (2020), *Efficient Intent Detection with Dual Sentence
 Encoders*. [Creator repository](https://github.com/PolyAI-LDN/task-specific-datasets),
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changes: existing
