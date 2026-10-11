@@ -72,3 +72,30 @@ def test_unknown_preview_case_and_invalid_pixels_rejected(tmp_path):
         path.write_text(json.dumps({"a": {"width": 1, "height": 1, "pixels": pixels}}))
         with pytest.raises(ValueError, match="grayscale"):
             previews(tmp_path, {"a"})
+
+
+def test_overview_counts_all_cases_once_even_with_overlapping_partial_policy(tmp_path):
+    cases = tuple(Case(case_id=str(i), expected="yes") for i in range(3))
+    good = tuple(Prediction(case_id=str(i), observed="yes") for i in range(3))
+    bad = tuple(Prediction(case_id=str(i), observed="no") for i in range(3))
+    run_investigation(
+        tmp_path / "run",
+        cases=cases,
+        slices=(
+            Slice(name="slice-a", case_ids=("0",)),
+            Slice(name="slice-b", case_ids=("0",)),
+        ),
+        baseline=lambda: good,
+        candidate=lambda: bad,
+        repairs={"restore": lambda: good, "ineffective": lambda: bad},
+        changes={},
+    )
+    render(tmp_path / "run", tmp_path / "report.html")
+    page = (tmp_path / "report.html").read_text()
+    assert "3 changed predictions" in page
+    assert "3 new errors" in page
+    assert "Policy covers 1 of 3 cases" in page
+    assert "0 of 2 declared slices passed" in page
+    assert "Failed slices: slice-a, slice-b" in page
+    assert "ineffective: Fail; restore: Pass" in page
+    assert "Historical cause: not identified" in page

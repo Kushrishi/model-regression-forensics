@@ -74,6 +74,7 @@ def render(directory: Path, output: Path) -> None:
                     row["count"],
                     f"{row['baseline_accuracy']:.2%}",
                     f"{row['candidate_accuracy']:.2%}",
+                    f"{row['accuracy_drop']:.2%}",
                     f"{row['maximum_accuracy_drop']:.2%}",
                     *(
                         (
@@ -100,7 +101,7 @@ def render(directory: Path, output: Path) -> None:
             f"<details><summary>{esc(name.replace(chr(95), chr(32)))}: slice results</summary>"
             "<table><thead><tr>"
             "<th>Slice</th><th>Cases</th><th>Baseline accuracy</th>"
-            "<th>Release accuracy</th><th>Maximum drop</th>"
+            "<th>Release accuracy</th><th>Observed drop</th><th>Maximum drop</th>"
             + ("<th>Minimum accuracy</th><th>Minimum met</th>" if has_floors else "")
             + "<th>Policy result</th>"
             f"<th>Regressed cases</th></tr></thead><tbody>{rows}</tbody></table></details>"
@@ -112,6 +113,7 @@ def render(directory: Path, output: Path) -> None:
     ]
     inputs = previews(directory, set(expected))
     rows = []
+    outcomes = {name: 0 for name in ("regressed", "improved", "changed", "unchanged")}
     for key in expected:
         before, after = predictions[0][key], predictions[1][key]
         state = (
@@ -123,6 +125,7 @@ def render(directory: Path, output: Path) -> None:
             if before != after
             else "unchanged"
         )
+        outcomes[state] += 1
         values = (key, expected[key], *(p[key] for p in predictions))
         rows.append(
             f'<tr data-state="{state}"><td>{inputs.get(key, "Not supplied")}</td>'
@@ -189,11 +192,7 @@ historical cause. Slice results may overlap and are not statistical significance
             "or prove model execution.</p>"
         )
     if report["schema_version"] == "initial-release-comparison/0.1":
-        page += (
-            "<h2>Initial release comparison</h2>"
-            f"<p>Candidate policy result: {'Pass' if candidate['passed'] else 'Fail'}.</p>"
-            f"<p>{esc(assessment['reason'])}</p>"
-        )
+        page += f"<h2>Initial release comparison</h2><p>{esc(assessment['reason'])}</p>"
     else:
         page += (
             "<h2>Repair assessment</h2>"
@@ -201,6 +200,59 @@ historical cause. Slice results may overlap and are not statistical significance
             "<p>Successful repairs: "
             f"{esc(', '.join(assessment['successful_repairs']) or 'None')}.</p>"
         )
+    changed = len(expected) - outcomes["unchanged"]
+    covered = {key for item in plan["slices"] for key in item["case_ids"]}
+    failed = [item["name"] for item in candidate["slices"] if not item["passed"]]
+    correct = [sum(p[key] == expected[key] for key in expected) for p in predictions[:2]]
+    # Count each case once across the entire input, never pool overlapping slices.
+    overview = (
+        '<section id="decision-overview"><h2>Release decision</h2>'
+        f"<p>Baseline: {esc(candidate['baseline_release_id'])}; "
+        f"candidate: {esc(candidate['candidate_release_id'])}. "
+        f"Candidate policy result: {'Pass' if candidate['passed'] else 'Fail'}.</p>"
+        f"<p>{len(candidate['slices']) - len(failed)} of {len(candidate['slices'])} "
+        "declared slices passed their accuracy-drop limits and any accuracy floors. "
+        f"Failed slices: {esc(', '.join(failed) or 'None')}. "
+        f"Policy covers {len(covered)} of {len(expected)} cases; "
+        "uncovered cases do not affect the policy decision.</p>"
+        f"<p><strong>{changed} changed predictions</strong>: "
+        f"{outcomes['regressed']} new errors (correct → incorrect), "
+        f"{outcomes['improved']} corrections (incorrect → correct), "
+        f"{outcomes['changed']} changes between incorrect labels. "
+        f"{outcomes['unchanged']} predictions unchanged.</p>"
+        f"<p>All-input exact-label accuracy: baseline {correct[0]}/{len(expected)} "
+        f"({correct[0] / len(expected):.2%}); candidate {correct[1]}/{len(expected)} "
+        f"({correct[1] / len(expected):.2%}). These counts include every case once. "
+        "A policy pass does not mean identical predictions.</p>"
+        "<p>Historical cause: not identified. Supplied predictions and declared "
+        "changes do not establish why behavior changed.</p></section>"
+    )
+    if report["repairs"]:
+        overview += (
+            "<p>Supplied repair policy results: "
+            + "; ".join(
+                f"{esc(name)}: {'Pass' if result['passed'] else 'Fail'}"
+                for name, result in report["repairs"].items()
+            )
+            + ". Repair success is evidence about the supplied policy, not exact "
+            "prediction restoration or proof of historical cause.</p>"
+        )
+    descriptions = {role: plan["declared_changes"].get(role) for role in ("baseline", "candidate")}
+    if all(isinstance(value, str) for value in descriptions.values()):
+        overview += (
+            "<p>Caller-supplied release descriptions: "
+            f"baseline {esc(descriptions['baseline'])}; "
+            f"candidate {esc(descriptions['candidate'])}.</p>"
+        )
+    if plan.get("record_origin") == "imported_predictions":
+        overview += (
+            "<p>Model execution costs: unknown for imported predictions. "
+            "No model was executed by this investigation.</p>"
+        )
+    # Put conclusions before the full table and optional evidence details.
+    page = page.replace(
+        "<h1>Model release investigation</h1>", "<h1>Model release investigation</h1>" + overview
+    )
     page += "".join(sections)
     page += (
         '<section id="case-inspection"><h2>Inspect cases</h2>'
@@ -209,7 +261,7 @@ historical cause. Slice results may overlap and are not statistical significance
         "Previews are caller-supplied inputs.</p>"
         '<label>Search cases or labels <input id="case-search" type="search"></label> '
         '<label>Candidate outcome <select id="case-state"><option value="all">All cases</option>'
-        '<option value="different">Changed prediction</option>'
+        '<option value="different" selected>Changed prediction</option>'
         '<option value="regressed">Correct → incorrect</option>'
         '<option value="improved">Incorrect → correct</option>'
         '<option value="unchanged">Unchanged prediction</option></select></label> '
@@ -259,6 +311,7 @@ function filterCases() {
 }
 search.addEventListener('input', filterCases);
 state.addEventListener('change', filterCases);
+filterCases();
 document.getElementById('export-cases').addEventListener('click', () => {
   const ids = rows.filter(row => !row.hidden).map(row => row.cells[1].textContent);
   const url = URL.createObjectURL(new Blob([JSON.stringify(ids, null, 2)],

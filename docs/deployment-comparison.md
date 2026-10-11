@@ -162,3 +162,16 @@ training-partition development split, TF-IDF representation, float32 and dynamic
 INT8 classification, saved predictions and case grouping. No external checkpoint
 or new training was used. Dataset terms do not resolve the project's own source
 distribution license.
+
+### First report view
+
+The HTML report now leads with the candidate's policy decision, unique all-input
+change/error/correction counts, exact-label accuracy, declared slice coverage and
+failed slice names. Imported execution costs and historical cause remain explicitly
+unknown. The Banking77 report shows a passing candidate and eight changed labels
+without conflating those outcomes. It initially filters to changed predictions;
+select **All cases** to inspect the complete table. With JavaScript disabled the
+summary remains available and all rows are shown.
+
+This addresses the maintainer's observed discoverability failure. It has not been
+validated with independent engineers and does not establish faster or better decisions.
