@@ -1,6 +1,11 @@
 # Research status
 
-Updated October 10, 2026. This page is the current status; dated records below describe their original scopes.
+Updated October 11, 2026. This page is the current status; dated records below describe their original scopes.
+
+The saved-prediction investigation application and completed research are in
+maintenance mode. No training campaign, scorer expansion or incident search is
+active. A concrete defect or new substantive evidence is needed to reopen work.
+Distribution licensing remains an owner decision.
 
 The matched Banking77 localization study is complete. The repository also has an
 executable classification investigation workflow: model callbacks, retained
@@ -12,9 +17,8 @@ policy. The [incremental intent release](../docs/incremental-intent-release.md)
 also completed: 15 fits across three fixed CLINC150 development scenarios.
 Ordinary full-data retraining was the only acceptable repair in each scenario;
 partial rollbacks failed. These constructed, overlapping scenarios establish
-application behavior, not a novel diagnostic advantage. Next: independent first
-use with an engineer's own saved predictions and, separately, qualified real
-incidents for a comparative research design.
+application behavior, not a novel diagnostic advantage. Independent first use and any qualified real-incident comparative study remain
+unmeasured and deferred; neither is an authorized next campaign.
 These are development results; no confirmatory study or official-test result is
 claimed. No paper is published.
 
@@ -105,3 +109,4 @@ outcome inspection, and ordinary complete/targeted rollback remain mandatory
 comparators. Existing Banking77 assessments and digests remain unchanged. No
 new fit or comparative study was executed. See
 [release acceptance](../docs/release-acceptance.md).
+
