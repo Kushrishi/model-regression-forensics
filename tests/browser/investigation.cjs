@@ -23,7 +23,7 @@ const {chromium} = require('playwright');
     assert.equal(await page.inputValue('#case-state'), 'different');
     assert.equal(await visible.count(), changedCount);
     assert.equal(await page.locator('#case-count').textContent(), `${changedCount} of ${plan.cases.length} cases`);
-    const overview = await page.locator('#decision-overview').textContent();
+    const overview = (await page.locator('#decision-overview').textContent()).replace(/\s+/g, ' ').trim();
     assert(overview.includes(`Candidate policy result: ${candidate.passed ? 'Pass' : 'Fail'}`));
     assert(overview.includes(`${changedCount} changed predictions`));
     // The retained deployment is a policy pass with changed labels, not a failure.
