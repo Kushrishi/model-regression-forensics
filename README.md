@@ -4,6 +4,9 @@ Compare classification releases, inspect changed examples and check whether
 proposed repairs satisfy declared requirements. MRF imports saved predictions or
 runs explicit release functions, then produces a portable HTML report.
 
+The supported application is in maintenance mode. New training, scorer variants
+and comparative research require new substantive evidence and separate approval.
+
 The research asks a separate question: when does a successful repair identify
 the responsible training change? The completed Banking77 study found no
 consistent top-1 benefit from model-based diagnostics over simple baselines.
@@ -32,6 +35,9 @@ or report server is needed. Installation needs access to the package dependencie
 This retained example compares 1,969 real-text predictions. The candidate passes
 the declared policy but changes eight labels: three new errors, three
 corrections and two changes between incorrect labels. Repairs remain unevaluated.
+Changed behavior is not itself a policy failure: this example passes all 78
+fixed slice checks. A passing supplied repair establishes restoration under that
+policy, not a uniquely identified historical cause.
 The [walkthrough](docs/deployment-comparison.md) adds optional text previews and
 explains the thresholds, measurements and limits.
 
@@ -79,9 +85,9 @@ The completed matched study evaluates localization. It does not establish genera
 
 The follow-up repair example tests this distinction directly: two interventions restore the same predictions, so the assessment reports ambiguity.
 
-## Comparison utility
+## Supported comparison utility
 
-The repository also contains an experimental exact-label release comparison utility. It validates record alignment, declared evaluation slices, and accuracy-drop tolerances. An external handwritten-digits fixture agrees with an independent NumPy reference.
+The repository contains an exact-label release comparison utility. It validates record alignment, declared evaluation slices, and accuracy-drop tolerances. An external handwritten-digits fixture agrees with an independent NumPy reference.
 
 That checks implementation arithmetic; it does not identify the cause of a regression.
 
@@ -118,9 +124,20 @@ The same release-comparison policy marks both repairs successful. The specificit
 
 [Read the fixture](docs/ambiguous-repairs.md)
 
-## Proposed follow-up: avoiding unjustified root-cause claims
+## Scope relative to established tools
 
-The next research question is whether a debugger can reduce incorrect, overly specific diagnoses without simply refusing to diagnose everything. It would have to beat ordinary diff inspection and targeted reversions at a comparable testing cost, using real incidents with known-good and regressed versions. Current incident screens have found software defects and useful repair examples, but no qualified training-release case with the required outcome and provenance evidence. The existing ambiguous-repair example demonstrates intended software behavior; it does not establish research novelty.
+[Evidently](https://github.com/evidentlyai/evidently) supports broader evaluation,
+testing and monitoring of ML/LLM systems. [Google LIT](https://github.com/PAIR-code/lit)
+provides extensible interactive model understanding across text, image and tabular
+data. MRF's narrower implementation validates saved exact-label classification
+releases, evaluates declared slice policies and supplied repairs, and retains a
+portable decision report. No superiority in metrics, diagnosis or user efficiency
+against those systems has been established.
+
+The earlier proposed selective-diagnosis follow-up remains speculative and
+**deferred**, not active work. Incident screens found no qualified training-release
+case with the necessary outcome and provenance evidence. The ambiguity fixture
+establishes software behavior, not research novelty.
 
 ## Research history and limits
 
@@ -128,7 +145,7 @@ The next research question is whether a debugger can reduce incorrect, overly sp
 
 The [experiment history](research/EXPERIMENT_HISTORY.md) preserves the completed
 localization study, unsuccessful development attempts and incident-discovery
-records. The [roadmap](research/ROADMAP.md) defines current work; those older
+records. The [roadmap](research/ROADMAP.md) records maintained scope and conditional future work; those older
 records are not a second active plan.
 
 MRF has not established general causal identification, superiority to attribution
@@ -136,7 +153,7 @@ methods, independent-user benefit or a published paper. Public distribution
 licensing remains unresolved.
 
 
-### Independent first-use decision packets
+### Optional independent first-use packets (not an active study)
 
 Prepare equal-evidence MRF and standalone ordinary diff/policy packets:
 
@@ -151,3 +168,4 @@ ambiguity fixture for multiple passing interventions. No participant observation
 are generated. The audit preserves unanswered items and requires human review
 of provenance steps and interpretation; correctness agreement alone establishes
 no user benefit. Actual independent first use remains outstanding.
+

@@ -1,6 +1,6 @@
 # Model Regression Forensics roadmap
 
-Updated 10 October 2026. [Current evidence](STATE.md) · [Start with saved predictions](../docs/import-predictions.md)
+Updated 11 October 2026. [Current evidence](STATE.md) · [Start with saved predictions](../docs/import-predictions.md)
 
 ## Deliverable
 
@@ -20,26 +20,25 @@ on a demonstrated contribution beyond ordinary comparison and rollback.
 | Deployment conversion inspection | Complete on one retained linear model | [Float32/INT8 comparison](../docs/deployment-comparison.md): exact source recovery, fixed development policy, eight changed INT8 labels, measured single-host sizes/latency and runnable saved predictions. | Prefer the label-preserving export unless the measured size/latency tradeoff warrants changed behavior; this is not independent-user or comparative research evidence. |
 | Recover and package a reproducible investigation | Partly complete | Existing Banking77 bundle is retained. Recover the complete incremental-intent archive or mark it unavailable; verify hashes and rebuild reports without fitting. Document supported installation, inputs, outputs and license terms. | Do not advertise a complete downloadable experiment while its full model/input archive is unavailable. |
 | Independent first use | Not completed | An engineer uses their own saved predictions through the documented importer, inspects a failed slice and exports the cases supporting a release/repair decision. Record setup failures, interpretation errors and missing capabilities. | Fix observed obstacles. One successful session establishes usability on that case, not research efficacy or broad time savings. |
-| Comparative investigation evaluation | Design pending | Qualify incident provenance and declare tasks, information access, success criteria and budget before scoring. Compare with full-diff inspection, direct prediction comparison, complete rollback, targeted rollback and full retraining where applicable. | Test whether MRF changes decision quality, protected-behavior failures, unjustified unique-cause claims or investigation cost. Include ordinary methods that win. |
+| Comparative investigation evaluation | Deferred; not authorized | Qualify incident provenance and declare tasks, information access, success criteria and budget before scoring. Compare with full-diff inspection, direct prediction comparison, complete rollback, targeted rollback and full retraining where applicable. | Test whether MRF changes decision quality, protected-behavior failures, unjustified unique-cause claims or investigation cost. Include ordinary methods that win. |
 | Focused package and research decision | Conditional | Reproducible installation and first use, retained examples, limitations and explicit license. A study must report incident-level results, execution costs, abstentions and failures. | Release useful software independently of paper novelty. Pursue a paper only if comparative evidence supports a distinct contribution. |
 
-## Immediate order
+## Maintenance decision
 
-1. Use the complete [deployment comparison](../docs/deployment-comparison.md) on
-   a second machine: import saved predictions, open the report, inspect failed
-   requirements and export the cases supporting a release decision. No training
-   is needed. Maintainer use is not an independent-user evaluation.
-2. Prepare independent first use using the existing importer. The report must
-   distinguish failed policy requirements from import errors. Keep the older
-   experiment-archive gap explicit; it does not block the complete deployment
-   example or use of an engineer's own saved predictions.
-3. Use concrete user problems to select product changes. Do not add another model
-   or dashboard feature solely to increase project scope.
-4. Qualify real incidents for a prospective comparative design. Existing screens
-   found no eligible training-release incident; repeated broad searches without new
-   evidence are not the next experiment.
-5. Decide whether the next deliverable is an improved investigation package or a
-   research study from those observations.
+The supported saved-prediction importer and HTML investigation utility are complete
+on the retained examples. Preserve the completed localization study and its negative
+results. No new training, benchmarks, scorer variants or viewer expansion are active.
+
+The documented quickstart remains supported. Independent first use is unmeasured;
+the existing decision packets can support a separately approved evaluation, without
+training. The older incremental-intent archive gap remains explicit and does not
+invalidate the retained deployment example. Choose distribution licensing before
+advertising an openly licensed software release; do not infer permission from public
+source visibility.
+
+Only a demonstrated supported-workflow defect or new substantive research evidence
+justifies reopening development. The conditional milestone table records limitations,
+not a commitment to keep the project continuously active.
 
 ## Study requirements before new comparative claims
 
@@ -87,3 +86,4 @@ probability calibration and general automatic repair are not current capabilitie
 The completed localization study and unsuccessful development attempts remain
 public evidence. Distribution licensing is unresolved; public source visibility
 must not be presented as an open-source license or a published package release.
+
