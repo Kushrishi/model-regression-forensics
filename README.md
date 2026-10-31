@@ -1,76 +1,39 @@
 # Model Regression Forensics
 
-Compare classification releases, inspect changed examples and check whether
-proposed repairs satisfy declared requirements. MRF imports saved predictions or
-runs explicit release functions, then produces a portable HTML report.
+Compare classification releases, inspect changed predictions and check proposed repairs against declared requirements. MRF produces a local HTML report from saved predictions or explicit model callbacks.
 
-The supported application is in maintenance mode. New training, scorer variants
-and comparative research require new substantive evidence and separate approval.
+**Status:** maintained comparison utility; the accompanying localization study is complete. Further comparative research is deferred.
 
-The research asks a separate question: when does a successful repair identify
-the responsible training change? The completed Banking77 study found no
-consistent top-1 benefit from model-based diagnostics over simple baselines.
+[Walkthrough](docs/deployment-comparison.md) · [Input format](docs/import-predictions.md) · [Architecture](docs/architecture.md) · [Research report](research/M4_TECHNICAL_REPORT.md)
 
-[Project overview](https://kushrishi.com/research/model-regression-forensics) ·
-[Current status](research/STATE.md) · [Roadmap](research/ROADMAP.md) ·
-[Technical report](research/M4_TECHNICAL_REPORT.md)
+## Run the example
 
-Source distribution: this repository currently has no project-wide software
-license. Publicly visible source is not a general open-source permission grant;
-Banking77 and other third-party materials have their own stated terms.
-
-## Start with saved predictions
-
-![Actual MRF report: passing policy, eight changed Banking77 predictions, three new errors and three corrections](docs/assets/release-investigation-real.png)
-
-Actual retained HTML, with the changed-prediction filter selected. Screenshot
-supplied by the owner after an independent Chromium interaction check; this is
-interface acceptance, not evidence of independent-user benefit.
-Banking77 examples: PolyAI, Casanueva et al. (2020),
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
-[dataset source](https://github.com/PolyAI-LDN/task-specific-datasets).
-Changes: development-case selection, model predictions and report grouping.
-[Capture identity and interpretation](docs/deployment-comparison.md#published-report-capture).
-
-Python 3.12 or later, from a checkout of this repository:
+From a checkout with Python 3.12 or later:
 
 ```bash
 python -m pip install .
 mrf-import examples/deployment_comparison/policy.json examples/deployment_comparison/predictions.csv deployment-investigation
 ```
 
-The output directory must not already exist. Open
-`deployment-investigation/index.html` in a browser. No model download, training
-or report server is needed. Installation needs access to the package dependencies.
+Use a new output directory, then open `deployment-investigation/index.html`. No training, model download or report server is needed. Installation requires access to package dependencies.
 
-This retained example compares 1,969 real-text predictions. The candidate passes
-the declared policy but changes eight labels: three new errors, three
-corrections and two changes between incorrect labels. Repairs remain unevaluated.
-Changed behavior is not itself a policy failure: this example passes all 78
-fixed slice checks. A passing supplied repair establishes restoration under that
-policy, not a uniquely identified historical cause.
-The [walkthrough](docs/deployment-comparison.md) adds optional text previews and
-explains the thresholds, measurements and limits.
+![Retained report showing changed predictions](docs/assets/release-investigation-real.png)
 
-| Task | Start here |
-| --- | --- |
-| Import your own baseline, candidate and optional repair predictions | [Input contract](docs/import-predictions.md) |
-| Run a classification model and disclosed preprocessing fault | [Digit investigation](docs/investigation-workflow.md) |
-| Inspect visible training changes and separate rollbacks | [Real-text investigation](docs/banking-investigation.md) |
-| Replay the completed localization result without training | [Research reproduction](research/REPRODUCE_M4.md) |
-| Understand the implementation | [Software architecture](docs/architecture.md) |
+The example compares 1,969 predictions. Eight labels change: three new errors, three corrections and two changes between incorrect labels. The candidate still passes its declared slice policy; changed behaviour is not automatically a policy failure. Repairs are not evaluated in this example.
 
-The real-text training walkthrough completed five CPU fits; only combined
-rollback passed its repair policy. A separate [incremental-intent experiment](docs/incremental-intent-release.md)
-completed fifteen fits across three fixed scenarios; ordinary full-data
-retraining was the only acceptable repair. These are development examples,
-not proof of diagnostic superiority. Independent practical use remains pending.
+Banking77 text: PolyAI, Casanueva et al. (2020), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), [dataset source](https://github.com/PolyAI-LDN/task-specific-datasets). Changes include case selection, predictions and report grouping. [Screenshot provenance](docs/deployment-comparison.md#published-report-capture).
 
-![Rank of the planted change among five candidates in two constructed Banking77 benchmarks](docs/assets/ranking-results.svg)
+## What the tool establishes
 
-## Completed localization study
+MRF checks case and label alignment, declared slice membership, accuracy thresholds and supplied repairs. It records changed examples and rejects incompatible evaluation records.
 
-Two constructed Banking77 benchmarks (A and B; recorded as world 00 and world 01) contain five structurally matched label-swap changes each. A pinned DistilBERT classifier was trained across three paired trajectories per world, and rankings were finalized before truth scoring.
+A passing repair shows restoration under a specified policy, not proof of the historical cause. A deterministic [ambiguity example](docs/ambiguous-repairs.md) demonstrates two distinct repairs restoring identical predictions. The output reports that ambiguity rather than selecting a cause.
+
+The tool does not establish statistical significance, general causal identification or independent-user benefit. It is narrower than general monitoring and interpretation tools such as Evidently and Google LIT; comparative superiority is not claimed.
+
+## Completed study
+
+Two constructed Banking77 benchmarks each contain five candidate label-swap changes. A DistilBERT classifier was trained across three paired trajectories per benchmark; rankings were finalized before truth scoring.
 
 | Diagnostic | Benchmark A root rank | Benchmark B root rank |
 | --- | ---: | ---: |
@@ -80,43 +43,19 @@ Two constructed Banking77 benchmarks (A and B; recorded as world 00 and world 01
 | Final-checkpoint Grad-Dot | 1 | 5 |
 | Seven-checkpoint TracIn | 1 | 5 |
 
-Simple visible-change baselines localized the planted change in both worlds. The evaluated model-based diagnostics added no top-1 benefit in this design.
+The model-based diagnostics added no top-1 benefit over simple baselines in this design. Known target labels and disjoint candidate label pairs give the overlap baseline a semantic shortcut. The repeated training trajectories are not additional independent benchmarks.
 
-The target labels are known and candidate label pairs are disjoint, which gives the simple label-overlap baseline a semantic shortcut. These are results from **two benchmark worlds**; the three paired trajectories within each world are repeated trainings, not independent benchmark worlds.
+These findings concern localization in two constructed settings, not general root-cause diagnosis. No peer-reviewed publication is claimed.
 
-## What this result means
+## Documentation
 
-The project keeps three questions separate:
-
-- **Localization:** which change looks suspicious?
-- **Restoration:** does reversing a change repair the failed behavior?
-- **Specificity:** is that repair distinguishable from plausible alternative repairs and retraining variability?
-
-The completed matched study evaluates localization. It does not establish general root-cause identification or superiority to modern training-data attribution methods.
-
-The follow-up repair example tests this distinction directly: two interventions restore the same predictions, so the assessment reports ambiguity.
-
-## Supported comparison utility
-
-The repository contains an exact-label release comparison utility. It validates record alignment, declared evaluation slices, and accuracy-drop tolerances. An external handwritten-digits fixture agrees with an independent NumPy reference.
-
-That checks implementation arithmetic; it does not identify the cause of a regression.
-
-The [saved-repair workflow](docs/ambiguous-repairs.md#evaluate-saved-repair-predictions)
-evaluates supplied regression and repair predictions under an identical, verified
-evaluation-policy identity. It rejects different cases or labels even when summary
-counts match, and reports multiple successful repairs as ambiguous.
-
-## Read and reproduce
-
-- [Technical report](research/M4_TECHNICAL_REPORT.md)
-- [Experiment history](research/EXPERIMENT_HISTORY.md)
-- [Reproduce the recorded results](research/REPRODUCE_M4.md)
+- [Replay the saved research results](research/REPRODUCE_M4.md)
 - [Accepted result record](research/M4_RESULT.json)
-- [External comparison fixture](docs/external-release-task.md)
-- [LFQ software-defect replay: fixed tensors, no training](research/LFQ_FIXED_TENSOR_REPLAY_2026_10_09.md)
+- [Experiment history](research/EXPERIMENT_HISTORY.md)
+- [Prediction and repair walkthroughs](docs/banking-investigation.md)
+- [Scope and deferred work](research/ROADMAP.md)
 
-With Python 3.12 or later and `uv`:
+For development with Python 3.12 or later and `uv`:
 
 ```bash
 uv sync --extra dev
@@ -125,58 +64,8 @@ uv run ruff format --check .
 uv run pytest
 ```
 
-Replaying the saved scoring records does not retrain the models. Research-only numerical checks have additional optional dependencies documented in the repository.
+Research-only checks require the optional dependencies documented in their reproduction instructions. Saved-result replay does not retrain the models.
 
-## Ambiguous repair fixture
+## Licensing
 
-A deterministic linear-model fixture now contains one regression and two distinct interventions that both restore the baseline predictions exactly: restoring the original feature order, or keeping reversed inputs while reversing the model weights.
-
-The same release-comparison policy marks both repairs successful. The specificity layer therefore returns `ambiguous_repairs` and leaves the historical cause `not_identified`. The known historical change is not provided to that decision layer.
-
-[Read the fixture](docs/ambiguous-repairs.md)
-
-## Scope relative to established tools
-
-[Evidently](https://github.com/evidentlyai/evidently) supports broader evaluation,
-testing and monitoring of ML/LLM systems. [Google LIT](https://github.com/PAIR-code/lit)
-provides extensible interactive model understanding across text, image and tabular
-data. MRF's narrower implementation validates saved exact-label classification
-releases, evaluates declared slice policies and supplied repairs, and retains a
-portable decision report. No superiority in metrics, diagnosis or user efficiency
-against those systems has been established.
-
-The earlier proposed selective-diagnosis follow-up remains speculative and
-**deferred**, not active work. Incident screens found no qualified training-release
-case with the necessary outcome and provenance evidence. The ambiguity fixture
-establishes software behavior, not research novelty.
-
-## Research history and limits
-
-[Evidence guide](research/README.md) · [Software architecture](docs/architecture.md)
-
-The [experiment history](research/EXPERIMENT_HISTORY.md) preserves the completed
-localization study, unsuccessful development attempts and incident-discovery
-records. The [roadmap](research/ROADMAP.md) records maintained scope and conditional future work; those older
-records are not a second active plan.
-
-MRF has not established general causal identification, superiority to attribution
-methods, independent-user benefit or a published paper. Public distribution
-licensing remains unresolved.
-
-
-### Optional independent first-use packets (not an active study)
-
-Prepare equal-evidence MRF and standalone ordinary diff/policy packets:
-
-```bash
-python -m model_forensics.workflow_evaluation prepare examples/release_acceptance/policy.json examples/release_acceptance/predictions.csv /tmp/mrf-decision-task
-```
-
-The facilitator distributes only one condition subdirectory, keeps the gold
-answers separate, assigns task/order prospectively and records prior exposure.
-Use the initial-comparison fixture for missing repair evidence and the retained
-ambiguity fixture for multiple passing interventions. No participant observations
-are generated. The audit preserves unanswered items and requires human review
-of provenance steps and interpretation; correctness agreement alone establishes
-no user benefit. Actual independent first use remains outstanding.
-
+There is no project-wide software licence grant. Public source visibility does not grant general reuse rights; third-party materials retain their stated terms.
