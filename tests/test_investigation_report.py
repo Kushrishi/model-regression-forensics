@@ -99,3 +99,16 @@ def test_overview_counts_all_cases_once_even_with_overlapping_partial_policy(tmp
     assert "Failed slices: slice-a, slice-b" in page
     assert "ineffective: Fail; restore: Pass" in page
     assert "Historical cause: not identified" in page
+
+
+def test_case_inspection_precedes_expandable_interpretation(tmp_path):
+    attempt(tmp_path / "run")
+    render(tmp_path / "run", tmp_path / "report.html")
+    page = (tmp_path / "report.html").read_text()
+    details = "<details><summary>Interpretation and evidence</summary>"
+    assert page.index('id="decision-overview"') < page.index('id="case-inspection"')
+    assert page.index('id="case-inspection"') < page.index(details)
+    assert page.index(details) < page.index("Repair success does not identify a unique")
+    assert page.index(details) < page.index("Repair assessment")
+    assert page.index(details) < page.index("slice results")
+    assert "not statistical significance tests" in page

@@ -182,19 +182,21 @@ h1,h2{line-height:1.2}
 <p>Recomputed from saved predictions. Repair success does not identify a unique
 historical cause. Slice results may overlap and are not statistical significance tests.</p>
 """
+    interpretation = page[page.index("<p>Recomputed from saved predictions.") :]
+    page = page[: page.index("<p>Recomputed from saved predictions.")]
     assessment = report["assessment"]
     if plan.get("record_origin") == "imported_predictions" or any(
         record.get("record_origin") == "imported_predictions" for record in records
     ):
-        page += (
+        interpretation += (
             "<p>Imported source integrity checked: retained input hashes, policy and "
             "prediction records agree. This does not authenticate the producer "
             "or prove model execution.</p>"
         )
     if report["schema_version"] == "initial-release-comparison/0.1":
-        page += f"<h2>Initial release comparison</h2><p>{esc(assessment['reason'])}</p>"
+        interpretation += f"<h2>Initial release comparison</h2><p>{esc(assessment['reason'])}</p>"
     else:
-        page += (
+        interpretation += (
             "<h2>Repair assessment</h2>"
             f"<p>{esc(assessment['reason'])}</p>"
             "<p>Successful repairs: "
@@ -254,7 +256,6 @@ historical cause. Slice results may overlap and are not statistical significance
     page = page.replace(
         "<h1>Model release investigation</h1>", "<h1>Model release investigation</h1>" + overview
     )
-    page += "".join(sections)
     page += (
         '<section id="case-inspection"><h2>Inspect cases</h2>'
         "<p>Outcome filters compare the candidate with the baseline. "
@@ -271,6 +272,12 @@ historical cause. Slice results may overlap and are not statistical significance
         f'<div class="case-scroll"><table id="cases"><thead><tr>{headers}</tr></thead>'
         f"<tbody>{case_rows}</tbody></table></div>"
         "<noscript>Filtering requires JavaScript; all case records are shown.</noscript></section>"
+    )
+    page += (
+        "<details><summary>Interpretation and evidence</summary>"
+        + interpretation
+        + "".join(sections)
+        + "</details>"
     )
     page += (
         (
