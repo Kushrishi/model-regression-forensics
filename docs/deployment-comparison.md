@@ -179,8 +179,8 @@ Encoders*. [Creator repository](https://github.com/PolyAI-LDN/task-specific-data
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changes: existing
 training-partition development split, TF-IDF representation, float32 and dynamic
 INT8 classification, saved predictions and case grouping. No external checkpoint
-or new training was used. Dataset terms do not resolve the project's own source
-distribution license.
+or new training was used. Original project software is covered by the
+[MIT License](../LICENSE); the dataset retains its CC BY 4.0 terms.
 
 ### First report view
 

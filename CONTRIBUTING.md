@@ -10,8 +10,8 @@ model-training dependencies.
 
 See the [architecture](docs/architecture.md) before changing shared modules.
 Preserve frozen protocols and result records; present a new experiment as a new
-design rather than rewriting old evidence. Public source visibility does not
-grant a distribution license.
+design rather than rewriting old evidence. Original software contributions are
+covered by the [MIT License](LICENSE); preserve third-party notices and terms.
 
 ## Reproducible regression cases
 

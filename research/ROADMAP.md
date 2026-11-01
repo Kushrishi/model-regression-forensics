@@ -1,6 +1,6 @@
 # Model Regression Forensics roadmap
 
-Updated 11 October 2026. [Current evidence](STATE.md) · [Start with saved predictions](../docs/import-predictions.md)
+Updated 1 November 2026 (licensing only). [Current evidence](STATE.md) · [Start with saved predictions](../docs/import-predictions.md)
 
 ## Deliverable
 
@@ -32,9 +32,8 @@ results. No new training, benchmarks, scorer variants or viewer expansion are ac
 The documented quickstart remains supported. Independent first use is unmeasured;
 the existing decision packets can support a separately approved evaluation, without
 training. The older incremental-intent archive gap remains explicit and does not
-invalidate the retained deployment example. Choose distribution licensing before
-advertising an openly licensed software release; do not infer permission from public
-source visibility.
+invalidate the retained deployment example. Original software is available under the
+[MIT License](../LICENSE); third-party materials retain their own terms.
 
 Only a demonstrated supported-workflow defect or new substantive research evidence
 justifies reopening development. The conditional milestone table records limitations,
@@ -84,6 +83,6 @@ Exact-label classification is the supported task. Imported execution costs are
 unknown unless independently measured. LLM evaluation, causal certification,
 probability calibration and general automatic repair are not current capabilities.
 The completed localization study and unsuccessful development attempts remain
-public evidence. Distribution licensing is unresolved; public source visibility
-must not be presented as an open-source license or a published package release.
+public evidence. The MIT licence covers original software, not third-party materials.
+A source licence does not imply a published package release.
 

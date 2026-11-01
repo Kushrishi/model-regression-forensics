@@ -40,7 +40,7 @@ Independent first use and comparative user benefit have not been measured. No qu
 
 The complete incremental-intent archive was not durably recovered after an upload failure. Its compact protocol and result records do not replace the full models, inputs and predictions. The Banking77 investigation bundle is retained separately.
 
-There is no project-wide software licence grant. Dataset and other third-party terms remain separate.
+Original project software is available under the [MIT License](../LICENSE). Dataset and other third-party terms remain separate.
 
 ## Maintenance
 
