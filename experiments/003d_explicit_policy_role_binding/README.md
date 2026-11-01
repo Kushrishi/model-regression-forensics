@@ -2,8 +2,9 @@
 
 ## Status
 
-Prospective capability-diagnostic protocol. No Experiment 003-D model training has
-been run.
+**Complete — explicit-policy role binding diagnostic passed.** See [RESULTS.md](RESULTS.md)
+for the measurements and limitations. The prospective protocol below is retained
+as the record of the design frozen before training.
 
 ## Why this experiment exists
 

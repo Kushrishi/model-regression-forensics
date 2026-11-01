@@ -2,7 +2,9 @@
 
 ## Status
 
-Prospective capability-diagnostic protocol. No model training has been run.
+**Complete — selected-slot lookup diagnostic passed.** See [RESULTS.md](RESULTS.md)
+for the measurements and limitations. The prospective protocol below is retained
+as the record of the design frozen before training.
 
 ## Why this experiment exists
 
