@@ -71,7 +71,8 @@ remain unverified.
 
 ## Inspect inputs and select cases
 
-The report now shows all cases with baseline, candidate and repair predictions.
+The report initially shows changed cases with baseline, candidate and repair predictions.
+Select **All cases** to inspect the complete table.
 Use **Candidate outcome** to select changed predictions, regressions or
 improvements; use search to narrow case IDs or labels. **Export visible case IDs**
 downloads the current selection as JSON. Filtering operates entirely in the
