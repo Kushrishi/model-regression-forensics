@@ -354,6 +354,30 @@ def test_score_ranking_reports_score_ties_without_trusting_id_tiebreak(tmp_path:
     }
 
 
+@pytest.mark.parametrize("score", [float("nan"), float("inf"), -float("inf"), True, 10**400])
+def test_score_ranking_rejects_nonfinite_or_non_numeric_scores(tmp_path: Path, score) -> None:
+    path = tmp_path / "ranking.json"
+    path.write_text(json.dumps({"ranking": [{"change_id": "a", "score": score}]}))
+    with pytest.raises(ValueError, match="finite numeric scores"):
+        score_ranking(path, "a")
+
+
+@pytest.mark.parametrize(
+    "entries, message",
+    [
+        ([{"change_id": "a", "score": 1}, {"change_id": "a", "score": 0}], "unique"),
+        ([{"change_id": " ", "score": 1}], "nonblank"),
+        ([{"change_id": 7, "score": 1}], "nonblank"),
+        ([None], "objects"),
+    ],
+)
+def test_score_ranking_rejects_invalid_candidate_identity(tmp_path: Path, entries, message) -> None:
+    path = tmp_path / "ranking.json"
+    path.write_text(json.dumps({"ranking": entries}))
+    with pytest.raises(ValueError, match=message):
+        score_ranking(path, "a")
+
+
 def test_exp003_lexical_baselines_tie_on_role_binding_confounders(tmp_path: Path) -> None:
     data = build_exp003_data(seed=42)
     changes = []
