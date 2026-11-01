@@ -21,6 +21,8 @@ The model is `distilbert/distilbert-base-uncased`, pinned at revision `12040acca
 
 The target behavior is the mean pairwise logit margin over all development-evaluation examples belonging to the target pair. Candidate scores sum changed-slot suspiciousness. Model-based scores are averaged across the three trajectories to obtain the primary world-level ranking. Higher scores indicate greater suspicion; ascending opaque candidate ID resolves ties. These rules were frozen before rankings were inspected.
 
+With 66 changed slots in every candidate, summing and averaging slot scores produce identical candidate rankings: each mean is its sum divided by 66. The frozen [attribution contract](ATTRIBUTION_TARGET.md) incorrectly suggests that score distribution could change that equivalence. This clarification corrects the explanation only; the study used the declared sums, and its scores and rankings are unchanged.
+
 The complete source definitions are in [the matched-study protocol](M4_LOCALIZATION_BASELINE_PROTOCOL.md) and its [amendment](M4_LOCALIZATION_BASELINE_PROTOCOL_AMENDMENT_1.md). This report summarizes the accepted experiment rather than changing those definitions.
 
 ## Baselines and results
