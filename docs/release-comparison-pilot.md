@@ -38,4 +38,4 @@ The [digits example](external-release-task.md) checks the comparator on external
 
 General model comparison already exists in tools such as Deepchecks. The comparator's current purpose is strict record validation and deterministic reporting. A larger package would need evidence that its repair workflow helps users make a debugging decision.
 
-The repository has no open-source license or public package-index release. Distribution rights need to be settled before publishing a reusable package.
+The project software is available under the [MIT License](../LICENSE). Third-party datasets, models and dependencies retain their own terms.
