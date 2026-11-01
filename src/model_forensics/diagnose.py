@@ -296,6 +296,28 @@ def score_ranking(ranking_path: str | Path, hidden_root_cause_id: str) -> dict[s
     if not isinstance(ranking, list) or not ranking:
         raise ValueError("ranking artifact must contain a non-empty ranking list")
 
+    change_ids: set[str] = set()
+    numeric_scores: list[float] = []
+    for candidate in ranking:
+        if not isinstance(candidate, dict):
+            raise ValueError("ranking entries must be objects")
+        change_id = candidate.get("change_id")
+        if not isinstance(change_id, str) or not change_id.strip():
+            raise ValueError("ranking entries must contain nonblank change IDs")
+        if change_id in change_ids:
+            raise ValueError("ranking change IDs must be unique")
+        change_ids.add(change_id)
+        score = candidate.get("score")
+        if type(score) not in (int, float):
+            raise ValueError("ranking entries must contain finite numeric scores")
+        try:
+            numeric_score = float(score)
+        except OverflowError as exc:
+            raise ValueError("ranking entries must contain finite numeric scores") from exc
+        if not math.isfinite(numeric_score):
+            raise ValueError("ranking entries must contain finite numeric scores")
+        numeric_scores.append(numeric_score)
+
     root_rank = next(
         (
             index
@@ -309,17 +331,7 @@ def score_ranking(ranking_path: str | Path, hidden_root_cause_id: str) -> dict[s
 
     candidate_count = len(ranking)
     top_k = min(3, candidate_count)
-    root_entry = ranking[root_rank - 1]
-    root_score = root_entry.get("score")
-    if not isinstance(root_score, (int, float)):
-        raise ValueError("ranking entries must contain numeric scores")
-
-    numeric_scores: list[float] = []
-    for candidate in ranking:
-        score = candidate.get("score")
-        if not isinstance(score, (int, float)):
-            raise ValueError("ranking entries must contain numeric scores")
-        numeric_scores.append(float(score))
+    root_score = numeric_scores[root_rank - 1]
 
     tie_tolerance = 1e-12
     strictly_higher = sum(score > float(root_score) + tie_tolerance for score in numeric_scores)
