@@ -89,8 +89,7 @@ An ordinary complete prediction diff with the same cases and policy reached the
 same conclusions as MRF. No diagnostic advantage, independent-user benefit,
 causal identification or paper-worthy discovery follows from this example.
 Float32 is the conservative label-preserving export; INT8 offers a measured
-size/latency tradeoff with explicit case errors. Independent first use is still
-the next product-acceptance milestone.
+size/latency tradeoff with explicit case errors. Use by independent engineers has not been evaluated.
 
 ### Verify the public fixture against original scores
 
@@ -133,7 +132,7 @@ establishes decision consistency for these inputs, not MRF superiority, causal
 diagnosis or independent user benefit. Disagreement exits nonzero and is retained
 for investigation rather than choosing the preferred conclusion.
 
-### What the workflow adds, and what must be tested
+### Workflow scope and evaluation limits
 
 A competent ordinary diff and policy script can reproduce these numerical
 release decisions. MRF's current distinction is the packaged investigation:
@@ -142,7 +141,7 @@ records, explicit supplied-repair evidence, and visible unknowns when evidence
 is missing. Those are engineering affordances, not demonstrated decision gains.
 A baseline equipped with those affordances may remove the distinction entirely.
 
-The next evaluation should give independent engineers identical saved records,
+A fair independent evaluation would give engineers identical saved records,
 policy, repair predictions and task instructions in both workflows. Counterbalance
 workflow order on matched cases; record correct release/rollback/repair choices,
 missed policy failures, evidence needed for the choice and time to a justified
@@ -193,5 +192,6 @@ without conflating those outcomes. It initially filters to changed predictions;
 select **All cases** to inspect the complete table. With JavaScript disabled the
 summary remains available and all rows are shown.
 
-This addresses the maintainer's observed discoverability failure. It has not been
-validated with independent engineers and does not establish faster or better decisions.
+Detailed interpretation and slice results are available under **Interpretation
+and evidence**, after the case table. The layout has not been evaluated with
+independent engineers and does not establish faster or better decisions.
