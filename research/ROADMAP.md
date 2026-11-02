@@ -1,6 +1,6 @@
 # Model Regression Forensics roadmap
 
-Updated 1 November 2026 (licensing only). [Current evidence](STATE.md) · [Start with saved predictions](../docs/import-predictions.md)
+Updated 2 November 2026. [Current evidence](STATE.md) · [Start with saved predictions](../docs/import-predictions.md)
 
 ## Deliverable
 
@@ -19,8 +19,8 @@ on a demonstrated contribution beyond ordinary comparison and rollback.
 | Executable comparison and repair inspection | Complete on documented examples | Saved-prediction import, explicit execution, identical-case validation, slice requirements and portable HTML. Digit, Banking77 and incremental-intent examples exercise actual models. | Keep these as integration evidence; their constructed faults do not establish diagnostic advantage. |
 | Deployment conversion inspection | Complete on one retained linear model | [Float32/INT8 comparison](../docs/deployment-comparison.md): exact source recovery, fixed development policy, eight changed INT8 labels, measured single-host sizes/latency and runnable saved predictions. | Prefer the label-preserving export unless the measured size/latency tradeoff warrants changed behavior; this is not independent-user or comparative research evidence. |
 | Recover and package a reproducible investigation | Partly complete | Existing Banking77 bundle is retained. Recover the complete incremental-intent archive or mark it unavailable; verify hashes and rebuild reports without fitting. Document supported installation, inputs, outputs and license terms. | Do not advertise a complete downloadable experiment while its full model/input archive is unavailable. |
-| Independent first use | Not completed | An engineer uses their own saved predictions through the documented importer, inspects a failed slice and exports the cases supporting a release/repair decision. Record setup failures, interpretation errors and missing capabilities. | Fix observed obstacles. One successful session establishes usability on that case, not research efficacy or broad time savings. |
-| Comparative investigation evaluation | Deferred; not authorized | Qualify incident provenance and declare tasks, information access, success criteria and budget before scoring. Compare with full-diff inspection, direct prediction comparison, complete rollback, targeted rollback and full retraining where applicable. | Test whether MRF changes decision quality, protected-behavior failures, unjustified unique-cause claims or investigation cost. Include ordinary methods that win. |
+| New-user usability | Not completed | An engineer uses their own saved predictions through the documented importer, inspects a failed slice and exports the cases supporting a release/repair decision. Record setup failures, interpretation errors and missing capabilities. | Fix observed obstacles. One successful session establishes usability on that case, not research efficacy or broad time savings. |
+| Comparative investigation evaluation | Deferred | Qualify incident provenance and declare tasks, information access, success criteria and budget before scoring. Compare with full-diff inspection, direct prediction comparison, complete rollback, targeted rollback and full retraining where applicable. | Test whether MRF changes decision quality, protected-behavior failures, unjustified unique-cause claims or investigation cost. Include ordinary methods that win. |
 | Focused package and research decision | Conditional | Reproducible installation and first use, retained examples, limitations and explicit license. A study must report incident-level results, execution costs, abstentions and failures. | Release useful software independently of paper novelty. Pursue a paper only if comparative evidence supports a distinct contribution. |
 
 ## Maintenance decision
@@ -29,7 +29,7 @@ The supported saved-prediction importer and HTML investigation utility are compl
 on the retained examples. Preserve the completed localization study and its negative
 results. No new training, benchmarks, scorer variants or viewer expansion are active.
 
-The documented quickstart remains supported. Independent first use is unmeasured;
+The documented quickstart remains supported. Usability for independent users has not been evaluated;
 the existing decision packets can support a separately approved evaluation, without
 training. The older incremental-intent archive gap remains explicit and does not
 invalidate the retained deployment example. Original software is available under the

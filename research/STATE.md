@@ -36,7 +36,7 @@ These examples are development evidence, not independent confirmatory benchmarks
 
 ## Remaining limits
 
-Independent first use and comparative user benefit have not been measured. No qualified real-incident comparative study or peer-reviewed publication is available.
+Usability and benefit to independent users have not been evaluated. No qualified real-incident comparative study or peer-reviewed publication is available.
 
 The complete incremental-intent archive was not durably recovered after an upload failure. Its compact protocol and result records do not replace the full models, inputs and predictions. The Banking77 investigation bundle is retained separately.
 
