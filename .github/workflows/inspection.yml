@@ -28,21 +28,31 @@ jobs:
       - run: python -m model_forensics.investigation_report examples/investigations/digits examples/investigations/digits/current.html
       - run: npm install --no-save playwright@1.62.1
       - run: npx playwright install --with-deps chromium --only-shell
-      - run: node tests/browser/investigation.cjs
+      - name: Check retained digit HTML
+        run: node tests/browser/investigation.cjs
+        env:
+          MRF_RETAINED_REPORT: '1'
+          MRF_ARTIFACT_PREFIX: inspection-digits-retained
+      - name: Check current digit renderer
+        run: node tests/browser/investigation.cjs
         env:
           MRF_REPORT_HTML: current.html
+          MRF_ARTIFACT_PREFIX: inspection-digits-current
       - run: mrf-import examples/initial_comparison/policy.json examples/initial_comparison/predictions.csv /tmp/mrf-initial
       - run: node tests/browser/investigation.cjs
         env:
+          MRF_ARTIFACT_PREFIX: inspection-initial
           MRF_REPORT_DIR: /tmp/mrf-initial
       - run: mrf-import examples/deployment_comparison/policy.json examples/deployment_comparison/predictions.csv /tmp/mrf-deployment
       - run: python -c "import shutil; shutil.copyfile('examples/deployment_comparison/case_inputs.json', '/tmp/mrf-deployment/case_inputs.json')"
       - run: python -m model_forensics.investigation_report /tmp/mrf-deployment /tmp/mrf-deployment/with-inputs.html
       - run: node tests/browser/investigation.cjs
         env:
+          MRF_ARTIFACT_PREFIX: inspection-deployment
           MRF_REPORT_DIR: /tmp/mrf-deployment
           MRF_REPORT_HTML: with-inputs.html
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: investigation-browser-views
           path: inspection-*.png

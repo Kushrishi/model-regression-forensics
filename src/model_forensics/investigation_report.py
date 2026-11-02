@@ -169,6 +169,9 @@ details{margin:12px 0}
 label{display:inline-flex;flex-direction:column;margin-right:12px}
 
 .case-scroll{overflow:auto}
+.case-scroll:focus-visible{outline:2px solid #2457a7;outline-offset:2px}
+.scroll-hint{font-size:14px}
+@media(min-width:1400px){.scroll-hint{display:none}}
 #cases{display:table;table-layout:fixed;width:100%;min-width:1280px;font-size:14px}
 #cases th:first-child{width:24%}
 #cases th:nth-child(2){width:9%}
@@ -269,7 +272,10 @@ historical cause. Slice results may overlap and are not statistical significance
         '<option value="unchanged">Unchanged prediction</option></select></label> '
         '<button id="export-cases" type="button">Export visible case IDs</button>'
         f'<p id="case-count" role="status">{len(expected)} cases</p>'
-        f'<div class="case-scroll"><table id="cases"><thead><tr>{headers}</tr></thead>'
+        '<p id="scroll-hint" class="scroll-hint">Scroll horizontally to compare all releases.</p>'
+        '<div class="case-scroll" role="region" aria-label="Case comparison" '
+        'aria-describedby="scroll-hint" tabindex="0">'
+        f'<table id="cases"><thead><tr>{headers}</tr></thead>'
         f"<tbody>{case_rows}</tbody></table></div>"
         "<noscript>Filtering requires JavaScript; all case records are shown.</noscript></section>"
     )

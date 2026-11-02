@@ -19,25 +19,36 @@ const {chromium} = require('playwright');
     const after = JSON.parse(fs.readFileSync(path.join(root, 'execution-001.json'))).release.predictions;
     const changedCount = after.filter(row => before.get(row.case_id) !== row.observed).length;
     await page.goto(pathToFileURL(path.join(root, process.env.MRF_REPORT_HTML || 'index.html')).href);
+    const retained = process.env.MRF_RETAINED_REPORT === '1';
+    const artifact = process.env.MRF_ARTIFACT_PREFIX || 'inspection';
+    assert.match(artifact, /^[a-z0-9-]+$/);
     const visible = page.locator('#cases tbody tr:visible');
+    // The historical HTML starts with all cases; current reports start with changes.
+    if (retained) {
+      assert.equal(await page.inputValue('#case-state'), 'all');
+      assert.equal(await visible.count(), plan.cases.length);
+      await page.selectOption('#case-state', 'different');
+    }
     assert.equal(await page.inputValue('#case-state'), 'different');
     assert.equal(await visible.count(), changedCount);
     assert.equal(await page.locator('#case-count').textContent(), `${changedCount} of ${plan.cases.length} cases`);
-    const overview = (await page.locator('#decision-overview').textContent()).replace(/\s+/g, ' ').trim();
-    assert(overview.includes(`Candidate policy result: ${candidate.passed ? 'Pass' : 'Fail'}`));
-    assert(overview.includes(`${changedCount} changed predictions`));
-    // The retained deployment is a policy pass with changed labels, not a failure.
-    if (plan.declared_changes.baseline === 'float32' && plan.declared_changes.candidate === 'int8') {
-      assert.equal(plan.cases.length, 1969);
-      assert.equal(changedCount, 8);
-      assert(overview.includes('3 new errors'));
-      assert(overview.includes('3 corrections'));
-      assert(overview.includes('2 changes between incorrect labels'));
-      assert(overview.includes('78 of 78 declared slices passed'));
-      assert(overview.includes('baseline 1734/1969'));
-      assert(overview.includes('candidate 1734/1969'));
-      assert(overview.includes('Historical cause: not identified'));
-      assert(overview.includes('Model execution costs: unknown'));
+    if (!retained) {
+      const overview = (await page.locator('#decision-overview').textContent()).replace(/\s+/g, ' ').trim();
+      assert(overview.includes(`Candidate policy result: ${candidate.passed ? 'Pass' : 'Fail'}`));
+      assert(overview.includes(`${changedCount} changed predictions`));
+      // The retained deployment is a policy pass with changed labels, not a failure.
+      if (plan.declared_changes.baseline === 'float32' && plan.declared_changes.candidate === 'int8') {
+        assert.equal(plan.cases.length, 1969);
+        assert.equal(changedCount, 8);
+        assert(overview.includes('3 new errors'));
+        assert(overview.includes('3 corrections'));
+        assert(overview.includes('2 changes between incorrect labels'));
+        assert(overview.includes('78 of 78 declared slices passed'));
+        assert(overview.includes('baseline 1734/1969'));
+        assert(overview.includes('candidate 1734/1969'));
+        assert(overview.includes('Historical cause: not identified'));
+        assert(overview.includes('Model execution costs: unknown'));
+      }
     }
     await page.selectOption('#case-state', 'all');
     assert.equal(await visible.count(), plan.cases.length);
@@ -51,7 +62,7 @@ const {chromium} = require('playwright');
       const example = Object.values(inputs)[0].text;
       assert((await page.locator('#cases').textContent()).includes(example));
     }
-    if (report.candidate) {
+    if (report.candidate && !retained) {
       assert((await page.locator('body').textContent()).includes('Repairs have not been evaluated'));
       assert.equal(await page.locator('#cases thead th').count(), 5);
     }
@@ -78,10 +89,18 @@ const {chromium} = require('playwright');
     await page.selectOption('#case-state', 'all');
     assert.equal(await visible.count(), plan.cases.length);
     await page.locator('#case-inspection').evaluate(element => element.scrollIntoView());
-    await page.screenshot({path: 'inspection-desktop.png'});
+    await page.screenshot({path: `${artifact}-desktop.png`});
     await page.setViewportSize({width: 390, height: 844});
     await page.locator('#case-inspection').evaluate(element => element.scrollIntoView());
-    await page.screenshot({path: 'inspection-mobile.png'});
+    await page.screenshot({path: `${artifact}-mobile.png`});
+    if (!retained) {
+      const region = page.getByRole('region', {name: 'Case comparison', exact: true});
+      assert(await page.locator('#scroll-hint').isVisible());
+      await region.focus();
+      await page.keyboard.press('ArrowRight');
+      await page.waitForFunction(() => document.querySelector('.case-scroll').scrollLeft > 0);
+      assert(await region.evaluate(element => element.scrollWidth > element.clientWidth));
+    }
     assert.deepEqual(errors, []);
     console.log(`${plan.cases.length} cases: previews, filters, search, empty state and JSON export passed`);
   } finally {
