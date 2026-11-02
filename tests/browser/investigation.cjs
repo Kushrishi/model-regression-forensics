@@ -93,6 +93,14 @@ const {chromium} = require('playwright');
     await page.setViewportSize({width: 390, height: 844});
     await page.locator('#case-inspection').evaluate(element => element.scrollIntoView());
     await page.screenshot({path: `${artifact}-mobile.png`});
+    if (!retained) {
+      const region = page.getByRole('region', {name: 'Case comparison', exact: true});
+      assert(await page.locator('#scroll-hint').isVisible());
+      await region.focus();
+      await page.keyboard.press('ArrowRight');
+      await page.waitForFunction(() => document.querySelector('.case-scroll').scrollLeft > 0);
+      assert(await region.evaluate(element => element.scrollWidth > element.clientWidth));
+    }
     assert.deepEqual(errors, []);
     console.log(`${plan.cases.length} cases: previews, filters, search, empty state and JSON export passed`);
   } finally {
